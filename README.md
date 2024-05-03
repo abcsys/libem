@@ -9,7 +9,11 @@ make install
 ``` 
 
 Update `~/.libem/config.yaml` with 
-> openai_api_key: YOUR_OPENAI_API_KEY
+> OPENAI_API_KEY: your key 
+
+Optionally, to support browsing:
+> GOOGLE_CSE_ID: your key
+> GOOGLE_API_KEY: your key
 
 To run the sample example.
 ```bash
