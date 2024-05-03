@@ -1,5 +1,5 @@
 from libem.core.model import run
-from libem.browse import function as browse
+from libem import browse
 from libem.parameter import model
 
 

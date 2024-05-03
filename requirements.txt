@@ -1,5 +1,8 @@
 openai
 langchain
+langchain-community
+langchain-google-community
+google-api-python-client
 dspy-ai
 pyyaml
 numpy

@@ -1,10 +1,10 @@
 import os
 import json
 
-from langchain_community.utilities import GoogleSearchAPIWrapper
+from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_core.tools import Tool
 
-from libem.constant import LIBEM_CONFIG
+import libem
 
 schema = {
     "type": "function",
@@ -31,18 +31,22 @@ def func(entity):
 
 """ Google search function """
 
-# if os env is not set, set it
-if os.environ.get("GOOGLE_CSE_ID") is None:
-    os.environ["GOOGLE_CSE_ID"] = LIBEM_CONFIG.get("google_cse_id", "")
-if os.environ.get("GOOGLE_API_KEY") is None:
-    os.environ["GOOGLE_API_KEY"] = LIBEM_CONFIG.get("google_api_key", "")
+# Set up environment variables for Google API if they are not already set
+os.environ.setdefault(
+    "GOOGLE_CSE_ID",
+    libem.LIBEM_CONFIG.get("google_cse_id", "")
+)
+os.environ.setdefault(
+    "GOOGLE_API_KEY",
+    libem.LIBEM_CONFIG.get("google_api_key", "")
+)
 
 
 def google(entity):
-    assert os.environ.get("GOOGLE_CSE_ID", "") != "", \
-        "GOOGLE_CSE_ID is not set, you can set it in the environment or in the config file"
-    assert os.environ.get("GOOGLE_API_KEY", "") != "", \
-        "GOOGLE_API_KEY is not set, you can set it in the environment or in the config file"
+    # Ensure required environment variables are set
+    if not os.environ.get("GOOGLE_CSE_ID") or not os.environ.get("GOOGLE_API_KEY"):
+        raise EnvironmentError(f"GOOGLE_CSE_ID or GOOGLE_API_KEY is not set. "
+                               f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
 
     tool = Tool(
         name="google_search",
