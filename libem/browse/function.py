@@ -34,11 +34,11 @@ def func(entity):
 # Set up environment variables for Google API if they are not already set
 os.environ.setdefault(
     "GOOGLE_CSE_ID",
-    libem.LIBEM_CONFIG.get("google_cse_id", "")
+    libem.LIBEM_CONFIG.get("GOOGLE_CSE_ID", "")
 )
 os.environ.setdefault(
     "GOOGLE_API_KEY",
-    libem.LIBEM_CONFIG.get("google_api_key", "")
+    libem.LIBEM_CONFIG.get("GOOGLE_API_KEY", "")
 )
 
 

@@ -9,7 +9,7 @@ import libem
 """ OpenAI calls """
 os.environ.setdefault(
     "OPENAI_API_KEY",
-    libem.LIBEM_CONFIG.get("openai_api_key", "")
+    libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
 )
 
 
