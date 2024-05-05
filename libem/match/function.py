@@ -2,7 +2,7 @@ from libem.match import prompt, parameter
 from libem.core.struct import Prompt
 import libem.core.model as model
 
-from libem import browse
+
 
 schema = {
     "type": "function",
@@ -42,7 +42,7 @@ def match(left, right):
             prompt.rule(),
             prompt.experience()
         ),
-        tools=[browse],
+        tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
     )

@@ -6,7 +6,13 @@ from openai import OpenAI
 
 import libem
 
-""" OpenAI calls """
+
+def call(*args, **kwargs) -> str:
+    return openai(*args, **kwargs)
+
+
+""" OpenAI """
+
 os.environ.setdefault(
     "OPENAI_API_KEY",
     libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
@@ -14,14 +20,24 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def call(prompt: str, tools: list[types.ModuleType],
-         model: str, temperature: float = 0,
-         max_model_call: int = 3) -> str:
+def openai(prompt: str, tools: list[types.ModuleType],
+           model: str, temperature: float,
+           max_model_call: int = 3) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
                                f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
     client = OpenAI()
 
+    """ Call with no tool use """
+    if len(tools) == 0:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+        )
+        return response.choices[0].message.content
+
+    """ Call with tools """
     # Get the functions from the tools
     available_functions = {
         tool.name: tool.func for tool in tools
