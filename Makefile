@@ -8,7 +8,7 @@ install:
 
 
 # examples
-.PHONY: run match browse chat
+.PHONY: run match browse chat all
 run: | match
 match:
 	python examples/match.py
@@ -16,3 +16,9 @@ browse:
 	python examples/browse.py
 chat:
 	python examples/chat.py
+all: | run browse chat
+
+
+# test
+.PHONY: test
+test: | all

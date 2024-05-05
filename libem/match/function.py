@@ -1,8 +1,8 @@
-import libem.core.model as model
-from libem import browse
-from libem import parameter
-from libem.match import prompt
+from libem.match import prompt, parameter
 from libem.core.struct import Prompt
+import libem.core.model as model
+
+from libem import browse
 
 schema = {
     "type": "function",
@@ -42,6 +42,7 @@ def match(left, right):
             prompt.rule(),
             prompt.experience()
         ),
+        tools=[browse],
         model=parameter.model(),
-        tools=[browse]
+        temperature=parameter.temperature(),
     )

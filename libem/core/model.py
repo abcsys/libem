@@ -14,7 +14,8 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def call(prompt: str, model: str, tools: list[types.ModuleType],
+def call(prompt: str, tools: list[types.ModuleType],
+         model: str, temperature: float = 0,
          max_model_call: int = 3) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
@@ -35,6 +36,7 @@ def call(prompt: str, model: str, tools: list[types.ModuleType],
         messages=messages,
         tools=tools,
         tool_choice="auto",
+        temperature=temperature,
     )
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
@@ -65,6 +67,7 @@ def call(prompt: str, model: str, tools: list[types.ModuleType],
             messages=messages,
             tools=tools,
             tool_choice="auto",
+            temperature=temperature,
         )
         response_message = response.choices[0].message
         tool_calls = response_message.tool_calls

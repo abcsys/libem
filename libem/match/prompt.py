@@ -5,7 +5,7 @@ query = Prompt(
             "Entity 1: {left} and Entity 2: {right}."
 )
 output = Prompt(
-    default="Answer 'yes' or 'no' in lower case.",
+    default="Answer with 'yes' or 'no' only, in lower case.",
     options=["Answer only 1 or 0."],
 )
 rule = Prompt(
