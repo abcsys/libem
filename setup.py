@@ -11,4 +11,6 @@ setup(
     python_requires='>=3.10',
     include_package_data=True,
     install_requires = open('requirements.txt').readlines(),
+    scripts=['cli/libem'],
 )
+

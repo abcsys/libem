@@ -1,29 +1,31 @@
-.PHONY: dist install
+.PHONY: dist cli install
 dist:
 	python setup.py sdist bdist_wheel && twine upload --skip-existing dist/*
 	rm -rf build dist *.egg-info
 install:
-	pip install -e . && rm -rf *.egg-info
+	pip install -e .
 	mkdir -p ~/.libem && touch ~/.libem/config.yaml
-
+uninstall:
+	pip uninstall libem -y && rm -r libem.egg-info || true
 
 # examples
 .PHONY: run match browse chat all
-run: | match
+run: match
 match:
 	python examples/match.py
 browse:
 	python examples/browse.py
 chat:
 	python examples/chat.py
-all: | run browse chat
+all: run browse chat
 
 # benchmarks
 .PHONY: product benchmark
+benchmark: product
 product:
 	python benchmark/product.py
 
 
 # test
 .PHONY: test
-test: | all
+test: all
