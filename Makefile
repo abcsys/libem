@@ -18,6 +18,11 @@ chat:
 	python examples/chat.py
 all: | run browse chat
 
+# benchmarks
+.PHONY: product benchmark
+product:
+	python benchmark/product.py
+
 
 # test
 .PHONY: test
