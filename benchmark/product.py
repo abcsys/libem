@@ -14,7 +14,7 @@ def main():
         is_match = libem.match(e1, e2)
 
         print(f"Entity 1: {e1}\nEntity 2: {e2}\nMatch: {is_match}; label: {label}\n")
-        if i > num_pair:
+        if i >= num_pair:
             break
     print("Done.")
 
