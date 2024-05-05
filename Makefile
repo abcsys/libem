@@ -6,8 +6,13 @@ install:
 	pip install -e . && rm -rf *.egg-info
 	mkdir -p ~/.libem && touch ~/.libem/config.yaml
 
-.PHONY: run browse
-run:
+
+# examples
+.PHONY: run match browse chat
+run: | match
+match:
 	python examples/match.py
 browse:
 	python examples/browse.py
+chat:
+	python examples/chat.py

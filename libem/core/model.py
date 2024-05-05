@@ -14,8 +14,8 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def run(prompt: str, model: str, tools: list[types.ModuleType],
-        max_model_call: int = 3) -> str:
+def call(prompt: str, model: str, tools: list[types.ModuleType],
+         max_model_call: int = 3) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
                                f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
@@ -47,6 +47,7 @@ def run(prompt: str, model: str, tools: list[types.ModuleType],
             function_name = tool_call.function.name
             function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
+            print(f"Tool: {function_name} - running ..")
             function_response = function_to_call(**function_args)
             messages.append(
                 {

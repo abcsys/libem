@@ -1,4 +1,4 @@
-import libem.browse.function as function
+import libem.browse.function
 
 name = "browse"
 func = function.func
