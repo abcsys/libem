@@ -2,8 +2,8 @@ import libem
 
 
 def positive():
-    e1 = "zero-g zero-g pro pack for garageband ( appleloops ) 169.95"
-    e2 = "east west propack for garageband av production software 152.96"
+    e1 = "Dyson Hot+Cool AM09 Jet Focus heater and fan, White/Silver"
+    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - Black japan"
 
     is_match = libem.chat(f"Match two entities entity 1: {e1}; entity 2: {e2}")
 
