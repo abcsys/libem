@@ -1,6 +1,6 @@
 import os
 import json
-import types
+import importlib
 
 from openai import OpenAI
 
@@ -20,7 +20,7 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str, tools: list[types.ModuleType],
+def openai(prompt: str, tools: list[str],
            model: str, temperature: float,
            max_model_call: int = 3) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
@@ -38,6 +38,9 @@ def openai(prompt: str, tools: list[types.ModuleType],
         return response.choices[0].message.content
 
     """ Call with tools """
+    # Load the tool modules
+    tools = [importlib.import_module(tool) for tool in tools]
+
     # Get the functions from the tools
     available_functions = {
         tool.name: tool.func for tool in tools

@@ -10,7 +10,7 @@ output = Prompt(
     options=["Answer only 1 or 0."],
 )
 rule = Prompt(
-    default="- Color distinguishes entities.",
+    default="",
     options=[""],
 )
 experience = Prompt(
