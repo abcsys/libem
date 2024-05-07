@@ -4,7 +4,6 @@ import libem.core.model as model
 from libem.core.struct import Prompt
 
 from libem import prompt, parameter
-from libem import match as match_tool
 
 """Chat interface"""
 
@@ -12,7 +11,7 @@ from libem import match as match_tool
 def chat(message):
     return model.call(
         prompt=Prompt.join(prompt.role(), message, sep="\n"),
-        tools=[match_tool],
+        tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
     )
