@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import numpy as np
+from pathlib import Path
 from datetime import datetime
 
 import libem
@@ -57,10 +58,10 @@ def main(args):
         if args.num_pair > 0 and i + 1 >= args.num_pair:
             break
 
-    # save results
-    out_file = os.path.join(
-        os.path.split(os.path.abspath(__file__))[0],
-        f'results/{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
+    # save results to ./results
+    results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
+    Path(results_folder).mkdir(parents=True, exist_ok=True)
+    out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
 
     with open(out_file, 'w') as f:
         json.dump(result, f, indent=4)
