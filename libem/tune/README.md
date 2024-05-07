@@ -1,6 +1,15 @@
 # Libem Tune
 
-input --> libem --> pred vs. label -> F1 or other speed / token cost
+The tune module contains the tools to tune the parameters of the libem module.
+- The parameters of tune.learn and tune.search indicate which parameters in the sub-modules of libem to tune
+- Save and load the parameters from persistent storage
+- The tune.learn module tunes by generating prompts from the training data
+- The tune.search module tunes by searching the parameter space with the training data
+
+---
+# Tune internal
+
+Input --> libem --> pred vs. label -> F1 or other speed / token cost
 
 tune.py
 - collect a "parameter tree" from the modules ("Parameters")

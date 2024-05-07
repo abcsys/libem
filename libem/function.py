@@ -1,0 +1,5 @@
+schema = {}
+
+
+def func():
+    pass

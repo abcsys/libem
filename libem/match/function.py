@@ -26,10 +26,6 @@ schema = {
 
 
 def func(left, right):
-    return match(left, right)
-
-
-def match(left, right):
     return model.call(
         prompt=Prompt.join(
             prompt.query(
