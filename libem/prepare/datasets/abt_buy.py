@@ -9,12 +9,12 @@ train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
 
 
-def read_test(schema=True):
-    # sample data:
-    #{"id_left":"abt_942","name_left":"sony bravia theater black micro system davis50b","description_left":"sony bravia theater black micro system davis50b 5.1-channel surround sound golf ball-sized speakers compact design s-air digital wireless capability hdmi connectivity bravia sync digital cinema sound ( dcs ) technology s-master digital amplifier portable audio enhancer black finish","price_left":null,"cluster_id_left":813,
-    # "id_right":"buy_949","name_right":"sony bravia dav-is50 \/ b home theater system","description_right":"dvd player , 5.1 speakers 1 disc ( s ) progressive scan 450w rms dolby digital ex , dolby pro logic , dolby pro logic ii","price_right":null,"cluster_id_right":813,
-    # "label":1,"pair_id":"abt_942#buy_949"}
-    with open(test_file) as f:
+# sample data:
+# {"id_left":"abt_942","name_left":"sony bravia theater black micro system davis50b","description_left":"sony bravia theater black micro system davis50b 5.1-channel surround sound golf ball-sized speakers compact design s-air digital wireless capability hdmi connectivity bravia sync digital cinema sound ( dcs ) technology s-master digital amplifier portable audio enhancer black finish","price_left":null,"cluster_id_left":813,
+# "id_right":"buy_949","name_right":"sony bravia dav-is50 \/ b home theater system","description_right":"dvd player , 5.1 speakers 1 disc ( s ) progressive scan 450w rms dolby digital ex , dolby pro logic , dolby pro logic ii","price_right":null,"cluster_id_right":813,
+# "label":1,"pair_id":"abt_942#buy_949"}
+def read(file, schema=True):
+    with open(file) as f:
         for line in f:
             data = json.loads(line.strip())
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
@@ -49,8 +49,12 @@ def read_test(schema=True):
             yield parsed_data
 
 
-def read_train():
-    raise NotImplementedError
+def read_test(schema=True):
+    return read(test_file, schema)
+
+
+def read_train(schema=True):
+    return read(train_file, schema)
 
 
 def read_valid():
