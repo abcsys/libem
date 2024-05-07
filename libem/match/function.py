@@ -2,8 +2,6 @@ from libem.match import prompt, parameter
 from libem.core.struct import Prompt
 import libem.core.model as model
 
-
-
 schema = {
     "type": "function",
     "function": {

@@ -35,12 +35,12 @@ class Parameter(Tunable):
         return self
 
     def search(self):
-        pass
+        raise NotImplementedError
 
 
 class Prompt(Parameter):
     @classmethod
-    def join(cls, *prompts, sep=" "):
+    def join(cls, *prompts, sep="\n"):
         return sep.join([*prompts])
 
     def __init__(self, default: str, options: list[str] = None):

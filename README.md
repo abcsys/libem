@@ -22,9 +22,19 @@ To run the sample example.
 make run
 ```
 
+You can also install libem library with pip:
+```bash
+pip install libem
+```
 
+## Usage
 
+```python
+import libem
+libem.match("apple", "orange")
+```
 
-
-
-
+In shell:
+```bash
+libem apple orange
+```

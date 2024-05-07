@@ -35,3 +35,5 @@ def match(left, right,
         return random.choice(["yes", "no"])
 
     return function.match(left, right)
+
+# TBD: batch match from dataset; prepare function

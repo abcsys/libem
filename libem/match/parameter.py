@@ -7,6 +7,6 @@ temperature = libem.temperature
 from libem import browse
 
 tools = Parameter(
-    default=[],
+    default=[browse],
     options=[[], ],
 )

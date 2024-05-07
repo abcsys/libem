@@ -3,6 +3,8 @@ import argparse
 
 import libem
 
+# TBD: configure command
+# TBD: chat command for session
 
 def main():
     parser = argparse.ArgumentParser(description="Libem CLI tool")
