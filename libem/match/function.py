@@ -1,3 +1,4 @@
+import libem
 from libem.match import prompt, parameter
 from libem.core.struct import Prompt
 import libem.core.model as model
@@ -26,7 +27,7 @@ schema = {
 
 
 def func(left, right):
-    return model.call(
+    pred = model.call(
         prompt=Prompt.join(
             prompt.query(
                 left=left,
@@ -40,3 +41,5 @@ def func(left, right):
         model=parameter.model(),
         temperature=parameter.temperature(),
     )
+    libem.trace.add({"match": {"left": left, "right": right, "pred": pred}})
+    return pred

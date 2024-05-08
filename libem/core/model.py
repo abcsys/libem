@@ -68,7 +68,8 @@ def openai(prompt: str, tools: list[str],
             function_name = tool_call.function.name
             function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
-            print(f"Tool: {function_name} - running ..")
+
+            libem.info(f"Tool: {function_name} - running ..")
             function_response = function_to_call(**function_args)
             messages.append(
                 {
@@ -78,7 +79,13 @@ def openai(prompt: str, tools: list[str],
                     "content": function_response,
                 }
             )
-            print(f"Tool: {function_name} - {function_response}")
+            libem.info(f"Tool: {function_name} - {function_response}")
+            libem.trace.add({
+                function_name: {
+                    "id": tool_call.id,
+                    "arguments": function_args,
+                    "response": function_response}
+            })
 
         # Call the model again with the tool outcomes
         response = client.chat.completions.create(
@@ -93,5 +100,5 @@ def openai(prompt: str, tools: list[str],
         num_model_call += 1
 
     if num_model_call == max_model_call:
-        raise Warning(f"Max call reached: {messages}\n{response_message}")
+        libem.warn(f"Max call reached: {messages}\n{response_message}")
     return response_message.content

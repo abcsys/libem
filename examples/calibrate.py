@@ -1,7 +1,7 @@
 import libem
 
 
-def tuned():
+def main():
     e1 = "Dyson Hot+Cool AM09 Jet Focus heater and fan, White/Silver"
     e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - Black japan"
 
@@ -37,4 +37,4 @@ def tuned():
           f"Match: {is_match}")
 
 if __name__ == "__main__":
-    tuned()
+    main()
