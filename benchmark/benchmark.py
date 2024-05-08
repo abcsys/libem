@@ -29,7 +29,7 @@ def main(args):
         print(f"Matching {args.num_pair if args.num_pair > 0 else 'everything'}"
               f" from the {dataset} dataset.")
 
-    for i, data in enumerate(datasets[dataset].read_test(args.schema)):
+    for i, data in enumerate(datasets[dataset].read_test(args.schema, args.shuffle)):
 
         e1 = data['left']
         e2 = data['right']
@@ -85,6 +85,8 @@ if __name__ == "__main__":
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
                         help="Number of pairs to run through. Set as 0 to run through the entire dataset.", type=int,
                         default=5)
+    parser.add_argument("--shuffle", dest='shuffle', nargs='?', help="Whether to shuffle the dataset or not.", type=bool, 
+                        default=True)
     parser.add_argument("--verbose", dest='verbose', nargs='?',
                         help="If true, will print out the result for each pair.", type=bool, default=False)
     args = parser.parse_args()

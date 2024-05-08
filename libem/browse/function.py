@@ -44,7 +44,7 @@ os.environ.setdefault(
     libem.LIBEM_CONFIG.get("GOOGLE_API_KEY", "")
 )
 
-def google_search_wrapper(k=1):
+def google_search_wrapper(k=1, full_text=True):
     # google search api
     service = build("customsearch", "v1", developerKey=os.environ.get("GOOGLE_API_KEY"))
     
@@ -81,7 +81,10 @@ def google_search_wrapper(k=1):
         if len(pages) == 0:
             return 'No good Google Search Result was found.'
         
-        return "\n".join([text_from_html(p['link']) for p in pages])
+        if full_text:
+            return "\n".join([text_from_html(p['link']) for p in pages])
+        else:
+            return "\n".join([p['snippet'] for p in pages if 'snippet' in p])
     
     return google_search
 
@@ -95,7 +98,7 @@ def google(entity):
     tool = Tool(
         name="google_search",
         description="Search Google and return the first result.",
-        func=google_search_wrapper(k=1),
+        func=google_search_wrapper(k=1, full_text=False),
     )
     desc = tool.run(entity)
     return json.dumps(

@@ -1,5 +1,6 @@
 import os
 import json
+import random
 
 import libem.prepare.datasets as datasets
 
@@ -13,9 +14,14 @@ valid_file = os.path.join(path, "valid.ndjson")
 # {"id_left":"amazon_1191","title_left":"sims 2 glamour life stuff pack","manufacturer_left":"aspyr media","price_left":24.99,"cluster_id_left":810,
 #  "id_right":"google_567","title_right":"aspyr media inc sims 2 glamour life stuff pack","manufacturer_right":null,"price_right":23.44,"cluster_id_right":810,
 #  "label":1,"pair_id":"amazon_1191#google_567"}
-def read(file, schema=True):
+def read(file, schema=True, shuffle=False):
     with open(file) as f:
-        for line in f:
+        lines = f.readlines()
+        
+        if shuffle:
+            random.shuffle(lines)
+            
+        for line in lines:
             data = json.loads(line.strip())
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
@@ -49,12 +55,12 @@ def read(file, schema=True):
             yield parsed_data
 
 
-def read_test(schema=True):
-    return read(test_file, schema)
+def read_test(schema=True, shuffle=False):
+    return read(test_file, schema, shuffle)
 
 
-def read_train(schema=True):
-    return read(train_file, schema)
+def read_train(schema=True, shuffle=False):
+    return read(train_file, schema, shuffle)
 
 
 def read_valid():
