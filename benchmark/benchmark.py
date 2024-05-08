@@ -26,23 +26,30 @@ def main(args):
     dataset = args.dataset.lower().replace('_', '-')
 
     if args.verbose:
-        print(f"Matching {args.num_pair} from "
-              f"{dataset} dataset.")
+        print(f"Matching {args.num_pair if args.num_pair > 0 else 'everything'}"
+              f" from the {dataset} dataset.")
 
     for i, data in enumerate(datasets[dataset].read_test(args.schema)):
 
         e1 = data['left']
         e2 = data['right']
         label = data['label']
+        
+        if args.verbose:
+            print("\nPair: ", i + 1)
+            print(f"Entity 1: {e1}\nEntity 2: {e2}")
 
+        # call match
         is_match = libem.match(e1, e2)
 
+        # track results for evaluation metrics
         if 'yes' in is_match.lower():
             predictions.append(1)
         else:
             predictions.append(0)
         truth.append(label)
 
+        # cache results
         result.append({
             'Entity 1': e1,
             'Entity 2': e2,
@@ -51,10 +58,9 @@ def main(args):
         })
 
         if args.verbose:
-            print("\nPair: ", i + 1)
-            print(f"Entity 1: {e1}\nEntity 2: "
-                  f"{e2}\nMatch: {is_match}; Label: {label}\n")
+            print(f"Match: {is_match}; Label: {label}\n")
 
+        # check num_pair stop condition
         if args.num_pair > 0 and i + 1 >= args.num_pair:
             break
 
