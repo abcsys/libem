@@ -8,12 +8,16 @@ from googleapiclient.discovery import build
 from langchain_core.tools import Tool
 
 import libem
+from libem.browse import prompt
+from libem.core.struct import Prompt
 
 schema = {
     "type": "function",
     "function": {
         "name": "browse",
-        "description": "Browse the web to find descriptions for the given entity",
+        "description": Prompt.join(
+            prompt.description(), prompt.rule()
+        ),
         "parameters": {
             "type": "object",
             "properties": {

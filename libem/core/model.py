@@ -81,7 +81,6 @@ def openai(prompt: str, tools: list[str],
                     "content": function_response,
                 }
             )
-            libem.info(f"Tool: {function_name} - {function_response}")
             libem.trace.add({
                 'tool': {
                     "id": tool_call.id,
@@ -89,6 +88,7 @@ def openai(prompt: str, tools: list[str],
                     "arguments": function_args,
                     "response": function_response}
             })
+            libem.info(f"Tool: {function_name} - {function_response}")
 
         # Call the model again with the tool outcomes
         response = client.chat.completions.create(

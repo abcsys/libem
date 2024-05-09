@@ -11,7 +11,7 @@ path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "abt-buy")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
-
+description = "The Abt-Buy dataset for entity resolution derives from the online retailers Abt.com and Buy.com."
 
 # sample data:
 # {"id_left":"abt_942","name_left":"sony bravia theater black micro system davis50b","description_left":"sony bravia theater black micro system davis50b 5.1-channel surround sound golf ball-sized speakers compact design s-air digital wireless capability hdmi connectivity bravia sync digital cinema sound ( dcs ) technology s-master digital amplifier portable audio enhancer black finish","price_left":null,"cluster_id_left":813,

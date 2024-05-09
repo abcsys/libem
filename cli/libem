@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+import ast
 import argparse
 
 import libem
+
 
 # TBD: configure command
 # TBD: chat command for session
@@ -10,14 +12,36 @@ def main():
     parser = argparse.ArgumentParser(description="Libem CLI tool")
     parser.add_argument('e1', type=str, help='First entity')
     parser.add_argument('e2', type=str, help='Second entity')
+    parser.add_argument('-c', '--calibrate', metavar="KEY=VALUE",
+                        type=parse_key_value_pair, nargs='+',
+                        help="Key-value pairs separated by '=', "
+                             "e.g., key1=value1 key2=value2")
 
     args = parser.parse_args()
 
     entity1 = args.e1
     entity2 = args.e2
+    configs = args.calibrate
+    if configs:
+        libem.calibrate(dict(configs))
+
 
     result = libem.match(entity1, entity2)
     print("Match result:", result)
+
+
+def parse_key_value_pair(arg_value):
+    """ Parse a key-value pair, separated by '=' """
+    if '=' not in arg_value:
+        raise argparse.ArgumentTypeError("Key-value pairs must be separated by '='")
+    key, value = arg_value.split('=', 1)
+    try:
+        # Safely evaluate the value part to handle data structures like lists
+        value = ast.literal_eval(value)
+    except (SyntaxError, ValueError):
+        # If evaluation fails, keep the value as a string
+        pass
+    return key, value
 
 
 if __name__ == '__main__':

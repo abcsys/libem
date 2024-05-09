@@ -27,19 +27,24 @@ schema = {
 
 
 def func(left, right):
-    pred = model.call(
+    pred = parse_output(model.call(
         prompt=Prompt.join(
             prompt.query(
                 left=left,
                 right=right
             ),
-            prompt.output(),
             prompt.rule(),
-            prompt.experience()
+            prompt.experience(),
+            prompt.output(),
         ),
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
-    )
+    ))
     libem.trace.add({"match": {"left": left, "right": right, "pred": pred}})
     return pred
+
+
+def parse_output(output: str) -> str:
+    output = output.split("\n")[-1].lower()
+    return "yes" if "yes" in output else "no"

@@ -61,5 +61,24 @@ class Prompt(Parameter):
     def join(cls, *prompts, sep="\n"):
         return sep.join([*prompts])
 
+    def add(self, *prompts, sep="\n"):
+        self.update(self.join(self.value, *prompts, sep=sep))
+        return self
+    def prepend(self, *prompts, sep="\n"):
+        self.update(self.join(*prompts, self.value, sep=sep))
+        return self
+
     def __init__(self, default: str, options: list[str] = None):
         super().__init__(default, options)
+
+
+CoT = chain_of_thought = Prompt(
+    default="Explain your answer step by step.",
+    options=[""],
+)
+
+# todo
+ReAct = reason_act = Prompt(
+    default="",
+    options=[""],
+)
