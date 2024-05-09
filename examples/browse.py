@@ -2,9 +2,9 @@ import libem
 
 
 def positive():
-    e1 = "Dyson Hot+Cool AM09 Jet Focus heater and fan, White/Silver"
-    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - Black japan"
-
+    e1 = "almighty freedom gundam"
+    e2 = "ZGMF/A-262PD-P"
+    
     is_match = libem.match(e1, e2)
 
     print(f"Entity 1: {e1}\nEntity 2: {e2}\n"
