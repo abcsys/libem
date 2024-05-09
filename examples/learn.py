@@ -1,8 +1,7 @@
 import random
-import pprint as pp
 
 import libem
-from libem.tune import learn, check, collect, flatten
+from libem.tune import learn, check
 from libem.prepare.datasets import amazon_google
 from libem.core.log import header
 
@@ -16,7 +15,6 @@ def main():
     num_iter = 3
     num_train_sample = 20
     rnd = random.Random(42)
-
     print("Calibrate the match to use no tool")
     libem.calibrate({
         "libem.match.parameter.tools": [],  # turn off sub-tools

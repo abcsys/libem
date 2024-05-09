@@ -37,6 +37,9 @@ class Parameter(Tunable):
     def __str__(self):
         return str(self.__call__())
 
+    def __repr__(self):
+        return str(self.__call__())
+
     def update(self, value):
         self.value = self.v = value
         return self
@@ -47,8 +50,8 @@ class Parameter(Tunable):
     def search(self, train_data, metric):
         raise NotImplementedError
 
-    def export(self, full=False):
-        if full:
+    def export(self, include_all=False):
+        if include_all:
             return {
                 'default': self.default,
                 'value': self.value,
@@ -79,14 +82,21 @@ class Prompt(Parameter):
         def __str__(self):
             return self.__call__()
 
+        def __repr__(self):
+            return self.__call__()
+
         def __len__(self):
-            return len(self.mistakes)
+            return len(self.rules)
 
         def add(self, *rules):
             """rule.add(rule1, rule2, rule3)"""
             for rule in rules:
                 self.rules.extend(rule.rules)
             return self
+
+        def export(self, *args, **kwargs):
+            _, _ = args, kwargs
+            return self.__call__()
 
     class Experience:
         def __init__(self, rules: list[str] = None,
@@ -107,6 +117,9 @@ class Prompt(Parameter):
         def __str__(self):
             return self.__call__()
 
+        def __repr__(self):
+            return self.__call__()
+
         def __len__(self):
             return len(self.mistakes)
 
@@ -115,6 +128,10 @@ class Prompt(Parameter):
             for mistake in mistakes:
                 self.mistakes.extend(mistake.miscakes)
             return self
+
+        def export(self, *args, **kwargs):
+            _, _ = args, kwargs
+            return self.__call__()
 
     @classmethod
     def join(cls, *prompts, sep="\n"):
