@@ -33,6 +33,7 @@ def openai(prompt: str, tools: list[str],
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
+            seed=libem.LIBEM_RANDOM_SEED,
             temperature=temperature,
         )
         return response.choices[0].message.content
@@ -55,6 +56,7 @@ def openai(prompt: str, tools: list[str],
         messages=messages,
         tools=tools,
         tool_choice="auto",
+        seed=libem.LIBEM_RANDOM_SEED,
         temperature=temperature,
     )
     response_message = response.choices[0].message
@@ -81,8 +83,9 @@ def openai(prompt: str, tools: list[str],
             )
             libem.info(f"Tool: {function_name} - {function_response}")
             libem.trace.add({
-                function_name: {
+                'tool': {
                     "id": tool_call.id,
+                    'name': function_name,
                     "arguments": function_args,
                     "response": function_response}
             })
@@ -93,6 +96,7 @@ def openai(prompt: str, tools: list[str],
             messages=messages,
             tools=tools,
             tool_choice="auto",
+            seed=libem.LIBEM_RANDOM_SEED,
             temperature=temperature,
         )
         response_message = response.choices[0].message

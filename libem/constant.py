@@ -14,7 +14,9 @@ except FileNotFoundError:
     print(f"Config file not found at {LIBEM_CONFIG_FILE}")
     sys.exit(1)
 
-LIBEM_DO_LOG = False
+LIBEM_RANDOM_SEED = 42
+LIBEM_DO_LOG = True
+LIBEM_VERBOSE = True
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "logs")

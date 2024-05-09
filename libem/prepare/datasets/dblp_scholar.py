@@ -3,6 +3,9 @@ import json
 import random
 
 import libem.prepare.datasets as datasets
+from libem.constant import LIBEM_RANDOM_SEED
+
+random.seed(LIBEM_RANDOM_SEED)
 
 path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "dblp-scholar")
 test_file = os.path.join(path, "test.ndjson")

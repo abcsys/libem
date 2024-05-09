@@ -10,9 +10,9 @@ logging.basicConfig(level=libem.LIBEM_3RD_PARTY_LOG_LEVEL)
 # when log method is called for the first time
 _logger = None
 
-
 def info(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_VERBOSE:
+        print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
         msg = "".join(map(str, *args))
@@ -20,7 +20,8 @@ def info(*args, **kwargs):
 
 
 def debug(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_VERBOSE:
+        print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
         msg = " ".join(map(str, *args))

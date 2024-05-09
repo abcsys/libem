@@ -20,17 +20,17 @@ def chat(message):
 from libem.match import func as match_func
 from libem.calibrate import func as calibrate_func
 from libem.tune import func as tune_func
+from libem.constant import LIBEM_RANDOM_SEED
 
 
 def match(left, right,
           always=None,
-          guess=False,
-          seed=42) -> str:
+          guess=False) -> str:
     if always is not None:
         return always
 
     if guess:
-        random.seed(seed)
+        random.seed(LIBEM_RANDOM_SEED)
         return random.choice(["yes", "no"])
 
     return match_func(left, right)

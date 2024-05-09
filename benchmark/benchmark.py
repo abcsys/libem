@@ -10,7 +10,7 @@ from libem.prepare.datasets import (
     abt_buy, amazon_google, dblp_acm,
     walmart_amazon, dblp_scholar
 )
-from libem.core.eval import f1
+from libem.core.eval import precision, recall, f1
 
 datasets = {
     'abt-buy': abt_buy,
@@ -24,10 +24,12 @@ datasets = {
 def main(args):
     truth, predictions, result = [], [], []
     dataset = args.dataset.lower().replace('_', '-')
+    
+    libem.LIBEM_VERBOSE = args.verbose
 
-    if args.verbose:
-        print(f"Matching {args.num_pair if args.num_pair > 0 else 'everything'}"
-              f" from the {dataset} dataset.")
+    print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'everything'}"
+          f" {'pairs' if args.num_pair > 1 else 'pair' if args.num_pair == 1 else ''}"
+          f" from the {dataset} dataset.")
 
     for i, data in enumerate(datasets[dataset].read_test(args.schema, args.shuffle)):
 
@@ -40,7 +42,17 @@ def main(args):
             print(f"Entity 1: {e1}\nEntity 2: {e2}")
 
         # call match
-        is_match = libem.match(e1, e2)
+        with libem.trace as t:
+            is_match = libem.match(e1, e2)
+            
+            # cache results
+            result.append({
+                'entity_1': e1,
+                'entity_2': e2,
+                'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
+                'pred': is_match,
+                'label': label
+            })
 
         # track results for evaluation metrics
         if 'yes' in is_match.lower():
@@ -48,14 +60,6 @@ def main(args):
         else:
             predictions.append(0)
         truth.append(label)
-
-        # cache results
-        result.append({
-            'Entity 1': e1,
-            'Entity 2': e2,
-            'Match': is_match,
-            'Label': label
-        })
 
         if args.verbose:
             print(f"Match: {is_match}; Label: {label}\n")
@@ -67,14 +71,19 @@ def main(args):
     # save results to ./results
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
-    out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
+    if len(parser.file) > 0:
+        out_file = os.path.join(results_folder, parser.file)
+    else:
+        out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
 
     with open(out_file, 'w') as f:
         json.dump(result, f, indent=4)
 
-    print("Done.")
-    print("F1 score:", round(f1(np.array(truth), np.array(predictions)) * 100, 2))
-    print("Results saved to:", out_file)
+    print("Benchmark: Done.")
+    print("Benchmark: Precision\t", round(precision(np.array(truth), np.array(predictions)) * 100, 2))
+    print("Benchmark: Recall\t", round(recall(np.array(truth), np.array(predictions)) * 100, 2))
+    print("Benchmark: F1 score\t", round(f1(np.array(truth), np.array(predictions)) * 100, 2))
+    print("Benchmark: Results saved to:", out_file)
 
 
 if __name__ == "__main__":
@@ -89,5 +98,7 @@ if __name__ == "__main__":
                         default=True)
     parser.add_argument("--verbose", dest='verbose', nargs='?',
                         help="If true, will print out the result for each pair.", type=bool, default=False)
+    parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, should end in '.json'.", type=str,
+                        default='')
     args = parser.parse_args()
     main(args)
