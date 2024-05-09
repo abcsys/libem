@@ -5,12 +5,16 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_core.tools import Tool
 
 import libem
+from libem.browse import prompt
+from libem.core.struct import Prompt
 
 schema = {
     "type": "function",
     "function": {
         "name": "browse",
-        "description": "Browse the web to find descriptions for the given entity",
+        "description": Prompt.join(
+            prompt.description(), prompt.rule()
+        ),
         "parameters": {
             "type": "object",
             "properties": {

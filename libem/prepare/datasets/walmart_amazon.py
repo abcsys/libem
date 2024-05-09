@@ -7,6 +7,8 @@ path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "walmart-amazon")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
+description = "The Walmart-Amazon dataset for entity resolution derives " \
+              "from the online retailers Walmart.com and Amazon.com."
 
 
 # sample data:

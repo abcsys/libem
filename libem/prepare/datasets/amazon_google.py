@@ -7,7 +7,9 @@ path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "amazon-google")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
-
+description = "The Amazon-Google dataset for entity resolution derives " \
+              "from the online retailers Amazon.com and the product search " \
+              "service of Google accessible through the Google Base Data API. "
 
 # sample data:
 # {"id_left":"amazon_1191","title_left":"sims 2 glamour life stuff pack","manufacturer_left":"aspyr media","price_left":24.99,"cluster_id_left":810,

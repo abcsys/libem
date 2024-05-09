@@ -7,7 +7,8 @@ path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "dblp-acm")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
-
+description = "The DBLP-ACM dataset for entity resolution derives " \
+              "from the DBLP and ACM digital libraries."
 
 # sample data:
 # {"id_left":"dblp_1835","title_left":"wavelet-based histograms for selectivity estimation","authors_left":"jeffrey scott vitter , yossi matias , min wang","venue_left":"sigmod conference","year_left":1998,"cluster_id_left":2110,
