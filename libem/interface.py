@@ -2,10 +2,9 @@ import random
 
 import libem.core.model as model
 from libem.core.struct import Prompt
-
 from libem import prompt, parameter
 
-"""Chat interface"""
+"""Chat access"""
 
 
 def chat(message):
@@ -17,8 +16,10 @@ def chat(message):
     )
 
 
-"""Programming interface"""
+"""Programmatic access"""
 from libem.match import func as match_func
+from libem.calibrate import func as calibrate_func
+from libem.tune import func as tune_func
 
 
 def match(left, right,
@@ -35,8 +36,9 @@ def match(left, right,
     return match_func(left, right)
 
 
-from libem.calibrate import func as calibrate_func
-
-
 def calibrate(*args, **kwargs):
     return calibrate_func(*args, **kwargs)
+
+
+def tune(*args, **kwargs):
+    return tune_func(*args, **kwargs)

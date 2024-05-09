@@ -1,4 +1,6 @@
 import importlib
+
+import libem
 from libem.core.struct import Parameter
 
 schema = {}
@@ -17,10 +19,9 @@ def func(config, verbose=False):
             parameter = getattr(module, attribute)
         except:
             raise Exception(f"unable to find parameter {path}")
-
         assert isinstance(parameter, Parameter), f"invalid parameter {path}"
 
         parameter.update(value)
 
     if verbose:
-        print(f"Tool: calibrate - {config}")
+        libem.info(f"Tool: calibrate - {config}")

@@ -26,6 +26,9 @@ product:
 	python benchmark/product.py
 
 
-# test
-.PHONY: test
+# tests clean
+.PHONY: test clean
 test: all
+clean:
+	rm -r benchmark/results > /dev/null 2>&1 || true
+	rm -r logs > /dev/null 2>&1 || true

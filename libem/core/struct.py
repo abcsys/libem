@@ -4,11 +4,15 @@ import typing
 
 class Tunable(abc.ABC):
     @abc.abstractmethod
-    def search(self):
+    def update(self, value):
         pass
 
     @abc.abstractmethod
-    def update(self, value):
+    def learn(self, train_data, metric):
+        pass
+
+    @abc.abstractmethod
+    def search(self, train_data, metric):
         pass
 
 
@@ -34,8 +38,22 @@ class Parameter(Tunable):
         self.value = self.v = value
         return self
 
-    def search(self):
+    def learn(self, train_data, metric):
         raise NotImplementedError
+
+    def search(self, train_data, metric):
+        raise NotImplementedError
+
+    def export(self, full=False):
+        if full:
+            return {
+                'default': self.default,
+                'value': self.value,
+                'options': self.options,
+                'optimal': self.optimal
+            }
+        else:
+            return self.value
 
 
 class Prompt(Parameter):
