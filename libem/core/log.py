@@ -12,7 +12,8 @@ _logger = None
 
 
 def info(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_LOG_LEVEL <= logging.INFO:
+        print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
         msg = "".join(map(str, *args))
@@ -20,7 +21,8 @@ def info(*args, **kwargs):
 
 
 def debug(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_LOG_LEVEL <= logging.DEBUG:
+        print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
         msg = " ".join(map(str, *args))
@@ -28,7 +30,8 @@ def debug(*args, **kwargs):
 
 
 def warn(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_LOG_LEVEL <= logging.WARNING:
+        print(*args, **kwargs)
 
     msg = " ".join(map(str, *args))
     if libem.LIBEM_DO_LOG:
@@ -37,7 +40,8 @@ def warn(*args, **kwargs):
 
 
 def error(*args, **kwargs):
-    print(*args, **kwargs)
+    if libem.LIBEM_LOG_LEVEL <= logging.ERROR:
+        print(*args, **kwargs)
 
     msg = " ".join(map(str, *args))
     if libem.LIBEM_DO_LOG:

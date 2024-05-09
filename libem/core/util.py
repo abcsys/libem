@@ -1,7 +1,15 @@
 import importlib
 
 """ Toolchain utilities. """
-tool = importlib.import_module
+
+
+def toolchain(path):
+    if not path.startswith("libem"):
+        path = f"libem.{path}"
+    return importlib.import_module(path)
+
+
+chain = toolchain
 
 
 def get_func(full_path):

@@ -1,4 +1,5 @@
-import libem.tune.learn.function
+from .interface import *
+from . import function
 
 name = "learn"
 func = function.func

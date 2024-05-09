@@ -45,27 +45,27 @@ libem apple orange
 
 ## Conventions
 
-Libem enforces a strict naming convention for a tool module and the tool's access methods.
-Sub-tools' main methods are defined in the tool's interface.py and exposed at the tool level.
-For example, the following code will import the tune _method_.
+Libem enforces a strict naming convention for a toolchain and the tool access methods.
+Toolchain's main methods are defined in the interface.py and exposed at the toolchain level.
+For example, the following code will import the tune tool in libem toolchain.
 
 ```python
 from libem import tune
 ```
 
-To import the libem.tune _module_, we must explicitly invoke:
+To import the libem.tune toolchain, we must explicitly invoke:
 
 ```python 
 import libem
 
-tune = libem.tool("libem.tune") 
+tune = libem.toolchain("libem.tune") 
 ```
 
-Note that this does not prevent us from importing a sub-tool's _methods_ directly:
+Note that this does not prevent us from importing the tools in the toolchain directly:
 
 ```python
 from libem.tune import learn
 ```
 
-In a nutshell, one can directly import a tool's methods but not the tool's module. 
+In a nutshell, one can directly import a toolchain's tools but not the tool's module. 
 This is to _encourage_ (but not enforce) that tools are always accessed via well-defined methods consistent with the LM access.
