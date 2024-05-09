@@ -27,7 +27,7 @@ schema = {
 
 
 def func(left, right):
-    pred = parse_output(model.call(
+    model_output = model.call(
         prompt=Prompt.join(
             prompt.query(
                 left=left,
@@ -40,8 +40,9 @@ def func(left, right):
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
-    ))
-    libem.trace.add({"match": {"left": left, "right": right, "pred": pred}})
+    )
+    pred = parse_output(model_output)
+    libem.trace.add({"match": {"left": left, "right": right, "pred": model_output}})
     return pred
 
 

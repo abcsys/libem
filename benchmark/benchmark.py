@@ -45,17 +45,21 @@ def main(args):
         with libem.trace as t:
             is_match = libem.match(e1, e2)
             
+            # get unparsed model output
+            pred = [i['match']['pred'] for i in t.get() if 'match' in i][0]
+            
             # cache results
             result.append({
                 'entity_1': e1,
                 'entity_2': e2,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
+                'model_output': pred,
                 'pred': is_match,
                 'label': label
             })
 
         # track results for evaluation metrics
-        if 'yes' in is_match.lower():
+        if is_match.lower()[-3:] == 'yes':
             predictions.append(1)
         else:
             predictions.append(0)
@@ -71,8 +75,8 @@ def main(args):
     # save results to ./results
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
-    if len(parser.file) > 0:
-        out_file = os.path.join(results_folder, parser.file)
+    if len(args.file) > 0:
+        out_file = os.path.join(results_folder, args.file)
     else:
         out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
 
