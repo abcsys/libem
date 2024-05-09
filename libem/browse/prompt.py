@@ -6,7 +6,7 @@ description = Prompt(
     options=[]
 )
 rule = Prompt(
-    default="- Use only when you think it would help "
-            "with the matching task. ",
+    default=Prompt.Rule(["Use only when you think it would help "
+                         "with the matching task. "]),
     options=[]
 )

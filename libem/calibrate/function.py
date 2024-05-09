@@ -1,7 +1,6 @@
 import sys
 import importlib
 import pkgutil
-from collections import defaultdict
 
 import libem
 from libem.core.struct import Parameter, Prompt
@@ -37,7 +36,7 @@ def collect(tool: str, depth=sys.maxsize, include_all=False) -> dict:
 
     :return: a dictionary of parameters with flattened paths.
     """
-    parameters = defaultdict(dict)
+    parameters = {}
 
     mod_tool = importlib.import_module(tool)
     mod_parameter = _import_or_none(f"{tool}.parameter")
@@ -47,18 +46,20 @@ def collect(tool: str, depth=sys.maxsize, include_all=False) -> dict:
     if mod_parameter is not None:
         for p, v in mod_parameter.__dict__.items():
             if isinstance(v, Parameter):
+                if "parameter" not in parameters:
+                    parameters["parameter"] = {}
                 parameters["parameter"][p] = v.export(include_all)
 
     # get all prompts in the tool
     if mod_prompt is not None:
         for p, v in mod_prompt.__dict__.items():
             if isinstance(v, (Prompt, Prompt.Rule, Prompt.Experience)):
+                if "prompt" not in parameters:
+                    parameters["prompt"] = {}
                 parameters["prompt"][p] = v.export(include_all)
 
     if depth > 0:
-        for _, sub_mod_name, is_mod in pkgutil.walk_packages(
-                mod_tool.__path__,
-                mod_tool.__name__ + "."):
+        for sub_mod_name, is_mod in _list_top_level_modules(mod_tool):
             if is_mod:
                 parameters.update(collect(sub_mod_name, depth - 1, include_all))
 
@@ -123,3 +124,17 @@ def _import_or_none(name):
         return importlib.import_module(name)
     except ImportError:
         return None
+
+
+def _list_top_level_modules(package):
+    top_level_modules = []
+    first_level = package.__name__ + '.'
+    length_of_first_level = len(first_level.split('.'))
+
+    for importer, modname, ispkg in pkgutil.walk_packages(path=package.__path__,
+                                                          prefix=package.__name__ + '.',
+                                                          onerror=lambda x: None):
+        if modname.count('.') < length_of_first_level:  # Check depth of the package/module
+            top_level_modules.append((modname, ispkg))
+
+    return top_level_modules
