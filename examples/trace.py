@@ -1,5 +1,7 @@
 import libem
-import pprint as pp
+import pprint
+
+pp = pprint.PrettyPrinter(sort_dicts=False)
 
 
 def main():

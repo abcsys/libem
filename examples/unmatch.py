@@ -1,9 +1,9 @@
 import libem
 
 
-def positive():
+def negative():
     e1 = "Dyson Hot+Cool AM09 Jet Focus heater and fan, White/Silver"
-    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - W/S"
+    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - Black japan"
 
     is_match = libem.match(e1, e2)
 
@@ -11,4 +11,4 @@ def positive():
 
 
 if __name__ == '__main__':
-    positive()
+    negative()

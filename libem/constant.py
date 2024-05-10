@@ -20,5 +20,8 @@ LIBEM_VERBOSE = True
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "logs")
-LIBEM_LOG_LEVEL = logging.INFO
-LIBEM_3RD_PARTY_LOG_LEVEL = logging.WARNING
+# DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40
+LIBEM_LOG_LEVEL = \
+    os.environ.get("LIBEM_LOG_LEVEL", logging.INFO)
+LIBEM_3RD_PARTY_LOG_LEVEL = \
+    os.environ.get("LIBEM_3RD_PARTY_LOG_LEVEL", logging.WARNING)
