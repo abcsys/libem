@@ -10,7 +10,7 @@ rule = Prompt(
 )
 
 experience = Prompt(
-    default="",
+    default=Prompt.Experience()
 )
 
 output = Prompt(

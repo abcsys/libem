@@ -43,7 +43,7 @@ def predict(dataset) -> (list, list, list, list):
 
 
 def learn(dataset: list or typing.Iterable,
-          metric: str = "libem.core.eval.f1") -> (Prompt.Rule, Prompt.Experience):
+          metric: str = "libem.core.eval.f1") -> (float, Prompt.Rule, Prompt.Experience):
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)
@@ -56,7 +56,7 @@ def learn(dataset: list or typing.Iterable,
         rule = rule_from_success(mistakes)
     else:
         experience = experience_from_mistake(mistakes)
-    return rule, experience
+    return score, rule, experience
 
 
 def rule_from_success(successes: list) -> Prompt.Rule:

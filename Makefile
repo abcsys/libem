@@ -21,7 +21,7 @@ chat:
 	python examples/chat.py
 learn:
 	python examples/learn.py
-all: run browse chat learn
+all: match unmatch browse chat
 
 # benchmarks
 .PHONY: product benchmark

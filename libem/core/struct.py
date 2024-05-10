@@ -38,7 +38,7 @@ class Parameter(Tunable):
         return str(self.__call__())
 
     def __repr__(self):
-        return str(self.__call__())
+        return self.__str__()
 
     def update(self, value):
         self.value = self.v = value
@@ -75,18 +75,23 @@ class Prompt(Parameter):
         def __call__(self, *args, **kwargs):
             if len(self.rules) == 0:
                 return ""
-            rules = [f"{self.bullet} {rule}" for rule in self.rules]
+            rules = [f"{self.bullet} {rule}" for rule in self.rules
+                     if len(rule.strip()) != ""]
             return f"{self.intro}\n" \
                    f"{self.sep.join(rules)}"
 
         def __str__(self):
-            return self.__call__()
+            return str(self.__call__())
 
         def __repr__(self):
-            return self.__call__()
+            return self.__str__()
 
         def __len__(self):
             return len(self.rules)
+
+        def __add__(self, other):
+            assert isinstance(other, self.__class__)
+            return Prompt.Rule(self.rules + other.rules)
 
         def add(self, *rules):
             """rule.add(rule1, rule2, rule3)"""
@@ -99,10 +104,10 @@ class Prompt(Parameter):
             return self.__call__()
 
     class Experience:
-        def __init__(self, rules: list[str] = None,
+        def __init__(self, mistakes: list[str] = None,
                      intro: str = "Mistakes to avoid:",
                      sep="\n", bullet="-"):
-            self.mistakes = rules or []
+            self.mistakes = mistakes or []
             self.intro = intro
             self.sep = sep
             self.bullet = bullet
@@ -110,18 +115,23 @@ class Prompt(Parameter):
         def __call__(self, *args, **kwargs):
             if len(self.mistakes) == 0:
                 return ""
-            rules = [f"{self.bullet} {mistake}" for mistake in self.mistakes]
+            mistakes = [f"{self.bullet} {mistake}" for mistake in self.mistakes
+                        if len(mistake.strip()) != ""]
             return f"{self.intro}\n" \
-                   f"{self.sep.join(rules)}"
+                   f"{self.sep.join(mistakes)}"
 
         def __str__(self):
-            return self.__call__()
+            return str(self.__call__())
 
         def __repr__(self):
-            return self.__call__()
+            return self.__str__()
 
         def __len__(self):
             return len(self.mistakes)
+
+        def __add__(self, other):
+            assert isinstance(other, self.__class__)
+            return Prompt.Experience(self.mistakes + other.mistakes)
 
         def add(self, *mistakes):
             """mistake.add(mistake1, mistake2, mistake3)"""
@@ -144,11 +154,11 @@ class Prompt(Parameter):
         return sep.join(to_join)
 
     def add(self, *prompts, sep="\n"):
-        self.update(self.join(self.value, *prompts, sep=sep))
+        self.update(Prompt.join(self.value, *prompts, sep=sep))
         return self
 
     def prepend(self, *prompts, sep="\n"):
-        self.update(self.join(*prompts, self.value, sep=sep))
+        self.update(Prompt.join(*prompts, self.value, sep=sep))
         return self
 
     def __init__(self, default: str | Rule | Experience,
