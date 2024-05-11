@@ -15,7 +15,7 @@ except FileNotFoundError:
     sys.exit(1)
 
 LIBEM_RANDOM_SEED = 42
-LIBEM_DO_LOG = True
+LIBEM_DO_LOG = False
 LIBEM_VERBOSE = True
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),

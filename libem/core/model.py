@@ -2,7 +2,7 @@ import os
 import json
 import importlib
 
-from openai import OpenAI
+from openai import OpenAI, APITimeoutError
 
 import libem
 
@@ -30,12 +30,20 @@ def openai(prompt: str, tools: list[str],
 
     """ Call with no tool use """
     if len(tools) == 0:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            seed=libem.LIBEM_RANDOM_SEED,
-            temperature=temperature,
-        )
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                seed=libem.LIBEM_RANDOM_SEED,
+                temperature=temperature,
+            )
+        except APITimeoutError: # try again if encountered timeout
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                seed=libem.LIBEM_RANDOM_SEED,
+                temperature=temperature,
+            )
         return response.choices[0].message.content
 
     """ Call with tools """

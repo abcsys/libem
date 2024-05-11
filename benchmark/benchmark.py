@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import numpy as np
+import time
 from pathlib import Path
 from datetime import datetime
 
@@ -22,16 +23,19 @@ datasets = {
 
 
 def main(args):
+    libem.LIBEM_VERBOSE = args.verbose
+    
     truth, predictions, result = [], [], []
     dataset = args.dataset.lower().replace('_', '-')
+    start_time = time.time()
     
-    libem.LIBEM_VERBOSE = args.verbose
-
-    print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'everything'}"
-          f" {'pairs' if args.num_pair > 1 else 'pair' if args.num_pair == 1 else ''}"
+    print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
+          f" {'pair' if args.num_pair == 1 else 'pairs'}"
           f" from the {dataset} dataset.")
 
     for i, data in enumerate(datasets[dataset].read_test(args.schema, args.shuffle)):
+        if i < args.start:
+            continue
 
         e1 = data['left']
         e2 = data['right']
@@ -46,7 +50,7 @@ def main(args):
             is_match = libem.match(e1, e2)
             
             # get unparsed model output
-            pred = [i['match']['pred'] for i in t.get() if 'match' in i][0]
+            pred = [i['match']['model_output'] for i in t.get() if 'match' in i][0]
             
             # cache results
             result.append({
@@ -59,13 +63,14 @@ def main(args):
             })
 
         # track results for evaluation metrics
-        if is_match.lower()[-3:] == 'yes':
+        if is_match == 'yes':
             predictions.append(1)
         else:
             predictions.append(0)
         truth.append(label)
 
         if args.verbose:
+            print(pred)
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pair stop condition
@@ -83,7 +88,7 @@ def main(args):
     with open(out_file, 'w') as f:
         json.dump(result, f, indent=4)
 
-    print("Benchmark: Done.")
+    print(f"Benchmark: Done in {time.time() - start_time}.")
     print("Benchmark: Precision\t", round(precision(np.array(truth), np.array(predictions)) * 100, 2))
     print("Benchmark: Recall\t", round(recall(np.array(truth), np.array(predictions)) * 100, 2))
     print("Benchmark: F1 score\t", round(f1(np.array(truth), np.array(predictions)) * 100, 2))
@@ -98,6 +103,8 @@ if __name__ == "__main__":
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
                         help="Number of pairs to run through. Set as 0 to run through the entire dataset.", type=int,
                         default=5)
+    parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.", type=int, 
+                        default=0)
     parser.add_argument("--shuffle", dest='shuffle', nargs='?', help="Whether to shuffle the dataset or not.", type=bool, 
                         default=True)
     parser.add_argument("--verbose", dest='verbose', nargs='?',

@@ -15,7 +15,7 @@ def main():
     num_iter = 2
     num_train_sample = 100
     num_test_sample = 100
-    rnd = random.Random(42)
+    rnd = random.Random(44)
     print("Calibrate the match to use no tool")
 
     libem.calibrate({
@@ -54,9 +54,9 @@ def main():
         print("Train score:", score)
         libem.calibrate({
             "libem.match.prompt.rule":
-                match_rule_prompt() + learned_rule,
+                str(match_rule_prompt()) + str(learned_rule),
             "libem.match.prompt.experience":
-                match_experience_prompt() + learned_experience,
+                str(match_experience_prompt()) + str(learned_experience),
         })
         train_scores.append(score)
 
