@@ -25,12 +25,12 @@ def main():
 
     print("Libem configurations:")
     calibrate.show()
-    print(header("Start of Learn Experiment"))
 
     print(f"Load a dataset with {num_train_sample} samples")
     full_test_set = list(amazon_google.read_test())
     full_train_set = list(amazon_google.read_train())
 
+    print("Test Results Before the Learning Experiement:")
     test_scores = []
     test_set = rnd.sample(
         full_test_set,
@@ -38,7 +38,8 @@ def main():
     )
     test_score, mistakes = check(test_set)
     test_scores.append(test_score)
-
+    
+    print(header("Start of Learn Experiment"))
     train_scores = []
     for i in range(num_iter):
         print(header(f"Iteration {i + 1}"))
