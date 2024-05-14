@@ -14,12 +14,12 @@ except FileNotFoundError:
     print(f"Config file not found at {LIBEM_CONFIG_FILE}")
     sys.exit(1)
 
-LIBEM_DO_LOG = False
+LIBEM_DO_LOG = bool(os.environ.get("LIBEM_DO_LOG", False))
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "logs")
 # DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40
 LIBEM_LOG_LEVEL = \
-    os.environ.get("LIBEM_LOG_LEVEL", logging.INFO)
+    int(os.environ.get("LIBEM_LOG_LEVEL", logging.INFO))
 LIBEM_3RD_PARTY_LOG_LEVEL = \
     os.environ.get("LIBEM_3RD_PARTY_LOG_LEVEL", logging.WARNING)

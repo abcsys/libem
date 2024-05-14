@@ -15,7 +15,7 @@ def info(*args, **kwargs):
         print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
-        msg = "".join(map(str, *args))
+        msg = "".join(map(str, args))
         log(msg, typ="info")
 
 
@@ -24,7 +24,7 @@ def debug(*args, **kwargs):
         print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
-        msg = " ".join(map(str, *args))
+        msg = " ".join(map(str, args))
         log(msg, typ="debug")
 
 
@@ -32,7 +32,7 @@ def warn(*args, **kwargs):
     if libem.LIBEM_LOG_LEVEL <= logging.WARNING:
         print(*args, **kwargs)
 
-    msg = " ".join(map(str, *args))
+    msg = " ".join(map(str, args))
     if libem.LIBEM_DO_LOG:
         log(msg, typ="warning")
     raise Warning(msg)
@@ -42,7 +42,7 @@ def error(*args, **kwargs):
     if libem.LIBEM_LOG_LEVEL <= logging.ERROR:
         print(*args, **kwargs)
 
-    msg = " ".join(map(str, *args))
+    msg = " ".join(map(str, args))
     if libem.LIBEM_DO_LOG:
         log(msg, typ="error")
     raise Exception(msg)
