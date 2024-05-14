@@ -2,7 +2,6 @@ from libem.core.struct import Prompt
 
 query = Prompt(
     default="Do the two entity descriptions refer to the same real-world entity? "
-            "Answer with 'Yes' if they do and 'No' if they do not.\n"
             "Entity 1: {left}.\nEntity 2: {right}.",
     options=[""],
 )
@@ -16,7 +15,7 @@ experience = Prompt(
 )
 
 output = Prompt(
-    default="",
+    default="Answer with 'Yes' if they do and 'No' if they do not.\n",
     options=["Explain your answer step by step and end with 'yes' or 'no' only."  # CoT
              "Answer only 1 or 0.",
              "Answer with 'yes' or 'no' only, in lower case.", ],
