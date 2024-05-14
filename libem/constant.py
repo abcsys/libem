@@ -14,7 +14,7 @@ except FileNotFoundError:
     print(f"Config file not found at {LIBEM_CONFIG_FILE}")
     sys.exit(1)
 
-LIBEM_DO_LOG = False
+LIBEM_DO_LOG = bool(os.environ.get("LIBEM_DO_LOG", False))
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),
     "..", "logs")
