@@ -14,3 +14,4 @@ from libem.core.log import (
 )
 from libem.core.trace import trace
 from libem.core.telemetry import telemetry
+from libem.core.exception import *

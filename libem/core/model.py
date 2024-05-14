@@ -22,7 +22,7 @@ os.environ.setdefault(
 # LLM call with multiple rounds of tool use
 def openai(prompt: str, tools: list[str],
            model: str, temperature: float,
-           max_model_call: int = 3) -> str:
+           seed: int, max_model_call: int = 3) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
                                f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
@@ -34,16 +34,11 @@ def openai(prompt: str, tools: list[str],
             response = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
-                seed=libem.LIBEM_RANDOM_SEED,
+                seed=seed,
                 temperature=temperature,
             )
-        except APITimeoutError: # try again if encountered timeout
-            response = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                seed=libem.LIBEM_RANDOM_SEED,
-                temperature=temperature,
-            )
+        except APITimeoutError as e: # catch timeout error
+            raise libem.ModelTimedoutException(e)
         return response.choices[0].message.content
 
     """ Call with tools """
@@ -64,7 +59,7 @@ def openai(prompt: str, tools: list[str],
         messages=messages,
         tools=tools,
         tool_choice="auto",
-        seed=libem.LIBEM_RANDOM_SEED,
+        seed=seed,
         temperature=temperature,
     )
     response_message = response.choices[0].message
@@ -104,7 +99,7 @@ def openai(prompt: str, tools: list[str],
             messages=messages,
             tools=tools,
             tool_choice="auto",
-            seed=libem.LIBEM_RANDOM_SEED,
+            seed=seed,
             temperature=temperature,
         )
         response_message = response.choices[0].message

@@ -11,7 +11,7 @@ logging.basicConfig(level=libem.LIBEM_3RD_PARTY_LOG_LEVEL)
 _logger = None
 
 def info(*args, **kwargs):
-    if libem.LIBEM_VERBOSE and libem.LIBEM_LOG_LEVEL <= logging.INFO:
+    if libem.LIBEM_LOG_LEVEL <= logging.INFO:
         print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:
@@ -20,7 +20,7 @@ def info(*args, **kwargs):
 
 
 def debug(*args, **kwargs):
-    if libem.LIBEM_VERBOSE and libem.LIBEM_LOG_LEVEL <= logging.DEBUG:
+    if libem.LIBEM_LOG_LEVEL <= logging.DEBUG:
         print(*args, **kwargs)
 
     if libem.LIBEM_DO_LOG:

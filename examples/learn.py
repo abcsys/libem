@@ -54,9 +54,9 @@ def main():
         print("Train score:", score)
         libem.calibrate({
             "libem.match.prompt.rule":
-                str(match_rule_prompt()) + str(learned_rule),
+                match_rule_prompt() + learned_rule,
             "libem.match.prompt.experience":
-                str(match_experience_prompt()) + str(learned_experience),
+                match_experience_prompt() + learned_experience,
         })
         train_scores.append(score)
 

@@ -1,8 +1,10 @@
-import os
-import json
 import argparse
+import json
+import logging
 import numpy as np
 import time
+import random
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -13,6 +15,7 @@ from libem.prepare.datasets import (
 )
 from libem.core.eval import precision, recall, f1
 
+random.seed(libem.parameter.seed())
 datasets = {
     'abt-buy': abt_buy,
     'amazon-google': amazon_google,
@@ -23,17 +26,22 @@ datasets = {
 
 
 def main(args):
-    libem.LIBEM_VERBOSE = args.verbose
+    if not args.verbose:
+        libem.LIBEM_LOG_LEVEL = logging.WARNING
     
     truth, predictions, result = [], [], []
-    dataset = args.dataset.lower().replace('_', '-')
+    dataset_name = args.dataset.lower().replace('_', '-')
+    dataset = list(datasets[dataset_name].read_test(args.schema))
+    if args.shuffle:
+        random.shuffle(dataset)
+    
     start_time = time.time()
     
     print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
           f" {'pair' if args.num_pair == 1 else 'pairs'}"
-          f" from the {dataset} dataset.")
+          f" from the {dataset_name} dataset.")
 
-    for i, data in enumerate(datasets[dataset].read_test(args.schema, args.shuffle)):
+    for i, data in enumerate(dataset):
         if i < args.start:
             continue
 
@@ -81,7 +89,7 @@ def main(args):
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
     if len(args.file) > 0:
-        out_file = os.path.join(results_folder, args.file)
+        out_file = os.path.join(results_folder, f'{args.file}.json')
     else:
         out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
 
@@ -99,17 +107,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
     parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.", type=str,
                         default='amazon-google')
-    parser.add_argument("--schema", dest='schema', nargs='?', help="The dataset to benchmark.", type=bool, default=True)
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
                         help="Number of pairs to run through. Set as 0 to run through the entire dataset.", type=int,
                         default=5)
     parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.", type=int, 
                         default=0)
-    parser.add_argument("--shuffle", dest='shuffle', nargs='?', help="Whether to shuffle the dataset or not.", type=bool, 
+    parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, will append '.json'.", 
+                        type=str, default='')
+    parser.add_argument("--no_schema", dest='schema', help="Turn off the dataset schema.",
+                        action='store_true', default=True)
+    parser.add_argument("--no_shuffle", dest='shuffle', help="Don't shuffle the dataset.", action='store_true', 
                         default=True)
-    parser.add_argument("--verbose", dest='verbose', nargs='?',
-                        help="If true, will print out the result for each pair.", type=bool, default=False)
-    parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, should end in '.json'.", type=str,
-                        default='')
+    parser.add_argument("--verbose", dest='verbose', help="Print intermediate results for each pair to console.", 
+                        action='store_true', default=False)
+    
     args = parser.parse_args()
     main(args)

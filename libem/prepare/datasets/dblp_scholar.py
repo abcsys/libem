@@ -1,11 +1,7 @@
 import os
 import json
-import random
 
 import libem.prepare.datasets as datasets
-from libem.constant import LIBEM_RANDOM_SEED
-
-random.seed(LIBEM_RANDOM_SEED)
 
 path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "dblp-scholar")
 test_file = os.path.join(path, "test.ndjson")
@@ -19,14 +15,9 @@ description = "The DBLP-Scholar dataset for entity resolution derives " \
 # {"id_left":"dblp_1853","title_left":"further improvements on integrity constraint checking for stratifiable deductive databases","authors_left":"s lee , t ling","venue_left":"vldb","year_left":1996,"cluster_id_left":2290,
 # "id_right":"scholar_17524","title_right":"further improvements on integrity constraint checking for stratifiable deductive databases","authors_right":"sy lee , tw ling","venue_right":"vldb ,","year_right":1996.0,"cluster_id_right":2290,
 # "label":1,"pair_id":"dblp_1853#scholar_17524"}
-def read(file, schema=True, shuffle=False):
+def read(file, schema=True):
     with open(file) as f:
-        lines = f.readlines()
-        
-        if shuffle:
-            random.shuffle(lines)
-            
-        for line in lines:
+        for line in f:
             data = json.loads(line.strip())
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
@@ -60,12 +51,12 @@ def read(file, schema=True, shuffle=False):
             yield parsed_data
 
 
-def read_test(schema=True, shuffle=False):
-    return read(test_file, schema, shuffle)
+def read_test(schema=True):
+    return read(test_file, schema)
 
 
-def read_train(schema=True, shuffle=False):
-    return read(train_file, schema, shuffle)
+def read_train(schema=True):
+    return read(train_file, schema)
 
 
 def read_valid():

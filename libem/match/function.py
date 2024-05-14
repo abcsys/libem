@@ -41,6 +41,7 @@ def func(left, right):
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
+        seed=parameter.seed(),
     )
     pred = parse_output(model_output)
     libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,

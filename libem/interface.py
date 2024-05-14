@@ -13,6 +13,7 @@ def chat(message):
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
+        seed=parameter.seed(),
     )
 
 
@@ -20,17 +21,17 @@ def chat(message):
 from libem.match import func as match_func
 from libem.calibrate import func as calibrate_func
 from libem.tune import func as tune_func
-from libem.constant import LIBEM_RANDOM_SEED
 
 
 def match(left, right,
           always=None,
-          guess=False) -> str:
+          guess=False,
+          seed=parameter.seed()) -> str:
     if always is not None:
         return always
 
     if guess:
-        random.seed(LIBEM_RANDOM_SEED)
+        random.seed(seed)
         return random.choice(["yes", "no"])
 
     return match_func(left, right)

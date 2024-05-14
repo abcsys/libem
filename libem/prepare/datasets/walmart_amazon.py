@@ -1,11 +1,7 @@
 import os
 import json
-import random
 
 import libem.prepare.datasets as datasets
-from libem.constant import LIBEM_RANDOM_SEED
-
-random.seed(LIBEM_RANDOM_SEED)
 
 path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "walmart-amazon")
 test_file = os.path.join(path, "test.ndjson")
@@ -19,14 +15,9 @@ description = "The Walmart-Amazon dataset for entity resolution derives " \
 # {"id_left":"walmart_88","title_left":"balt wheasel easel adjustable melamine dry erase board white","category_left":"stationery & office machinery","brand_left":"balt","modelno_left":"33250","price_left":239.88,"cluster_id_left":463,
 # "id_right":"amazon_3269","title_right":"balt inc. wheasel easel adjustable melamine dry erase board 28 3 4 x 59 1 2 white","category_right":"laminating supplies","brand_right":"mayline","modelno_right":null,"price_right":134.45,"cluster_id_right":463,
 # "label":1,"pair_id":"walmart_88#amazon_3269"}
-def read(file, schema=True, shuffle=False):
+def read(file, schema=True):
     with open(file) as f:
-        lines = f.readlines()
-        
-        if shuffle:
-            random.shuffle(lines)
-            
-        for line in lines:
+        for line in f:
             data = json.loads(line.strip())
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
@@ -60,12 +51,12 @@ def read(file, schema=True, shuffle=False):
             yield parsed_data
 
 
-def read_test(schema=True, shuffle=False):
-    return read(test_file, schema, shuffle)
+def read_test(schema=True):
+    return read(test_file, schema)
 
 
-def read_train(schema=True, shuffle=False):
-    return read(train_file, schema, shuffle)
+def read_train(schema=True):
+    return read(train_file, schema)
 
 
 def read_valid():
