@@ -15,7 +15,7 @@ description = "The DBLP-ACM dataset for entity resolution derives " \
 # "id_right":"acm_184","title_right":"wavelet-based histograms for selectivity estimation","authors_right":"yossi matias , jeffrey scott vitter , min wang","venue_right":"international conference on management of data","year_right":1998,"cluster_id_right":2110,
 # "label":1,"pair_id":"dblp_1835#acm_184"}
 def read(file, schema=True):
-    with open(file) as f:
+    with open(file) as f: 
         for line in f:
             data = json.loads(line.strip())
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}

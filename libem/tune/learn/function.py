@@ -14,7 +14,7 @@ def func(*args, **kwargs):
     return learn(*args, **kwargs)
 
 
-def predict(dataset) -> (list, list, list, list):
+def predict(dataset) -> tuple[list, list, list, list]:
     preds, truths = [], []
     mistakes, successes = [], []
 
@@ -42,8 +42,8 @@ def predict(dataset) -> (list, list, list, list):
     return preds, truths, mistakes, successes
 
 
-def learn(dataset: list or typing.Iterable,
-          metric: str = "libem.core.eval.f1") -> (float, Prompt.Rule, Prompt.Experience):
+def learn(dataset: list | typing.Iterable,
+          metric: str = "libem.core.eval.f1") -> tuple[float, Prompt.Rule, Prompt.Experience]:
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)
@@ -68,6 +68,7 @@ def rule_from_success(successes: list) -> Prompt.Rule:
         ),
         model=parameter.model(),
         temperature=parameter.temperature(),
+        seed=parameter.seed(),
         tools=[],
     )
     libem.info("Learned: ", message)
@@ -84,6 +85,7 @@ def experience_from_mistake(mistakes: list) -> Prompt.Experience:
         ),
         model=parameter.model(),
         temperature=parameter.temperature(),
+        seed=parameter.seed(),
         tools=[],
     )
     libem.info("Learned: ", message)
@@ -91,7 +93,7 @@ def experience_from_mistake(mistakes: list) -> Prompt.Experience:
     return Prompt.Experience(mistakes)
 
 
-def check(dataset, metric: str = "libem.core.eval.f1") -> (float, list):
+def check(dataset, metric: str = "libem.core.eval.f1") -> tuple[float, list]:
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)

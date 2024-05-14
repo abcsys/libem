@@ -36,14 +36,16 @@ def func(left, right):
         prompt.experience(),
         prompt.output(),
     )
-    pred = parse_output(model.call(
+    model_output = model.call(
         prompt=match_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
-    ))
-    libem.trace.add({"match": {"left": left, "right": right, "pred": pred,
-                               "prompt": match_prompt}})
+        seed=parameter.seed(),
+    )
+    pred = parse_output(model_output)
+    libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
+                               "pred": pred, "prompt": match_prompt}})
     return pred
 
 

@@ -13,6 +13,7 @@ def chat(message):
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
+        seed=parameter.seed(),
     )
 
 
@@ -25,7 +26,7 @@ from libem.tune import func as tune_func
 def match(left, right,
           always=None,
           guess=False,
-          seed=42) -> str:
+          seed=parameter.seed()) -> str:
     if always is not None:
         return always
 

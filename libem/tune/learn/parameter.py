@@ -1,3 +1,4 @@
+import libem.parameter as libem
 from libem.core.struct import Parameter
 
 model = Parameter(
@@ -6,3 +7,4 @@ model = Parameter(
 temperature = Parameter(
     default=0,
 )
+seed = libem.seed()

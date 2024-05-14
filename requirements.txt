@@ -9,3 +9,4 @@ langchain-google-community
 dspy-ai
 tokencost
 google-api-python-client
+bs4

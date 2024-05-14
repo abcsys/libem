@@ -1,8 +1,9 @@
 from libem.core.struct import Prompt
 
 query = Prompt(
-    default="Do these two entity descriptions refer to the same entity? "
-            "Entity 1: {left} and Entity 2: {right}.",
+    default="Do the two entity descriptions refer to the same real-world entity?\n"
+            "Entity 1: {left}.\nEntity 2: {right}.",
+    options=[""],
 )
 
 rule = Prompt(
@@ -10,12 +11,12 @@ rule = Prompt(
 )
 
 experience = Prompt(
-    default=Prompt.Experience()
+    default=Prompt.Experience(),
 )
 
 output = Prompt(
-    default="If it's straightforward to answer, just answer with 'yes' or 'no' "
-            "in a new line. If there are browsing results, you must first explain "
-            "your answer step by step, and then end with 'yes' or 'no' "
-            "in a new line.",
+    default="Answer with 'Yes' if they do and 'No' if they do not.",
+    options=["Explain your answer step by step and end with 'yes' or 'no' only."  # CoT
+             "Answer only 1 or 0.",
+             "Answer with 'yes' or 'no' only, in lower case.", ],
 )

@@ -15,7 +15,7 @@ def main():
     num_iter = 2
     num_train_sample = 100
     num_test_sample = 100
-    rnd = random.Random(42)
+    rnd = random.Random(44)
     print("Calibrate the match to use no tool")
 
     libem.calibrate({

@@ -10,7 +10,6 @@ logging.basicConfig(level=libem.LIBEM_3RD_PARTY_LOG_LEVEL)
 # when log method is called for the first time
 _logger = None
 
-
 def info(*args, **kwargs):
     if libem.LIBEM_LOG_LEVEL <= logging.INFO:
         print(*args, **kwargs)
