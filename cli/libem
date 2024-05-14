@@ -25,7 +25,6 @@ def main():
     if configs:
         libem.calibrate(dict(configs))
 
-
     result = libem.match(entity1, entity2)
     print("Match result:", result)
 

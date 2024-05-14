@@ -8,6 +8,3 @@ temperature = Parameter(
     default=0,
     options=[0.1, 0.5, 0.9, 1.4]
 )
-seed = Parameter(
-    default=42,
-)

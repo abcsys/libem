@@ -22,7 +22,8 @@ os.environ.setdefault(
 # LLM call with multiple rounds of tool use
 def openai(prompt: str, tools: list[str],
            model: str, temperature: float,
-           seed: int, max_model_call: int = 3) -> str:
+           max_model_call: int = 3,
+           seed: int = None) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
                                f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
@@ -38,12 +39,12 @@ def openai(prompt: str, tools: list[str],
                 seed=seed,
                 temperature=temperature,
             )
-        except APITimeoutError as e: # catch timeout error
+        except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
-        
+
         response_message = response.choices[0].message
         tokens += response.usage.total_tokens
-    
+
     else:
         """ Call with tools """
         # Load the tool modules
@@ -67,9 +68,9 @@ def openai(prompt: str, tools: list[str],
                 seed=seed,
                 temperature=temperature,
             )
-        except APITimeoutError as e: # catch timeout error
+        except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
-        
+
         response_message = response.choices[0].message
         tokens += response.usage.total_tokens
         tool_calls = response_message.tool_calls
@@ -99,7 +100,7 @@ def openai(prompt: str, tools: list[str],
                         'name': function_name,
                         "arguments": function_args,
                         "response": function_response
-                        }
+                    }
                 })
                 libem.info(f"Tool: {function_name} - {function_response}")
 
@@ -113,9 +114,9 @@ def openai(prompt: str, tools: list[str],
                     seed=seed,
                     temperature=temperature,
                 )
-            except APITimeoutError as e: # catch timeout error
+            except APITimeoutError as e:  # catch timeout error
                 raise libem.ModelTimedoutException(e)
-        
+
             response_message = response.choices[0].message
             tokens += response.usage.total_tokens
             tool_calls = response_message.tool_calls
@@ -123,7 +124,7 @@ def openai(prompt: str, tools: list[str],
 
         if num_model_call == max_model_call:
             libem.warn(f"Max call reached: {messages}\n{response_message}")
-            
+
     # add model calls to trace
     libem.trace.add({
         'model': {
@@ -131,5 +132,5 @@ def openai(prompt: str, tools: list[str],
             'tokens': tokens
         }
     })
-    
+
     return response_message.content

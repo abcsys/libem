@@ -15,7 +15,7 @@ from libem.prepare.datasets import (
 )
 from libem.core.eval import precision, recall, f1
 
-random.seed(libem.parameter.seed())
+random.seed(libem.LIBEM_SEED)
 datasets = {
     'abt-buy': abt_buy,
     'amazon-google': amazon_google,

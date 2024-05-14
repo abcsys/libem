@@ -7,4 +7,3 @@ model = Parameter(
 temperature = Parameter(
     default=0,
 )
-seed = libem.seed()

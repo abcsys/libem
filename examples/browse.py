@@ -2,7 +2,7 @@ import libem
 
 
 def positive():
-    e1 = "almighty freedom gundam"
+    e1 = "mighty freedom gundam"
     e2 = "ZGMF/A-262PD-P"
 
     is_match = libem.match(e1, e2)
