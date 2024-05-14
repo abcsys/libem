@@ -36,6 +36,7 @@ def main(args):
         random.shuffle(dataset)
     
     start_time = time.time()
+    tokens_used = 0
     
     print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
           f" {'pair' if args.num_pair == 1 else 'pairs'}"
@@ -59,6 +60,7 @@ def main(args):
             
             # get unparsed model output
             pred = [i['match']['model_output'] for i in t.get() if 'match' in i][0]
+            tokens_used += sum([i['model']['tokens'] for i in t.get() if 'model' in i])
             
             # cache results
             result.append({
@@ -92,14 +94,23 @@ def main(args):
         out_file = os.path.join(results_folder, f'{args.file}.json')
     else:
         out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
+    
+    # get stats
+    metrics = [precision, recall, f1]
+    stats = {m.__name__: round(m(np.array(truth), np.array(predictions)) * 100, 2) for m in metrics}
+    stats['latency'] = round(time.time() - start_time, 2)
+    stats['tokens'] = tokens_used
 
     with open(out_file, 'w') as f:
-        json.dump(result, f, indent=4)
+        json.dump({
+                'stats': stats,
+                'results': result
+            }, f, indent=4)
 
-    print(f"Benchmark: Done in {time.time() - start_time}.")
-    print("Benchmark: Precision\t", round(precision(np.array(truth), np.array(predictions)) * 100, 2))
-    print("Benchmark: Recall\t", round(recall(np.array(truth), np.array(predictions)) * 100, 2))
-    print("Benchmark: F1 score\t", round(f1(np.array(truth), np.array(predictions)) * 100, 2))
+    print(f"Benchmark: Done in {stats['latency']}.")
+    print("Benchmark: Precision\t", stats['precision'])
+    print("Benchmark: Recall\t", stats['recall'])
+    print("Benchmark: F1 score\t", stats['f1'])
     print("Benchmark: Results saved to:", out_file)
 
 
