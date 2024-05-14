@@ -20,6 +20,6 @@ LIBEM_LOG_DIR = os.path.join(
     "..", "logs")
 # DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40
 LIBEM_LOG_LEVEL = \
-    os.environ.get("LIBEM_LOG_LEVEL", logging.INFO)
+    int(os.environ.get("LIBEM_LOG_LEVEL", logging.INFO))
 LIBEM_3RD_PARTY_LOG_LEVEL = \
     os.environ.get("LIBEM_3RD_PARTY_LOG_LEVEL", logging.WARNING)
