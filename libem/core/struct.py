@@ -1,5 +1,6 @@
 import abc
 import typing
+import copy
 
 
 class Tunable(abc.ABC):
@@ -61,6 +62,9 @@ class Parameter(Tunable):
         else:
             return self.value
 
+    def copy(self):
+        return copy.deepcopy(self)
+
 
 class Prompt(Parameter):
     class Rule:
@@ -103,6 +107,9 @@ class Prompt(Parameter):
             _, _ = args, kwargs
             return self.__call__()
 
+        def copy(self):
+            return copy.deepcopy(self)
+
     class Experience:
         def __init__(self, mistakes: list[str] = None,
                      intro: str = "Mistakes to avoid:",
@@ -142,6 +149,9 @@ class Prompt(Parameter):
         def export(self, *args, **kwargs):
             _, _ = args, kwargs
             return self.__call__()
+
+        def copy(self):
+            return copy.deepcopy(self)
 
     @classmethod
     def join(cls, *prompts, sep="\n"):
