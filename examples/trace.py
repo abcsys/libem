@@ -13,9 +13,7 @@ def main():
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
 
-    # e1 = "Supplier X, Item: Widget, Qty: 100, Price: $5"
-    # e2 = "X Supplier, Widget, Quantity: 100, Unit Price: $5"
-    e1 = "almighty freedom gundam"
+    e1 = "mighty freedom gundam"
     e2 = "ZGMF/A-262PD-P"
 
     print("Trace 2:")
