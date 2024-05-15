@@ -1,3 +1,5 @@
+import time
+
 import libem
 from libem.match import prompt, parameter
 from libem.core.struct import Prompt
@@ -27,6 +29,7 @@ schema = {
 
 
 def func(left, right):
+    start = time.time()
     match_prompt = Prompt.join(
         prompt.query(
             left=left,
@@ -45,7 +48,8 @@ def func(left, right):
     )
     pred = parse_output(model_output)
     libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
-                               "pred": pred, "prompt": match_prompt}})
+                               "pred": pred, "prompt": match_prompt,
+                               "latency": time.time() - start}})
     return pred
 
 
