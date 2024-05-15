@@ -25,9 +25,15 @@ datasets = {
 }
 
 
-def main(args):
+def benchmark(args):
     if not args.verbose:
         libem.LIBEM_LOG_LEVEL = logging.WARNING
+    
+    # set configs
+    libem.calibrate({
+        "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],  # turn off sub-tools
+        "libem.match.parameter.model": args.model,
+    })
     
     truth, predictions, result = [], [], []
     dataset_name = args.dataset.lower().replace('_', '-')
@@ -116,6 +122,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
+    parser.add_argument("--model", dest='model', nargs='?', help="The OpenAI model to use.", type=str,
+                        default='gpt-4-turbo')
     parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.", type=str,
                         default='amazon-google')
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
@@ -131,6 +139,8 @@ if __name__ == "__main__":
                         default=True)
     parser.add_argument("--verbose", dest='verbose', help="Print intermediate results for each pair to console.", 
                         action='store_true', default=False)
+    parser.add_argument("--browse", dest='browse', help="Enable the browse tool.", 
+                        action='store_true', default=False)
     
     args = parser.parse_args()
-    main(args)
+    benchmark(args)

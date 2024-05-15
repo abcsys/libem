@@ -8,7 +8,7 @@ from libem.core.struct import Parameter, Prompt
 schema = {}
 
 
-def func(config, verbose=False):
+def func(config):
     for path, value in config.items():
         # Split the path into module and attribute parts
         module_path, _, attribute = path.rpartition('.')
@@ -25,8 +25,7 @@ def func(config, verbose=False):
 
         parameter.update(value)
 
-    if verbose:
-        libem.info(f"Tool: calibrate - {config}")
+    libem.info(f"Tool: calibrate - {config}")
 
 
 def collect(tool: str, depth=sys.maxsize, include_all=False) -> dict:

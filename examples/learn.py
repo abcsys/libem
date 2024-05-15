@@ -12,16 +12,16 @@ calibrate = libem.toolchain("calibrate")
 
 
 def main():
-    num_iter = 2
-    num_train_sample = 100
-    num_test_sample = 100
+    num_iter = 1
+    num_train_sample = 250
+    num_test_sample = 1
     rnd = random.Random(44)
     print("Calibrate the match to use no tool")
 
     libem.calibrate({
         "libem.match.parameter.tools": [],  # turn off sub-tools
-        "libem.match.parameter.model": "gpt-3.5-turbo",  # use GPT-3.5-turbo to train
-    }, verbose=True)
+        "libem.match.parameter.model": "gpt-4o",  # use GPT-3.5-turbo to train
+    })
 
     print("Libem configurations:")
     calibrate.show()
@@ -67,7 +67,7 @@ def main():
     # libem.calibrate({
     #     "libem.match.parameter.tools": [],
     #     "libem.match.parameter.model": "gpt-4-turbo",  # use GPT-4-turbo to validate
-    # }, verbose=True)
+    # })
     test_score, mistakes = check(test_set)
     test_scores.append(test_score)
 
