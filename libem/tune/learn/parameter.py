@@ -1,4 +1,3 @@
-import libem.parameter as libem
 from libem.core.struct import Parameter
 
 model = Parameter(

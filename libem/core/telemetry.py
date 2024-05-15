@@ -19,7 +19,7 @@ class Telemetry:
 
     def reset(self):
         self.history.append(self.telemetry)
-        self.trace = []
+        self.telemetry = []
         return self
 
     def stop(self):
