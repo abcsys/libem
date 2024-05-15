@@ -15,7 +15,7 @@ def main():
     num_iter = 2
     num_train_sample = 100
     num_test_sample = 100
-    rnd = random.Random(44)
+    rnd = random.Random(42)
     print("Calibrate the match to use no tool")
 
     libem.calibrate({
@@ -64,10 +64,6 @@ def main():
     print(header("End of Learn Experiment"))
 
     print(header("Check the learned rule"))
-    # libem.calibrate({
-    #     "libem.match.parameter.tools": [],
-    #     "libem.match.parameter.model": "gpt-4-turbo",  # use GPT-4-turbo to validate
-    # }, verbose=True)
     test_score, mistakes = check(test_set)
     test_scores.append(test_score)
 
