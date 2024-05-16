@@ -9,11 +9,8 @@ def main(args):
     args.model = 'gpt-4-turbo'
     libem.calibrate({
         "libem.match.prompt.rule":
-            Prompt(default=Prompt.Rule(rules=[])),
-        "libem.match.prompt.experience":
-            Prompt(
-                default=Prompt.Experience(mistakes=[
-                    'Consider version and edition differences explicitly, even if titles are similar.',
+            Prompt(default=Prompt.Rule(rules=[
+                'Consider version and edition differences explicitly, even if titles are similar.',
                     'Check for specific product types like upgrades, licenses, or bundles, and do not assume they are the same as standalone products.',
                     'Validate that the product intended for the same platform (e.g., Windows, Mac) before matching.',
                     'Ensure that the product titles match closely, avoiding mismatches due to additional descriptors that change the product context (e.g., family pack, professional edition).',
@@ -26,8 +23,10 @@ def main(args):
                     'Acknowledge the presence of additional terms like "deluxe," "premium," or "professional" as they typically denote different product tiers.',
                     'Do not assume products are the same based on partial title matches; ensure all major elements of the product title align.',
                     'For software, consider the implications of different licensing terms or durations mentioned in the titles.',
-                    'When in doubt, err on the side of not matching unless all key aspects (title, manufacturer, version, price) align closely.',
-                    ]),
+                    'When in doubt, err on the side of not matching unless all key aspects (title, manufacturer, version, price) align closely.'])),
+        "libem.match.prompt.experience":
+            Prompt(
+                default=Prompt.Experience(mistakes=[]),
             )
         })
 

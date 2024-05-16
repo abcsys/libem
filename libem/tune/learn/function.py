@@ -50,13 +50,12 @@ def learn(dataset: list | typing.Iterable,
 
     libem.info("Tool: learn - metric:", metric, "score:", score)
 
-    # if lots of mistakes, learn from rules
-    rule, experience = Prompt.Rule(), Prompt.Experience()
+    # if lots of mistakes, learn from success
     if score < 0.25:
         rule = rule_from_success(mistakes)
     else:
-        experience = experience_from_mistake(mistakes)
-    return score, rule, experience
+        rule = rule_from_mistake(mistakes)
+    return score, rule
 
 
 def rule_from_success(successes: list) -> Prompt.Rule:
@@ -76,7 +75,7 @@ def rule_from_success(successes: list) -> Prompt.Rule:
     return Prompt.Rule(rules)
 
 
-def experience_from_mistake(mistakes: list) -> Prompt.Experience:
+def rule_from_mistake(mistakes: list) -> Prompt.Experience:
     libem.info("Mistakes: ", pp.pformat(mistakes))
     message = model.call(
         prompt=Prompt.join(
@@ -89,8 +88,8 @@ def experience_from_mistake(mistakes: list) -> Prompt.Experience:
         tools=[],
     )
     libem.info("Learned: ", message)
-    mistakes = message.split("\n")
-    return Prompt.Experience(mistakes)
+    rules = message.split("\n")
+    return Prompt.Rule(rules)
 
 
 def check(dataset, metric: str = "libem.core.eval.f1") -> tuple[float, list]:

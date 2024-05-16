@@ -20,7 +20,7 @@ browse:
 chat:
 	python examples/chat.py
 learn:
-	python examples/learn.py
+	python examples/learn35.py
 all: match unmatch browse chat
 
 # benchmarks

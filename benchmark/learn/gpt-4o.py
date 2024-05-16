@@ -9,10 +9,7 @@ def main(args):
     args.model = 'gpt-4o'
     libem.calibrate({
         "libem.match.prompt.rule":
-            Prompt(default=Prompt.Rule(rules=[])),
-        "libem.match.prompt.experience":
-            Prompt(
-                default=Prompt.Experience(mistakes=["Compare the titles of both entities carefully, focusing on specific keywords and phrases to ensure they refer to the same product version or edition.",
+            Prompt(default=Prompt.Rule(rules=["Compare the titles of both entities carefully, focusing on specific keywords and phrases to ensure they refer to the same product version or edition.",
                     'Check for differences in product versions, editions, or specific features mentioned in the titles (e.g., "full version" vs. "upgrade").',
                     "Verify the manufacturer information when available; mismatches in manufacturer names can indicate different products.",
                     "Consider significant price differences as a potential indicator of different products, especially if the price difference is substantial.",
@@ -30,7 +27,10 @@ def main(args):
                     "Be aware of any additional product features or bundled items mentioned in the titles that could differentiate the products.",
                     'Check for any specific regional or language versions mentioned (e.g., "French") that might indicate different products.',
                     'Ensure that any product-specific terms (e.g., "academic," "education") match between the entities.',
-                    "Consider the overall context and combination of title, manufacturer, and price to make a final determination on product matching."]),
+                    "Consider the overall context and combination of title, manufacturer, and price to make a final determination on product matching."])),
+        "libem.match.prompt.experience":
+            Prompt(
+                default=Prompt.Experience(),
             )
         })
 

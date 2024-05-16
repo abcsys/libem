@@ -1,16 +1,15 @@
 from libem.core.struct import Prompt
-from libem.match.prompt import rule
+from libem.match.prompt import rule as match_rule_prompt
 
 recap_success = Prompt(
     default="You achieve successes on entity matching "
             "in the following examples: {successes}",
 )
 gen_rules = Prompt(
-    default=f"Current ruleset:\n{rule}\n"
-            f"generate additional rules to follow "
-            f"from the above examples if needed,"
-            f"in the form of a rule list line by line,"
-            f"with each rule in a new line with no bullet point.",
+    default=f"**Current ruleset:**\n"
+            f"{match_rule_prompt}"
+            "given the mistakes you made and the current ruleset, "
+            "generate an additional list of rules to follow in the future to address these mistakes.",
 )
 recap_mistake = Prompt(
     default="You made mistakes on entity matching "

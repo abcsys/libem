@@ -9,10 +9,7 @@ def main(args):
     args.model = 'gpt-3.5-turbo-0613'
     libem.calibrate({
         "libem.match.prompt.rule":
-            Prompt(default=Prompt.Rule(rules=[])),
-        "libem.match.prompt.experience":
-            Prompt(
-                default=Prompt.Experience(mistakes=[
+            Prompt(default=Prompt.Rule(rules=[
                                     'Match entities if titles are similar, '
                                     'disregarding minor differences such as '
                                     'punctuation, order of words, and presence '
@@ -64,7 +61,10 @@ def main(args):
                                     'When in doubt, prioritize title and '
                                     'manufacturer similarity over price, '
                                     'especially for high-value items where '
-                                    'price variations can be larger.',]),
+                                    'price variations can be larger.',])),
+        "libem.match.prompt.experience":
+            Prompt(
+                default=Prompt.Experience(mistakes=[]),
             )
         })
 

@@ -9,11 +9,7 @@ def main(args):
     args.model = 'gpt-4'
     libem.calibrate({
         "libem.match.prompt.rule":
-            Prompt(default=Prompt.Rule(rules=[])),
-        "libem.match.prompt.experience":
-            Prompt(
-                default=Prompt.Experience(mistakes=[
-                                    'Consider version compatibility and '
+            Prompt(default=Prompt.Rule(rules=['Consider version compatibility and '
                                     'specificity when matching software '
                                     'titles.  ',
                                     'Ensure exact match or clear equivalence '
@@ -46,7 +42,10 @@ def main(args):
                                     'Ensure that additional descriptors like '
                                     '"complete package" or "media only" are '
                                     'considered in the matching '
-                                    'process.',]),
+                                    'process.'])),
+        "libem.match.prompt.experience":
+            Prompt(
+                default=Prompt.Experience(mistakes=[]),
             )
         })
 
