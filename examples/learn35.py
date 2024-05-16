@@ -11,11 +11,10 @@ def main():
     num_iter = 2
     num_train_sample = 100
     num_test_sample = 100
-    print("Calibrate the match to use no tool")
-
+    match_model, learn_model = 'gpt-4-turbo', 'gpt-3.5-turbo'
+    
     print("Libem configurations:")
     calibrate.show()
-
     print(f"Match model: {match_model}; Learn model: {learn_model}")
     print(f"Load a dataset with {num_train_sample} samples")
     
@@ -26,7 +25,7 @@ def main():
     
     libem.tune(train_set=full_train_set, test_set=full_test_set, 
                num_train_sample=num_train_sample, num_test_sample=num_test_sample,
-               student_model='gpt-3.5-turbo', teacher_model='gpt-4-turbo',
+               learn_model=learn_model, match_model=match_model,
                num_iter=num_iter)
     
     print(header("End of Learn Experiment"))

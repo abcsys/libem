@@ -13,15 +13,15 @@ schema = {}
 def func(train_set: list, test_set: list,
          num_train_sample: int=100,
          num_test_sample: int=100,
-         student_model: str='gpt-4o',
-         teacher_model: str='gpt-4o',
+         learn_model: str='gpt-4o',
+         match_model: str='gpt-4o',
          num_iter: int=2):
     
     # set config
     libem.calibrate({
         "libem.match.parameter.tools": [],  # turn off sub-tools
-        "libem.match.parameter.model": student_model,
-        "libem.tune.learn.parameter.model": teacher_model,
+        "libem.match.parameter.model": learn_model,
+        "libem.tune.learn.parameter.model": match_model,
     })
     
     test_scores = []
