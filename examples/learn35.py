@@ -15,8 +15,8 @@ def main():
 
     print("Libem configurations:")
     calibrate.show()
-    print(header("Start of Learn Experiment"))
 
+    print(f"Match model: {match_model}; Learn model: {learn_model}")
     print(f"Load a dataset with {num_train_sample} samples")
     
     full_test_set = list(amazon_google.read_test())
