@@ -18,6 +18,7 @@ def main():
     rnd = random.Random(42)
 
     match_model = "gpt-3.5-turbo"
+    # match_model = "gpt-4o"
     learn_model = "gpt-4o"
 
     libem.calibrate({

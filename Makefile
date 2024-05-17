@@ -9,25 +9,22 @@ uninstall:
 	pip uninstall libem -y && rm -r libem.egg-info || true
 
 # examples
-.PHONY: run match unmatch browse chat all
+.PHONY: run match no_match browse chat all
 run: match
 match:
 	python examples/match.py
-unmatch:
-	python examples/unmatch.py
+no_match:
+	python examples/no_match.py
 browse:
 	python examples/browse.py
 chat:
 	python examples/chat.py
-all: match unmatch browse chat
+all: match no_match browse chat
 
 # self-refinement examples
-.PHONY: learn35 learn4o learn
-learn35:
-	python examples/learn35.py
-learn4o:
-	python examples/learn4o.py
-learn: learn4o
+.PHONY: learn
+learn:
+	python examples/learn.py
 
 
 # benchmarks
