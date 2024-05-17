@@ -12,7 +12,13 @@ def main():
     num_train_sample = 100
     num_test_sample = 100
     match_model, learn_model = 'gpt-4-turbo', 'gpt-3.5-turbo'
-    
+
+    libem.calibrate({
+        "libem.match.parameter.model": match_model,
+        "libem.tune.learn.parameter.model": learn_model,
+        "libem.match.parameter.tools": [],  # turn off browse etc.
+    }, verbose=True)
+
     print("Libem configurations:")
     calibrate.show()
     print(f"Match model: {match_model}; Learn model: {learn_model}")

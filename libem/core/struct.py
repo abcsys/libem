@@ -94,13 +94,28 @@ class Prompt(Parameter):
             return len(self.rules)
 
         def __add__(self, other):
-            assert isinstance(other, self.__class__)
-            return Prompt.Rule(self.rules + other.rules)
+            match other:
+                case str():
+                    return Prompt.Rule(self.rules + [other])
+                case list():
+                    return Prompt.Rule(self.rules + other)
+                case Prompt.Rule():
+                    return Prompt.Rule(self.rules + other.rules)
+                case _:
+                    raise ValueError(f"Invalid rule type "
+                                     f"{type(other)} for {other}")
 
         def add(self, *rules):
-            """rule.add(rule1, rule2, rule3)"""
+            """rule.add(rule1, rule2, ...)"""
             for rule in rules:
-                self.rules.extend(rule.rules)
+                match rule:
+                    case str():
+                        self.rules.append(rule)
+                    case list():
+                        self.rules.extend(rule)
+                    case _:
+                        raise ValueError(f"Invalid rule type "
+                                         f"{type(rule)} for {rule}")
             return self
 
         def export(self, *args, **kwargs):
@@ -110,57 +125,26 @@ class Prompt(Parameter):
         def copy(self):
             return copy.deepcopy(self)
 
-    class Experience:
+    class Experience(Rule):
         def __init__(self, mistakes: list[str] = None,
                      intro: str = "Mistakes to avoid:",
-                     sep="\n", bullet="-"):
-            self.mistakes = mistakes or []
-            self.intro = intro
-            self.sep = sep
-            self.bullet = bullet
-
-        def __call__(self, *args, **kwargs):
-            if len(self.mistakes) == 0:
-                return ""
-            mistakes = [f"{self.bullet} {mistake}" for mistake in self.mistakes
-                        if len(mistake.strip()) != ""]
-            return f"{self.intro}\n" \
-                   f"{self.sep.join(mistakes)}"
-
-        def __str__(self):
-            return str(self.__call__())
-
-        def __repr__(self):
-            return self.__str__()
-
-        def __len__(self):
-            return len(self.mistakes)
-
-        def __add__(self, other):
-            assert isinstance(other, self.__class__)
-            return Prompt.Experience(self.mistakes + other.mistakes)
-
-        def add(self, *mistakes):
-            """mistake.add(mistake1, mistake2, mistake3)"""
-            for mistake in mistakes:
-                self.mistakes.extend(mistake.miscakes)
-            return self
-
-        def export(self, *args, **kwargs):
-            _, _ = args, kwargs
-            return self.__call__()
-
-        def copy(self):
-            return copy.deepcopy(self)
+                     sep="\n", bullet="*"):
+            super().__init__(rules=mistakes,
+                             intro=intro,
+                             sep=sep,
+                             bullet=bullet)
 
     @classmethod
     def join(cls, *prompts, sep="\n"):
         to_join = []
         for prompt in prompts:
-            if isinstance(prompt, str):
-                to_join.append(prompt)
-            elif isinstance(prompt, (cls.Rule, cls.Experience)):
-                to_join.append(prompt())
+            match prompt:
+                case str():
+                    to_join.append(prompt)
+                case cls.Rule():
+                    to_join.append(prompt())
+                case cls.Experience():
+                    to_join.append(prompt())
         return sep.join(to_join)
 
     def add(self, *prompts, sep="\n"):

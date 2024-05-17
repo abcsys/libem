@@ -7,12 +7,12 @@ query = Prompt(
 )
 
 rule = Prompt(
-    default=Prompt.Rule(rules=[]),
+    default=Prompt.Rule(),
     options=[Prompt.Rule(rules=["Color distinguishes entities."])],
 )
 
 experience = Prompt(
-    default=Prompt.Experience(),
+    default=Prompt.Experience(intro="Mistakes to avoid:"),
 )
 
 output = Prompt(
