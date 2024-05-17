@@ -2,56 +2,73 @@ import argparse
 import benchmark
 import libem
 from libem.core.struct import Prompt
+from libem.prepare.datasets import (
+    abt_buy, amazon_google, dblp_acm,
+    walmart_amazon, dblp_scholar
+)
+
+datasets = {
+    'abt-buy': abt_buy,
+    'amazon-google': amazon_google,
+    'dblp-acm': dblp_acm,
+    'walmart-amazon': walmart_amazon,
+    'dblp-scholar': dblp_scholar
+}
 
 def main(args):
+    dataset_name = args.dataset.lower().replace('_', '-')
+    train_set = list(datasets[dataset_name].read_train(args.schema))
+    test_set = list(datasets[dataset_name].read_test(args.schema))
     
+    # tune
+    # if args.tune:
+    #     learned_rules = libem.tune(train_set=train_set, test_set=test_set,
+    #                             num_train_sample=100, num_test_sample=0,
+    #                             learn_model='gpt-4-turbo', match_model='gpt-4-turbo',
+    #                             num_iter=3)
+    learned_rules = Prompt.Rule(rules=[
+        "1. If the manufacturer names are different or one is missing, and the product titles do not match exactly, classify as 'no'.",
+        "2. If one product title contains a specific model or version number but the other does not, classify as 'no'.",
+        "3. If the product titles contain the same unique product name and version number, classify as 'yes'.",
+        "4. If the product titles are similar but refer to different versions or editions (e.g., 'deluxe' vs. 'standard'), classify as 'no'.",
+        "5. If the product titles are similar but one includes additional descriptors that suggest a different product scope or bundle (e.g., 'upgrade', 'bundle', 'suite'), classify as 'no'.",
+        "6. If the prices are vastly different, classify as 'no', unless both the titles and manufacturers match exactly.",
+        "7. If one title includes specifies a quantity (e.g. 3pk) but the other does not, classify as 'no'.",
+        "8. If the products are from the same manufacturer and the titles suggest they are different editions or releases of the same product line, classify as 'no'.",
+        "9. If the product titles contain the same base name but different extensions (e.g., 'Pro' vs. 'Pro Upgrade'), classify as 'no'.",
+        "10. If both titles include terms that typically indicate the same type of product but are formatted differently (e.g., abbreviations vs. full names), classify as 'no' unless other information (like exact matching part numbers) suggests they are the same product.",
+        ])
+        
     # set model-specific config
     args.model = 'gpt-4-turbo'
     libem.calibrate({
         "libem.match.prompt.rule":
-            Prompt(default=Prompt.Rule(rules=[
-                'Consider version and edition differences explicitly, even if titles are similar.',
-                    'Check for specific product types like upgrades, licenses, or bundles, and do not assume they are the same as standalone products.',
-                    'Validate that the product intended for the same platform (e.g., Windows, Mac) before matching.',
-                    'Ensure that the product titles match closely, avoiding mismatches due to additional descriptors that change the product context (e.g., family pack, professional edition).',
-                    'Do not match products based solely on the presence of similar keywords; context and completeness of the title are crucial.',
-                    'Compare manufacturer names if available; absence in one entity does not immediately imply a match with an entity having a manufacturer.',
-                    'Price differences can be indicative of different products or versions; significant price discrepancies likely mean different products.',
-                    'Consider the release context, such as software version numbers or edition years, to ensure both products are indeed the same.',
-                    'Avoid matching products where one is a specific type of service or subscription unless explicitly stated in both entities.',
-                    'Be cautious with products that have similar names but may differ in content or intended use, such as educational versions versus professional versions.',
-                    'Acknowledge the presence of additional terms like "deluxe," "premium," or "professional" as they typically denote different product tiers.',
-                    'Do not assume products are the same based on partial title matches; ensure all major elements of the product title align.',
-                    'For software, consider the implications of different licensing terms or durations mentioned in the titles.',
-                    'When in doubt, err on the side of not matching unless all key aspects (title, manufacturer, version, price) align closely.'])),
-        "libem.match.prompt.experience":
-            Prompt(
-                default=Prompt.Experience(mistakes=[]),
-            )
-        })
+            Prompt(default=learned_rules)})
 
-    benchmark.benchmark(args)
+    benchmark.benchmark(args, learned_rules)
     
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
-    parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.", type=str,
-                        default='amazon-google')
+    parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.", 
+                        type=str, default='amazon-google')
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
-                        help="Number of pairs to run through. Set as 0 to run through the entire dataset.", type=int,
-                        default=5)
-    parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.", type=int, 
-                        default=0)
+                        help="Number of pairs to run through. Set as 0 to run through the entire dataset.", 
+                        type=int, default=5)
+    parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.", 
+                        type=int, default=0)
     parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, will append '.json'.", 
                         type=str, default='')
     parser.add_argument("--no_schema", dest='schema', help="Turn off the dataset schema.",
                         action='store_true', default=True)
-    parser.add_argument("--no_shuffle", dest='shuffle', help="Don't shuffle the dataset.", action='store_true', 
-                        default=True)
+    parser.add_argument("--no_shuffle", dest='shuffle', help="Don't shuffle the dataset.", 
+                        action='store_true', default=True)
     parser.add_argument("--verbose", dest='verbose', help="Print intermediate results for each pair to console.", 
                         action='store_true', default=False)
     parser.add_argument("--browse", dest='browse', help="Enable the browse tool.", 
+                        action='store_true', default=False)
+    parser.add_argument("--tune", dest='tune', help="Redo tuning.", 
                         action='store_true', default=False)
     
     args = parser.parse_args()

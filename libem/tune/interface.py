@@ -1,8 +1,8 @@
-from libem.tune import func
+from libem.tune.learn import func
 from libem.tune.learn.function import check as check_func
 
 
-def tune(*args, **kwargs):
+def learn(*args, **kwargs):
     return func(*args, **kwargs)
 
 

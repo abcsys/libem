@@ -1,11 +1,14 @@
+import math
 import typing
-import pprint as pp
+import random
 
 import libem
 from libem.core import model
 import libem.core.util as libem_util
 from libem.core.struct import Prompt
 from libem.tune.learn import prompt, parameter
+
+random.seed(libem.LIBEM_SEED)
 
 schema = {}
 
@@ -43,26 +46,31 @@ def predict(dataset) -> tuple[list, list, list, list]:
 
 
 def learn(dataset: list | typing.Iterable,
-          metric: str = "libem.core.eval.f1") -> tuple[float, Prompt.Rule, Prompt.Experience]:
+          metric: str = "libem.core.eval.f1") -> tuple[float, Prompt.Rule]:
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)
 
     libem.info("Tool: learn - metric:", metric, "score:", score)
-
-    # if lots of mistakes, learn from success
-    if score < 0.25:
-        rule = rule_from_success(mistakes)
-    else:
-        rule = rule_from_mistake(mistakes)
+    
+    # sample 0.2 * len(dataset) results to generate 
+    # rulesets from, prioritizing 50-50 split of mistakes and successes
+    mistakes_to_sample = min(len(mistakes), math.ceil(0.15 * len(dataset)))
+    successes_to_sample = min(len(successes), math.ceil(0.2 * len(dataset) - mistakes_to_sample))
+    sampled_set = random.sample(successes, k=successes_to_sample)
+    sampled_set.extend(random.sample(mistakes, k=mistakes_to_sample))
+    
+    libem.info(f"Tool: learn - generating ruleset from "
+               f"{mistakes_to_sample} mistakes and {successes_to_sample} successes")
+    
+    rule = rule_from_results(sampled_set)
     return score, rule
 
 
-def rule_from_success(successes: list) -> Prompt.Rule:
-    libem.info("Successes: ", pp.pformat(successes))
+def rule_from_results(results: list) -> Prompt.Experience:
     message = model.call(
         prompt=Prompt.join(
-            prompt.recap_success(successes=successes),
+            prompt.recap_results(results=results),
             prompt.gen_rules(),
         ),
         model=parameter.model(),
@@ -75,24 +83,7 @@ def rule_from_success(successes: list) -> Prompt.Rule:
     return Prompt.Rule(rules)
 
 
-def rule_from_mistake(mistakes: list) -> Prompt.Experience:
-    libem.info("Mistakes: ", pp.pformat(mistakes))
-    message = model.call(
-        prompt=Prompt.join(
-            prompt.recap_mistake(mistakes=mistakes),
-            prompt.gen_rules(),
-        ),
-        model=parameter.model(),
-        temperature=parameter.temperature(),
-        seed=libem.LIBEM_SEED,
-        tools=[],
-    )
-    libem.info("Learned: ", message)
-    rules = message.split("\n")
-    return Prompt.Rule(rules)
-
-
-def check(dataset, metric: str = "libem.core.eval.f1") -> tuple[float, list]:
+def check(dataset, metric: str = "libem.core.eval.f1") -> tuple[float, list, list]:
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)

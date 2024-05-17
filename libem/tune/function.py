@@ -6,7 +6,7 @@ from libem.core.log import header
 from libem.match.prompt import rule as match_rule_prompt
 
 calibrate = libem.calibrate
-random.seed = libem.LIBEM_SEED
+random.seed(libem.LIBEM_SEED)
 
 schema = {}
 
@@ -28,9 +28,10 @@ def func(train_set: list, test_set: list,
     
     libem.info(header(f"Tool: Tune - Start"))
 
-    sampled_test = random.sample(test_set, num_test_sample)
-    test_score, mistakes = check(sampled_test)
-    test_scores.append(test_score)
+    if num_test_sample > 0:
+        sampled_test = random.sample(test_set, num_test_sample)
+        test_score, mistakes = check(sampled_test)
+        test_scores.append(test_score)
 
     train_scores = []
     for i in range(num_iter):
@@ -44,15 +45,19 @@ def func(train_set: list, test_set: list,
         print("Train score:", score)
         libem.calibrate({
             "libem.match.prompt.rule":
-                match_rule_prompt() + learned_rule,
+                learned_rule,
         })
         libem.info(header(f"Tool: Tune - Train score: {score}"))
         train_scores.append(score)
     
-    test_score, mistakes = check(sampled_test)
-    test_scores.append(test_score)
+    if num_test_sample > 0:
+        test_score, mistakes = check(sampled_test)
+        test_scores.append(test_score)
     
     calibrate.show("libem.match")
     print(f"Tool: Tune - End")
-    print(f"Tool: Tune - Test scores: {test_scores}")
-    print(f"Tool: Tune - Mistakes: {len(mistakes)}")
+    if num_test_sample > 0:
+        print(f"Tool: Tune - Test scores: {test_scores}")
+        print(f"Tool: Tune - Mistakes: {len(mistakes)}")
+    
+    return learned_rule

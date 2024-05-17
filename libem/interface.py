@@ -21,7 +21,8 @@ def chat(message):
 """Programmatic access"""
 from libem.match import func as match_func
 from libem.calibrate import func as calibrate_func
-from libem.tune import func as tune_func
+# from libem.tune import check_func
+from libem.tune.function import func as tune_func
 
 
 def match(left, right,
