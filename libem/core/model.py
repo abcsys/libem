@@ -44,7 +44,7 @@ def openai(prompt: str, tools: list[str],
 
         response_message = response.choices[0].message
         tokens += response.usage.total_tokens
-
+        num_model_call += 1
     else:
         """ Call with tools """
         # Load the tool modules
@@ -76,7 +76,7 @@ def openai(prompt: str, tools: list[str],
         tool_calls = response_message.tool_calls
 
         # Call the tools
-        num_model_call = 1
+        num_model_call += 1
         while tool_calls and num_model_call < max_model_call:
             messages.append(response_message)
             for tool_call in tool_calls:
@@ -127,9 +127,9 @@ def openai(prompt: str, tools: list[str],
 
     # add model calls to trace
     libem.trace.add({
-        'model': {
-            'num_calls': num_model_call,
-            'tokens': tokens
+        "model": {
+            "num_model_calls": num_model_call,
+            "num_tokens": tokens
         }
     })
 
