@@ -30,8 +30,7 @@ def main(args):
     # set model-specific config
     args.model = 'gpt-4o'
     libem.calibrate({
-        "libem.match.prompt.rule":
-            Prompt(default=learned_rules)})
+        "libem.match.prompt.rule": learned_rules})
 
     benchmark.benchmark(args)
     
