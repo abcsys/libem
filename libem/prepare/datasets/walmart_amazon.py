@@ -22,8 +22,8 @@ def read(file, schema=True):
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
             # clean the data
-            trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
             if schema:
+                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
                 for key, value in data.items():
                     if key in trim:
                         continue
@@ -34,19 +34,25 @@ def read(file, schema=True):
                         new_key = key[:-6]  # Remove '_right'
                         parsed_data['right'][new_key] = value
             else:
-                left_values, right_values = [], []
+                # 'brand title modelno price'
+                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right", "category_left", "category_right"]
+                left_values, right_values = {}, {}
                 for key, value in data.items():
                     if key in trim:
                         continue
-                    # Skip null values
+                    # Change null values to empty str
                     if value is None:
-                        continue
+                        value = ''
                     if key.endswith('_left'):
-                        left_values.append(str(value))
+                        new_key = key[:-5]  # Remove '_left'
+                        left_values[new_key] = str(value)
                     elif key.endswith('_right'):
-                        right_values.append(str(value))
-                parsed_data['left'] = ' '.join(left_values)
-                parsed_data['right'] = ' '.join(right_values)
+                        new_key = key[:-6]  # Remove '_right'
+                        right_values[new_key] = str(value)
+                parsed_data['left'] = ' '.join([left_values['brand'], left_values['title'], 
+                                                left_values['modelno'], left_values['price']])
+                parsed_data['right'] = ' '.join([right_values['brand'], right_values['title'], 
+                                                 right_values['modelno'], right_values['price']])
 
             yield parsed_data
 

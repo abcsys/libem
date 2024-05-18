@@ -53,10 +53,10 @@ def learn(dataset: list | typing.Iterable,
 
     libem.info("Tool: learn - metric:", metric, "score:", score)
     
-    # sample 0.2 * len(dataset) results to generate 
-    # rulesets from, prioritizing 50-50 split of mistakes and successes
-    mistakes_to_sample = min(len(mistakes), math.ceil(0.15 * len(dataset)))
-    successes_to_sample = min(len(successes), math.ceil(0.2 * len(dataset) - mistakes_to_sample))
+    # sample 0.15 * len(dataset) results to generate 
+    # rulesets from, prioritizing 2-1 split of mistakes and successes
+    mistakes_to_sample = min(len(mistakes), math.ceil(0.1 * len(dataset)))
+    successes_to_sample = min(len(successes), math.ceil(0.15 * len(dataset) - mistakes_to_sample))
     sampled_set = random.sample(successes, k=successes_to_sample)
     sampled_set.extend(random.sample(mistakes, k=mistakes_to_sample))
     

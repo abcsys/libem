@@ -20,8 +20,8 @@ def read(file, schema=True):
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
             # clean the data
-            trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
             if schema:
+                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
                 for key, value in data.items():
                     if key in trim:
                         continue
@@ -32,13 +32,14 @@ def read(file, schema=True):
                         new_key = key[:-6]  # Remove '_right'
                         parsed_data['right'][new_key] = value
             else:
+                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right", "description_left", "description_right"]
                 left_values, right_values = [], []
                 for key, value in data.items():
                     if key in trim:
                         continue
-                    # Skip null values
+                    # Change null values to empty str
                     if value is None:
-                        continue
+                        value = ''
                     if key.endswith('_left'):
                         left_values.append(str(value))
                     elif key.endswith('_right'):

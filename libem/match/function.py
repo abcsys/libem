@@ -36,8 +36,9 @@ def func(left, right):
             right=right
         ),
         prompt.rule(),
-        # prompt.experience(),
+        prompt.experience(),
         prompt.output(),
+        sep=""
     )
     model_output = model.call(
         prompt=match_prompt,

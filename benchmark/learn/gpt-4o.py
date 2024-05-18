@@ -49,9 +49,9 @@ if __name__ == "__main__":
     parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, will append '.json'.", 
                         type=str, default='')
     parser.add_argument("--no_schema", dest='schema', help="Turn off the dataset schema.",
-                        action='store_true', default=True)
+                        action='store_false', default=True)
     parser.add_argument("--no_shuffle", dest='shuffle', help="Don't shuffle the dataset.", 
-                        action='store_true', default=True)
+                        action='store_false', default=True)
     parser.add_argument("--verbose", dest='verbose', help="Print intermediate results for each pair to console.", 
                         action='store_true', default=False)
     parser.add_argument("--browse", dest='browse', help="Enable the browse tool.", 
