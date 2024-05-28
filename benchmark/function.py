@@ -62,8 +62,13 @@ def benchmark(args):
             print(f"Entity 1: {e1}\nEntity 2: {e2}")
 
         # call match
+        is_match = None
         with libem.trace as t:
-            is_match = libem.match(e1, e2)
+            while is_match is None:
+                try: # retry if model times out
+                    is_match = libem.match(e1, e2)
+                except libem.ModelTimedoutException:
+                    pass
             
             # get unparsed model output
             pred = [i['match']['model_output'] for i in t.get() if 'match' in i][0]

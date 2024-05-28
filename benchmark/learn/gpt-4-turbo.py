@@ -22,11 +22,21 @@ def main(args):
     test_set = list(datasets[dataset_name].read_test(args.schema))
     
     # tune
-    if args.tune:
-        learned_rules = libem.tune(train_set=train_set, test_set=test_set,
-                                num_train_sample=250, num_test_sample=0,
-                                learn_model='gpt-4-turbo', match_model='gpt-4-turbo',
-                                num_iter=5)
+    # if args.tune:
+    #     learned_rules = libem.tune(train_set=train_set, test_set=test_set,
+    #                             num_train_sample=250, num_test_sample=0,
+    #                             learn_model='gpt-4-turbo', match_model='gpt-4-turbo',
+    #                             num_iter=5)
+    learned_rules = Prompt.Rule(rules=[
+"1. If the products are from the same series (e.g., 'Adobe Creative Suite') but different versions or editions, do not match unless explicitly stated as compatible.",
+"2. If the price difference exceeds 50%, do not match, unless the product titles and manufacturers are identical.",
+"3. If one product title contains a specific year or edition number and the other does not, do not match.",
+"4. If one title mentions a specific plaform (e.g., 'mac', 'win') and the other does not, do not match, regardless of title similarity.",
+"5. If the product titles are identical but the manufacturers are different, do not match unless there is evidence of a rebranding or acquisition.",
+"6. If the product titles suggest different functionalities (e.g., 'server software' vs. 'client software'), do not match.",
+"7. If one title mentions a specific language or regional version (e.g., 'Japanese' vs. 'French'), do not match."
+"8. 'upsale' and 'upgrade' are not the same.\n"
+         ])
         
     # set model-specific config
     args.model = 'gpt-4-turbo'
