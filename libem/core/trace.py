@@ -42,6 +42,29 @@ class Trace:
     def get_history(self):
         return self.history
 
+    def stats(self):
+        trace = self.get()
+        latencies = []
+        # todo: parse not only match tool
+        num_model_calls, num_input_tokens, num_output_tokens = [], [], []
+        for span in trace:
+            if "match" in span:
+                latencies.append(span["match"]["latency"])
+            elif "model" in span:
+                num_model_calls.append(span["model"]["num_model_calls"])
+                num_input_tokens.append(span["model"]["num_input_tokens"])
+                num_output_tokens.append(span["model"]["num_output_tokens"])
+        return {
+            "latency": latencies,
+            "num_model_calls": num_model_calls,
+            "num_input_tokens": num_input_tokens,
+            "num_output_tokens": num_output_tokens,
+            "avg_latency": sum(latencies) / len(latencies) if latencies else None,
+            "total_model_calls": sum(num_model_calls),
+            "total_input_tokens": sum(num_input_tokens),
+            "total_output_tokens": sum(num_output_tokens),
+        }
+
 
 """A global tracer object that libem tools reports to."""
 trace = Trace().start()

@@ -28,7 +28,10 @@ def openai(prompt: str, tools: list[str],
         raise EnvironmentError(f"OPENAI_API_KEY is not set. "
                                f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
     client = OpenAI()
-    num_model_call, tokens = 0, 0
+
+    # todo: simplify accounting using model response
+    num_model_calls = 0
+    num_input_tokens, num_output_tokens = 0, 0
 
     if len(tools) == 0:
         """ Call with no tool use """
@@ -42,9 +45,10 @@ def openai(prompt: str, tools: list[str],
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
 
+        num_model_calls += 1
+        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_output_tokens += response.usage.completion_tokens
         response_message = response.choices[0].message
-        tokens += response.usage.total_tokens
-
     else:
         """ Call with tools """
         # Load the tool modules
@@ -72,12 +76,14 @@ def openai(prompt: str, tools: list[str],
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-        tokens += response.usage.total_tokens
         tool_calls = response_message.tool_calls
 
+        num_model_calls += 1
+        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_output_tokens += response.usage.completion_tokens
+
         # Call the tools
-        num_model_call = 1
-        while tool_calls and num_model_call < max_model_call:
+        while tool_calls and num_model_calls < max_model_call:
             messages.append(response_message)
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
@@ -118,18 +124,21 @@ def openai(prompt: str, tools: list[str],
                 raise libem.ModelTimedoutException(e)
 
             response_message = response.choices[0].message
-            tokens += response.usage.total_tokens
             tool_calls = response_message.tool_calls
-            num_model_call += 1
 
-        if num_model_call == max_model_call:
+            num_model_calls += 1
+            num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+            num_output_tokens += response.usage.completion_tokens
+
+        if num_model_calls == max_model_call:
             libem.warn(f"Max call reached: {messages}\n{response_message}")
 
     # add model calls to trace
     libem.trace.add({
-        'model': {
-            'num_calls': num_model_call,
-            'tokens': tokens
+        "model": {
+            "num_model_calls": num_model_calls,
+            "num_input_tokens": num_input_tokens,
+            "num_output_tokens": num_output_tokens,
         }
     })
 
