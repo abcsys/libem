@@ -12,7 +12,7 @@ rule = Prompt(
 )
 
 experience = Prompt(
-    default=Prompt.Experience(intro="Mistakes to avoid:"),
+    default=Prompt.Experience(intro="Rules to follow:"),
 )
 
 output = Prompt(
