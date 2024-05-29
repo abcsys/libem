@@ -20,8 +20,8 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str, tools: list[str],
-           model: str, temperature: float,
+def openai(prompt: str, tools: list[str] = None,
+           model: str = "gpt-4o", temperature: float = 0.0,
            max_model_call: int = 3,
            seed: int = None) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
@@ -33,7 +33,7 @@ def openai(prompt: str, tools: list[str],
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
 
-    if len(tools) == 0:
+    if not tools:
         """ Call with no tool use """
         try:
             response = client.chat.completions.create(
