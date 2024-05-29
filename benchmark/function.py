@@ -11,8 +11,8 @@ from datetime import datetime
 import libem
 from libem.core.struct import Prompt
 from libem.prepare.datasets import (
-    abt_buy, amazon_google, dblp_acm,
-    walmart_amazon, dblp_scholar
+    abt_buy, amazon_google, beer, dblp_acm,
+    dblp_scholar, fodors_zagats, itunes_amazon, walmart_amazon
 )
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
@@ -20,9 +20,12 @@ random.seed(libem.LIBEM_SEED)
 datasets = {
     'abt-buy': abt_buy,
     'amazon-google': amazon_google,
+    'beer': beer,
     'dblp-acm': dblp_acm,
-    'walmart-amazon': walmart_amazon,
-    'dblp-scholar': dblp_scholar
+    'dblp-scholar': dblp_scholar,
+    'fodors-zagats': fodors_zagats,
+    'itunes-amazon': itunes_amazon,
+    'walmart-amazon': walmart_amazon
 }
 
 
@@ -75,8 +78,8 @@ def benchmark(args):
                     is_match = libem.match(e1, e2)
                 except libem.ModelTimedoutException:
                     num_timeouts += 1
-                if args.verbose and num_timeouts > 0:
-                    print(f"Model timed out {num_timeouts} time(s).")
+            if num_timeouts > 0:
+                print(f"Model timed out {num_timeouts} time(s).")
             
             # get unparsed model output and telemetry
             latency = time.time() - start_time
