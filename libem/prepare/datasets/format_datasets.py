@@ -3,7 +3,8 @@ import json
 
 import libem.prepare.datasets as datasets
 
-dataset_names = ['beer', 'fodors-zagats', 'itunes-amazon']
+dataset_names = ['beer', 'fodors-zagats', 'itunes-amazon', 'walmart-amazon', 
+                 'dblp-scholar', 'dblp-acm', 'abt-buy', 'amazon-google']
 
 def open_json(path):
     with open(path, "r", encoding='ISO-8859-1') as f:
@@ -11,7 +12,7 @@ def open_json(path):
     return data
 
 def add_quotes_to_keys(dataset_name, s):
-    s = s.replace('\\', '')
+    s = s.replace('\\', '').replace('""', 'null')
     if dataset_name == 'itunes-amazon':
         return s.replace('Song_Name:', '"Song_Name":')\
                 .replace('Artist_Name:', '"Artist_Name":')\
@@ -37,7 +38,7 @@ def add_quotes_to_keys(dataset_name, s):
                 .replace('brand:', '"brand":')\
                 .replace('modelno:', '"modelno":')\
                 .replace('price:', '"price":')
-    elif dataset_name == 'dblp-scholar':
+    elif dataset_name == 'dblp-scholar' or dataset_name == 'dblp-acm':
         return s.replace('title:', '"title":')\
                 .replace('authors:', '"authors":')\
                 .replace('venue:', '"venue":')\
@@ -53,6 +54,7 @@ def add_quotes_to_keys(dataset_name, s):
 
 for name in dataset_names:
     path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, name)
+    path = os.path.join(path, 'v0')
     original_path = os.path.join(path, 'original')
     files = ['test', 'train', 'valid']
     

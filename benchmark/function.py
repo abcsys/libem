@@ -3,33 +3,14 @@ import json
 import logging
 import numpy as np
 import time
-import random
 import os
 from pathlib import Path
 from datetime import datetime
 
 import libem
-from libem.core.struct import Prompt
-from libem.prepare.datasets import (
-    abt_buy, amazon_google, beer, dblp_acm,
-    dblp_scholar, fodors_zagats, itunes_amazon, walmart_amazon
-)
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
-random.seed(libem.LIBEM_SEED)
-datasets = {
-    'abt-buy': abt_buy,
-    'amazon-google': amazon_google,
-    'beer': beer,
-    'dblp-acm': dblp_acm,
-    'dblp-scholar': dblp_scholar,
-    'fodors-zagats': fodors_zagats,
-    'itunes-amazon': itunes_amazon,
-    'walmart-amazon': walmart_amazon
-}
-
-
-def benchmark(args):
+def benchmark(dataset, args):
     total_start_time = time.time()
     
     if not args.verbose:
@@ -42,17 +23,7 @@ def benchmark(args):
     })
     
     truth, predictions, result = [], [], []
-    dataset_name = args.dataset.lower().replace('_', '-')
-    dataset = list(datasets[dataset_name].read_test(args.schema))
-    if args.shuffle:
-        random.shuffle(dataset)
-    
-    # telemetry
     total_input_tokens, total_output_tokens = 0, 0
-    
-    print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
-          f" {'pair' if args.num_pair == 1 else 'pairs'}"
-          f" from the {dataset_name} dataset.")
 
     for i, data in enumerate(dataset[args.start:]):
         if i < args.start:
@@ -139,7 +110,6 @@ def benchmark(args):
         'fp': int(conf_mat[1]),
         'fn': int(conf_mat[3])
     }
-    
 
     with open(out_file, 'w') as f:
         json.dump({
@@ -152,29 +122,3 @@ def benchmark(args):
     print("Benchmark: Recall\t", stats['recall'])
     print("Benchmark: F1 score\t", stats['f1'])
     print("Benchmark: Results saved to:", out_file)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser("benchmark.py")
-    parser.add_argument("--model", dest='model', nargs='?', help="The OpenAI model to use.", 
-                        type=str, default='gpt-4-turbo')
-    parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.", 
-                        type=str, default='amazon-google')
-    parser.add_argument("--num_pair", dest='num_pair', nargs='?',
-                        help="Number of pairs to run through. Set as 0 to run through the entire dataset.", 
-                        type=int, default=5)
-    parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.", 
-                        type=int, default=0)
-    parser.add_argument("--file", dest='file', nargs='?', help="Name of the file to save to, will append '.json'.", 
-                        type=str, default='')
-    parser.add_argument("--no_schema", dest='schema', help="Turn off the dataset schema.",
-                        action='store_false', default=True)
-    parser.add_argument("--no_shuffle", dest='shuffle', help="Don't shuffle the dataset.", 
-                        action='store_false', default=True)
-    parser.add_argument("--verbose", dest='verbose', help="Print intermediate results for each pair to console.", 
-                        action='store_true', default=False)
-    parser.add_argument("--browse", dest='browse', help="Enable the browse tool.", 
-                        action='store_true', default=False)
-    
-    args = parser.parse_args()
-    benchmark(args)
