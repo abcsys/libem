@@ -9,3 +9,4 @@ langchain-google-community
 dspy-ai
 google-api-python-client
 bs4
+requests

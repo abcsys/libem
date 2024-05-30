@@ -40,3 +40,8 @@ test: all
 clean:
 	rm -r benchmark/results > /dev/null 2>&1 || true
 	rm -r logs > /dev/null 2>&1 || true
+
+# refresh price
+.PHONY: price
+price:
+	python -c "from libem import optimize; optimize.refresh_price_cache()"
