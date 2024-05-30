@@ -1,12 +1,14 @@
 import random
-import benchmark
 import libem
 from libem.core.struct import Prompt
-from libem.prepare.datasets import fodors_zagats
+from libem.prepare.datasets import abt_buy
+
+from benchmark.util import run as benchmark_run
 
 random.seed(libem.LIBEM_SEED)
 
-def benchmark_fodors_zagats(args):
+
+def benchmark(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -18,11 +20,15 @@ def benchmark_fodors_zagats(args):
     # construct kwargs dict
     kwargs = {
         'schema': args.schema,
-        'version': 0,
+        'version': 1,
         'keep_null': args.schema,
-        'fields': ["name", "addr", "city", "phone", "type", "class"]
+        'price_diff': False
     }
-    
+    if args.schema:
+        kwargs['fields'] = ["name", "description", "price"]
+    else:
+        kwargs['fields'] = ["name", "price"]
+
     if args.kwargs is not None:
         if 'version' in args.kwargs:
             kwargs['version'] = args.kwargs['version']
@@ -30,21 +36,23 @@ def benchmark_fodors_zagats(args):
             kwargs['keep_null'] = args.kwargs['keep_null']
         if 'fields' in args.kwargs:
             kwargs['fields'] = args.kwargs['fields']
-    
+        if 'price_diff' in args.kwargs:
+            kwargs['price_diff'] = args.kwargs['price_diff']
+
     # get dataset with kwargs
-    dataset = list(fodors_zagats.read_test(**kwargs))
+    dataset = list(abt_buy.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
-    
+
     # set domain prompt
     if 'domain_prompt' in kwargs and kwargs['domain_prompt'] is True:
         libem.calibrate({
-            "libem.match.prompt.query": "Do the two restaurant descriptions refer to the same real-world restaurant? "
+            "libem.match.prompt.query": "Do the two product descriptions refer to the same real-world product? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
-                                        "Restaurant 1: '{left}'\nRestaurant 2: '{right}'",
+                                        "Product 1: '{left}'\nProduct 2: '{right}'",
             "libem.match.prompt.rule": Prompt.Rule(),
             "libem.match.prompt.experience": Prompt.Experience(),
             "libem.match.prompt.output": ""
-            })
+        })
 
-    benchmark.benchmark(dataset, args)
+    benchmark_run(dataset, args)
