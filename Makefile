@@ -28,10 +28,9 @@ learn:
 
 
 # benchmarks
-.PHONY: product benchmark
-benchmark: product
-product:
-	python benchmark/product.py
+.PHONY: benchmark
+benchmark:
+	python -m benchmark.run
 
 
 # tests clean

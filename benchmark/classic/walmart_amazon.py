@@ -1,12 +1,14 @@
 import random
-import benchmark
 import libem
 from libem.core.struct import Prompt
 from libem.prepare.datasets import walmart_amazon
 
+from benchmark.util import run as benchmark_run
+
 random.seed(libem.LIBEM_SEED)
 
-def benchmark_walmart_amazon(args):
+
+def benchmark(args):
     '''
     kwargs:
         version (int): the version of the dataset to use, default to 0.
@@ -29,7 +31,7 @@ def benchmark_walmart_amazon(args):
         kwargs['fields'] = ["title", "category", "brand", "modelno", "price"]
     else:
         kwargs['fields'] = ["brand", "title", "modelno", "price"]
-    
+
     if args.kwargs is not None:
         if 'version' in args.kwargs:
             kwargs['version'] = args.kwargs['version']
@@ -39,12 +41,12 @@ def benchmark_walmart_amazon(args):
             kwargs['fields'] = args.kwargs['fields']
         if 'price_diff' in args.kwargs:
             kwargs['price_diff'] = args.kwargs['price_diff']
-    
+
     # get dataset with kwargs
     dataset = list(walmart_amazon.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
-    
+
     # set domain prompt
     if 'domain_prompt' in kwargs and kwargs['domain_prompt'] is True:
         libem.calibrate({
@@ -54,6 +56,6 @@ def benchmark_walmart_amazon(args):
             "libem.match.prompt.rule": Prompt.Rule(rules=["Color distinguishes entities."]),
             "libem.match.prompt.experience": Prompt.Experience(),
             "libem.match.prompt.output": ""
-            })
+        })
 
-    benchmark.benchmark(dataset, args)
+    benchmark_run(dataset, args)

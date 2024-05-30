@@ -1,12 +1,14 @@
 import random
-import benchmark
 import libem
 from libem.core.struct import Prompt
-from libem.prepare.datasets import dblp_acm
+from libem.prepare.datasets import itunes_amazon
+
+from benchmark.util import run as benchmark_run
 
 random.seed(libem.LIBEM_SEED)
 
-def benchmark_dblp_acm(args):
+
+def benchmark(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -18,15 +20,11 @@ def benchmark_dblp_acm(args):
     # construct kwargs dict
     kwargs = {
         'schema': args.schema,
-        'version': 1
+        'version': 0,
+        'keep_null': args.schema,
+        'fields': ["song_name", "artist_name", "album_name", "genre", "price", "copyright", "time", "released"]
     }
-    if args.schema:
-        kwargs['keep_null'] = True
-        kwargs['fields'] = ["title", "authors", "venue", "year"]
-    else:
-        kwargs['keep_null'] = False
-        kwargs['fields'] = ["authors", "title", "venue", "year"]
-    
+
     if args.kwargs is not None:
         if 'version' in args.kwargs:
             kwargs['version'] = args.kwargs['version']
@@ -34,21 +32,21 @@ def benchmark_dblp_acm(args):
             kwargs['keep_null'] = args.kwargs['keep_null']
         if 'fields' in args.kwargs:
             kwargs['fields'] = args.kwargs['fields']
-    
+
     # get dataset with kwargs
-    dataset = list(dblp_acm.read_test(**kwargs))
+    dataset = list(itunes_amazon.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
-    
+
     # set domain prompt
     if 'domain_prompt' in kwargs and kwargs['domain_prompt'] is True:
         libem.calibrate({
-            "libem.match.prompt.query": "Do the two publications refer to the same real-world publication? "
+            "libem.match.prompt.query": "Do the two song descriptions refer to the same real-world song? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
-                                        "Publication 1: '{left}'\nPublication 2: '{right}'",
+                                        "Song 1: '{left}'\nSong 2: '{right}'",
             "libem.match.prompt.rule": Prompt.Rule(),
             "libem.match.prompt.experience": Prompt.Experience(),
             "libem.match.prompt.output": ""
-            })
+        })
 
-    benchmark.benchmark(dataset, args)
+    benchmark_run(dataset, args)
