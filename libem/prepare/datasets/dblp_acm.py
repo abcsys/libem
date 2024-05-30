@@ -33,19 +33,24 @@ def read(file, schema=True):
                         new_key = key[:-6]  # Remove '_right'
                         parsed_data['right'][new_key] = value
             else:
-                left_values, right_values = [], []
+                # 'authors title venue year'
+                left_values, right_values = {}, {}
                 for key, value in data.items():
                     if key in trim:
                         continue
-                    # Skip null values
+                    # Change null values to empty str
                     if value is None:
-                        continue
+                        value = ''
                     if key.endswith('_left'):
-                        left_values.append(str(value))
+                        new_key = key[:-5]  # Remove '_left'
+                        left_values[new_key] = str(value)
                     elif key.endswith('_right'):
-                        right_values.append(str(value))
-                parsed_data['left'] = ' '.join(left_values)
-                parsed_data['right'] = ' '.join(right_values)
+                        new_key = key[:-6]  # Remove '_right'
+                        right_values[new_key] = str(value)
+                parsed_data['left'] = ' '.join([left_values['authors'], left_values['title'], 
+                                                left_values['venue'], left_values['year']])
+                parsed_data['right'] = ' '.join([right_values['authors'], right_values['title'], 
+                                                 right_values['venue'], right_values['year']])
 
             yield parsed_data
 

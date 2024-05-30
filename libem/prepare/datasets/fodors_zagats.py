@@ -3,18 +3,16 @@ import json
 
 import libem.prepare.datasets as datasets
 
-path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "walmart-amazon")
+path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "fodors-zagats")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
-description = "The Walmart-Amazon dataset for entity resolution derives " \
-              "from the online retailers Walmart.com and Amazon.com."
-
+description = "The Abt-Buy dataset for entity resolution derives from the online retailers Abt.com and Buy.com."
 
 # sample data:
-# {"id_left":"walmart_88","title_left":"balt wheasel easel adjustable melamine dry erase board white","category_left":"stationery & office machinery","brand_left":"balt","modelno_left":"33250","price_left":239.88,"cluster_id_left":463,
-# "id_right":"amazon_3269","title_right":"balt inc. wheasel easel adjustable melamine dry erase board 28 3 4 x 59 1 2 white","category_right":"laminating supplies","brand_right":"mayline","modelno_right":null,"price_right":134.45,"cluster_id_right":463,
-# "label":1,"pair_id":"walmart_88#amazon_3269"}
+# {"name_left": "citrus", "addr_left": "' 6703 melrose ave. '", "city_left": "` los angeles '", "phone_left": "213/857-0034", "type_left": "californian", "class_left": "6",
+# "name_right": "` le chardonnay ( los angeles ) '", "addr_right": "' 8284 melrose ave. '", "city_right": "` los angeles '", "phone_right": "213-655-8880", "type_right": "` french bistro '", "class_right": "12",
+# "label": 0}
 def read(file, schema=True):
     with open(file) as f:
         for line in f:
@@ -22,8 +20,8 @@ def read(file, schema=True):
             parsed_data = {'left': {}, 'right': {}, 'label': data.get('label', None)}
 
             # clean the data
+            trim = []
             if schema:
-                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
                 for key, value in data.items():
                     if key in trim:
                         continue
@@ -34,9 +32,7 @@ def read(file, schema=True):
                         new_key = key[:-6]  # Remove '_right'
                         parsed_data['right'][new_key] = value
             else:
-                # 'brand title modelno price'
-                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right", "category_left", "category_right"]
-                left_values, right_values = {}, {}
+                left_values, right_values = [], []
                 for key, value in data.items():
                     if key in trim:
                         continue
@@ -44,15 +40,11 @@ def read(file, schema=True):
                     if value is None:
                         value = ''
                     if key.endswith('_left'):
-                        new_key = key[:-5]  # Remove '_left'
-                        left_values[new_key] = str(value)
+                        left_values.append(str(value))
                     elif key.endswith('_right'):
-                        new_key = key[:-6]  # Remove '_right'
-                        right_values[new_key] = str(value)
-                parsed_data['left'] = ' '.join([left_values['brand'], left_values['title'], 
-                                                left_values['modelno'], left_values['price']])
-                parsed_data['right'] = ' '.join([right_values['brand'], right_values['title'], 
-                                                 right_values['modelno'], right_values['price']])
+                        right_values.append(str(value))
+                parsed_data['left'] = ' '.join(left_values)
+                parsed_data['right'] = ' '.join(right_values)
 
             yield parsed_data
 

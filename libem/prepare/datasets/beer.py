@@ -3,18 +3,16 @@ import json
 
 import libem.prepare.datasets as datasets
 
-path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "walmart-amazon")
+path = os.path.join(datasets.LIBEM_SAMPLE_DATA_PATH, "beer")
 test_file = os.path.join(path, "test.ndjson")
 train_file = os.path.join(path, "train.ndjson")
 valid_file = os.path.join(path, "valid.ndjson")
-description = "The Walmart-Amazon dataset for entity resolution derives " \
-              "from the online retailers Walmart.com and Amazon.com."
-
+description = ""
 
 # sample data:
-# {"id_left":"walmart_88","title_left":"balt wheasel easel adjustable melamine dry erase board white","category_left":"stationery & office machinery","brand_left":"balt","modelno_left":"33250","price_left":239.88,"cluster_id_left":463,
-# "id_right":"amazon_3269","title_right":"balt inc. wheasel easel adjustable melamine dry erase board 28 3 4 x 59 1 2 white","category_right":"laminating supplies","brand_right":"mayline","modelno_right":null,"price_right":134.45,"cluster_id_right":463,
-# "label":1,"pair_id":"walmart_88#amazon_3269"}
+# {"beer_name_left": "Bulleit Bourbon Barrel Aged G'Knight", "brew_factory_name_left": "Oskar Blues Grill & Brew", "style_left": "American Amber / Red Ale", "abv_left": "8.70 %",
+# "beer_name_right": "Figure Eight Bourbon Barrel Aged Jumbo Love", "brew_factory_name_right": "Figure Eight Brewing", "style_right": "Barley Wine", "abv_right": "",
+# "label": 0}
 def read(file, schema=True):
     with open(file) as f:
         for line in f:
@@ -23,10 +21,7 @@ def read(file, schema=True):
 
             # clean the data
             if schema:
-                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right"]
                 for key, value in data.items():
-                    if key in trim:
-                        continue
                     if key.endswith('_left'):
                         new_key = key[:-5]  # Remove '_left'
                         parsed_data['left'][new_key] = value
@@ -34,12 +29,8 @@ def read(file, schema=True):
                         new_key = key[:-6]  # Remove '_right'
                         parsed_data['right'][new_key] = value
             else:
-                # 'brand title modelno price'
-                trim = ["cluster_id_left", "cluster_id_right", "id_left", "id_right", "category_left", "category_right"]
                 left_values, right_values = {}, {}
                 for key, value in data.items():
-                    if key in trim:
-                        continue
                     # Change null values to empty str
                     if value is None:
                         value = ''
@@ -49,10 +40,10 @@ def read(file, schema=True):
                     elif key.endswith('_right'):
                         new_key = key[:-6]  # Remove '_right'
                         right_values[new_key] = str(value)
-                parsed_data['left'] = ' '.join([left_values['brand'], left_values['title'], 
-                                                left_values['modelno'], left_values['price']])
-                parsed_data['right'] = ' '.join([right_values['brand'], right_values['title'], 
-                                                 right_values['modelno'], right_values['price']])
+                parsed_data['left'] = ' '.join([left_values['brew_factory_name'], left_values['beer_name'], 
+                                                left_values['style'], left_values['abv']])
+                parsed_data['right'] = ' '.join([right_values['brew_factory_name'], right_values['beer_name'], 
+                                                 right_values['style'], right_values['abv']])
 
             yield parsed_data
 
@@ -71,7 +62,6 @@ def read_valid():
 
 if __name__ == "__main__":
     import pprint
-
     pp = pprint.PrettyPrinter(sort_dicts=False)
     pp.pprint(next(read_test()))
     pp.pprint(next(read_test(schema=False)))
