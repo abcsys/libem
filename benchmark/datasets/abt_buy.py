@@ -1,14 +1,14 @@
 import random
 import libem
 from libem.core.struct import Prompt
-from libem.prepare.datasets import amazon_google
+from libem.prepare.datasets import abt_buy
 
-from benchmark.util import run as benchmark_run
+from benchmark.util import benchmark
 
 random.seed(libem.LIBEM_SEED)
 
 
-def benchmark(args):
+def benchmark_abt_buy(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -27,11 +27,10 @@ def benchmark(args):
         'keep_null': args.schema,
         'price_diff': False
     }
-
     if args.schema:
-        kwargs['fields'] = ["title", "manufacturer", "price"]
+        kwargs['fields'] = ["name", "description", "price"]
     else:
-        kwargs['fields'] = ["manufacturer", "title", "price"]
+        kwargs['fields'] = ["name", "price"]
 
     if args.kwargs is not None:
         if 'version' in args.kwargs:
@@ -44,7 +43,7 @@ def benchmark(args):
             kwargs['price_diff'] = args.kwargs['price_diff']
 
     # get dataset with kwargs
-    dataset = list(amazon_google.read_test(**kwargs))
+    dataset = list(abt_buy.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 
@@ -59,4 +58,4 @@ def benchmark(args):
             "libem.match.prompt.output": ""
         })
 
-    benchmark_run(dataset, args)
+    benchmark(dataset, args)

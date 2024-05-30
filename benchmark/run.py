@@ -1,30 +1,27 @@
 import json
 import argparse
 
-import benchmark.classic as classic
+import benchmark.datasets as datasets
 
-classic = {
-    'abt-buy': classic.benchmark_abt_buy,
-    'amazon-google': classic.benchmark_amazon_google,
-    'beer': classic.benchmark_beer,
-    'dblp-acm': classic.benchmark_dblp_acm,
-    'dblp-scholar': classic.benchmark_dblp_scholar,
-    'fodors-zagats': classic.benchmark_fodors_zagats,
-    'itunes-amazon': classic.benchmark_itunes_amazon,
-    'walmart-amazon': classic.benchmark_walmart_amazon
+dataset_map = {
+    'abt-buy': datasets.benchmark_abt_buy,
+    'amazon-google': datasets.benchmark_amazon_google,
+    'beer': datasets.benchmark_beer,
+    'dblp-acm': datasets.benchmark_dblp_acm,
+    'dblp-scholar': datasets.benchmark_dblp_scholar,
+    'fodors-zagats': datasets.benchmark_fodors_zagats,
+    'itunes-amazon': datasets.benchmark_itunes_amazon,
+    'walmart-amazon': datasets.benchmark_walmart_amazon
 }
 
 
-def benchmark(args):
-    # classic benchmarks
+def run(args):
     name = args.dataset.lower().replace('_', '-')
     print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
           f" {'pair' if args.num_pair == 1 else 'pairs'}"
           f" from the {name} dataset.")
-    benchmark_func = classic[name]
+    benchmark_func = dataset_map[name]
     benchmark_func(args)
-
-    # ...
 
 
 if __name__ == "__main__":
@@ -52,4 +49,4 @@ if __name__ == "__main__":
                         help="Additional args that apply to specific benchmark files, in JSON format.")
 
     args = parser.parse_args()
-    benchmark(args)
+    run(args)

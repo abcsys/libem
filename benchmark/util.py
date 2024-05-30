@@ -3,7 +3,6 @@ import json
 import logging
 import numpy as np
 import time
-import argparse
 from pathlib import Path
 from datetime import datetime
 
@@ -11,7 +10,7 @@ import libem
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
 
-def run(dataset, args):
+def benchmark(dataset, args):
     total_start_time = time.time()
 
     if not args.verbose:

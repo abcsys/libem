@@ -1,14 +1,14 @@
 import random
 import libem
 from libem.core.struct import Prompt
-from libem.prepare.datasets import dblp_scholar
+from libem.prepare.datasets import beer
 
-from benchmark.util import run as benchmark_run
+from benchmark.util import benchmark
 
 random.seed(libem.LIBEM_SEED)
 
 
-def benchmark(args):
+def benchmark_beer(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -20,14 +20,14 @@ def benchmark(args):
     # construct kwargs dict
     kwargs = {
         'schema': args.schema,
-        'version': 1
+        'version': 0
     }
     if args.schema:
         kwargs['keep_null'] = True
-        kwargs['fields'] = ["title", "authors", "venue", "year"]
+        kwargs['fields'] = ["beer_name", "brew_factory_name", "style", "abv"]
     else:
         kwargs['keep_null'] = False
-        kwargs['fields'] = ["authors", "title", "venue", "year"]
+        kwargs['fields'] = ["brew_factory_name", "beer_name", "style", "abv"]
 
     if args.kwargs is not None:
         if 'version' in args.kwargs:
@@ -38,19 +38,19 @@ def benchmark(args):
             kwargs['fields'] = args.kwargs['fields']
 
     # get dataset with kwargs
-    dataset = list(dblp_scholar.read_test(**kwargs))
+    dataset = list(beer.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 
     # set domain prompt
     if 'domain_prompt' in kwargs and kwargs['domain_prompt'] is True:
         libem.calibrate({
-            "libem.match.prompt.query": "Do the two publications refer to the same real-world publication? "
+            "libem.match.prompt.query": "Do the two beer descriptions refer to the same real-world beer? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
-                                        "Publication 1: '{left}'\nPublication 2: '{right}'",
+                                        "Beer 1: '{left}'\nBeer 2: '{right}'",
             "libem.match.prompt.rule": Prompt.Rule(),
             "libem.match.prompt.experience": Prompt.Experience(),
             "libem.match.prompt.output": ""
         })
 
-    benchmark_run(dataset, args)
+    benchmark(dataset, args)

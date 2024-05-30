@@ -3,12 +3,12 @@ import libem
 from libem.core.struct import Prompt
 from libem.prepare.datasets import fodors_zagats
 
-from benchmark.util import run as benchmark_run
+from benchmark.util import benchmark
 
 random.seed(libem.LIBEM_SEED)
 
 
-def benchmark(args):
+def benchmark_fodors_zagats(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -49,4 +49,4 @@ def benchmark(args):
             "libem.match.prompt.output": ""
         })
 
-    benchmark_run(dataset, args)
+    benchmark(dataset, args)

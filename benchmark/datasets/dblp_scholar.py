@@ -1,14 +1,14 @@
 import random
 import libem
 from libem.core.struct import Prompt
-from libem.prepare.datasets import dblp_acm
+from libem.prepare.datasets import dblp_scholar
 
-from benchmark.util import run as benchmark_run
+from benchmark.util import benchmark
 
 random.seed(libem.LIBEM_SEED)
 
 
-def benchmark(args):
+def benchmark_dblp_scholar(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -38,7 +38,7 @@ def benchmark(args):
             kwargs['fields'] = args.kwargs['fields']
 
     # get dataset with kwargs
-    dataset = list(dblp_acm.read_test(**kwargs))
+    dataset = list(dblp_scholar.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 
@@ -53,4 +53,4 @@ def benchmark(args):
             "libem.match.prompt.output": ""
         })
 
-    benchmark_run(dataset, args)
+    benchmark(dataset, args)
