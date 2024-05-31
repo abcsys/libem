@@ -5,6 +5,11 @@
 | :------- | :----- | :----------------------------------   |
 | `gpt-4o` | Off    | Schema inline with entity description |
 
+### Replicate
+```
+python -m benchmark.run --dataset <dataset-name> --num_pairs 0
+```
+
 ### Accuracy
 | Dataset | Precision | Recall | F1  |
 | :--- | :---: | :---: | :---: |
