@@ -1,9 +1,11 @@
 # Benchmark Results
 
-## Classic
+### Libem Settings
+| Model    | Tools  | Data Preparation                      |
+| :------- | :----- | :----------------------------------   |
+| `gpt-4o` | Off    | Schema inline with entity description |
 
-Using `gpt-4o`, with schema and all tools are turned off.
-
+### Accuracy
 | Dataset | Precision | Recall | F1  |
 | :--- | :---: | :---: | :---: |
 | abt-buy | 89.9 | 99.5 | 94.5 |
