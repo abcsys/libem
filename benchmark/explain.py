@@ -35,11 +35,6 @@ def addRules(e1, e2):
 
 if __name__ == "__main__":
     libem.LIBEM_LOG_LEVEL = 0  # debug
-    libem.calibrate({
-        "libem.match.parameter.tools": [],  # turn off browse etc.
-    })
-    libem.calibrate({"libem.match.prompt.output":
-                        "Explain your answer step by step and end with 'yes' or 'no' only."})
 
     fp, fn = read(dblp_scholar) # choose dataset
     num_fp, num_fn = 0, 0
@@ -48,6 +43,10 @@ if __name__ == "__main__":
     print('False Positives:')
     for example in fp:
         print(example)
+        libem.calibrate({
+            "libem.match.parameter.tools": [],  # turn off browse etc.
+            "libem.match.prompt.output": "Explain your answer step by step and end with 'yes' or 'no' only."
+        })
         pred = libem.match(example['entity_1'], example['entity_2'])
         processed_pred = pred.strip().translate(str.maketrans('', '', string.punctuation)).lower()
         if 'yes' in processed_pred:
@@ -65,6 +64,10 @@ if __name__ == "__main__":
     print('\nFalse Negatives:')
     for example in fn:
         print(example)
+        libem.calibrate({
+            "libem.match.parameter.tools": [],  # turn off browse etc.
+            "libem.match.prompt.output": "Explain your answer step by step and end with 'yes' or 'no' only."
+        })
         pred = libem.match(example['entity_1'], example['entity_2'])
         processed_pred = pred.strip().translate(str.maketrans('', '', string.punctuation)).lower()
         if 'no' in processed_pred:
