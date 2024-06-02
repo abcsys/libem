@@ -1,6 +1,7 @@
 import os
 import json
 import string
+
 import libem
 from libem.core.struct import Prompt
 
@@ -36,7 +37,7 @@ def addRules(e1, e2):
 if __name__ == "__main__":
     libem.LIBEM_LOG_LEVEL = 0  # debug
 
-    fp, fn = read(dblp_scholar) # choose dataset
+    fp, fn = read(itunes_amazon) # choose dataset
     num_fp, num_fn = 0, 0
     num_fp_r, num_fn_r = 0, 0
     
