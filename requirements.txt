@@ -10,3 +10,4 @@ google-api-python-client
 dspy-ai
 bs4
 requests
+duckduckgo-search
