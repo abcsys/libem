@@ -7,7 +7,7 @@
 
 ### Replicate
 ```
-python -m benchmark.run --dataset <dataset-name> --num_pairs 0
+python -m benchmark.run --dataset <dataset-name> --num_pairs -1
 ```
 
 ### Accuracy
