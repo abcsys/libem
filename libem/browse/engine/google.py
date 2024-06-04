@@ -57,7 +57,7 @@ def search_wrapper(k=1, full_text=False):
         pages = res.get('items', [])
         
         if len(pages) == 0:
-            return 'No good Google Search Result was found.'
+            return 'No good search results were found.'
         
         if full_text:
             return "\n".join([text_from_html(p['link']) for p in pages])

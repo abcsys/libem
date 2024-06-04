@@ -90,7 +90,7 @@ def openai(prompt: str, tools: list[str] = None,
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
 
-                libem.info(f"Tool: {function_name} - running ..")
+                libem.info(f"Tool: {function_name} - args: {function_args}")
                 function_response = function_to_call(**function_args)
                 messages.append(
                     {
@@ -108,7 +108,7 @@ def openai(prompt: str, tools: list[str] = None,
                         "response": function_response
                     }
                 })
-                libem.info(f"Tool: {function_name} - {function_response}")
+                libem.info(f"Tool: {function_name} - result: {function_response}")
 
             # Call the model again with the tool outcomes
             try:
