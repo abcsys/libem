@@ -25,8 +25,7 @@ def openai(prompt: str, tools: list[str] = None,
            max_model_call: int = 3,
            seed: int = None) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
-        raise EnvironmentError(f"OPENAI_API_KEY is not set. "
-                               f"Check your environment or {libem.LIBEM_CONFIG_FILE}.")
+        raise EnvironmentError(f"OPENAI_API_KEY is not set.")
     client = OpenAI()
 
     # todo: simplify accounting using model response
@@ -94,10 +93,10 @@ def openai(prompt: str, tools: list[str] = None,
                 function_response = function_to_call(**function_args)
                 messages.append(
                     {
-                        "tool_call_id": tool_call.id,
                         "role": "tool",
                         "name": function_name,
                         "content": function_response,
+                        "tool_call_id": tool_call.id,
                     }
                 )
                 libem.trace.add({

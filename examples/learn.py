@@ -12,14 +12,15 @@ calibrate = libem.toolchain("calibrate")
 
 
 def main():
-    num_iter = 2
-    num_train_sample = 100
-    num_test_sample = 100
-    rnd = random.Random(42)
+    num_iter = 1
+    num_train_sample = 200
+    num_test_sample = 400
+    rnd = random.Random(43)
 
     match_model = "gpt-3.5-turbo"
     # match_model = "gpt-4o"
     learn_model = "gpt-4o"
+    dataset = amazon_google
 
     libem.calibrate({
         "libem.match.parameter.model": match_model,
@@ -32,8 +33,8 @@ def main():
 
     print(f"Match model: {match_model}; Learn model: {learn_model}")
     print(f"Load a dataset with {num_train_sample} samples")
-    full_test_set = list(amazon_google.read_test())
-    full_train_set = list(amazon_google.read_train())
+    full_test_set = list(dataset.read_test())
+    full_train_set = list(dataset.read_train())
 
     test_set = rnd.sample(
         full_test_set,
