@@ -1,5 +1,27 @@
 # Benchmark Results
 
+## No Schema
+
+### Libem Settings
+| Model    | Tools  | Data Preparation                      |
+| :------- | :----- | :----------------------------------   |
+| `gpt-4o` | Off    | Field values only separated by spaces |
+
+### Accuracy
+
+| Dataset | Precision | Recall | F1  |
+| :--- | :---: | :---: | :---: |
+| abt-buy | 84.0 | 99.5 | 91.1 |
+| amazon-google | 60.0 | 89.7 | 71.9 |
+| beer | 92.3 | 85.7 | 88.9 |
+| dblp-acm | 80.4 | 100.0 | 89.1 |
+| dblp-scholar | 78.4 | 98.8 | 87.4 |
+| fodors-zagats | 95.7 | 100.0 | 97.8 |
+| itunes-amazon | 87.5 | 77.8 | 82.4 |
+| walmart-amazon | 75.4 | 95.3 | 84.2 |
+
+## With Schema
+
 ### Libem Settings
 | Model    | Tools  | Data Preparation                      |
 | :------- | :----- | :----------------------------------   |
