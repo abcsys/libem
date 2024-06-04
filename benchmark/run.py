@@ -34,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.",
                         type=str, default='amazon-google')
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
-                        help="Number of pairs to run through. Set as 0 to run through the entire dataset.",
+                        help="Number of pairs to run through. Set as <= 0 to run through the entire dataset.",
                         type=int, default=5)
     parser.add_argument("--start", dest='start', nargs='?', help="The index of the dataset to start from.",
                         type=int, default=0)

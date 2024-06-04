@@ -6,8 +6,8 @@ openai
 langchain
 langchain-community
 langchain-google-community
-dspy-ai
 google-api-python-client
+dspy-ai
 bs4
 requests
 duckduckgo-search
