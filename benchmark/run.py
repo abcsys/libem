@@ -17,10 +17,10 @@ classic = {
 
 def benchmark(args):
     # classic benchmarks
-    name = args.dataset.lower().replace('_', '-')
+    name = args.name.lower().replace('_', '-')
     print(f"Benchmark: Matching {args.num_pair if args.num_pair > 0 else 'all'}"
           f" {'pair' if args.num_pair == 1 else 'pairs'}"
-          f" from the {name} dataset.")
+          f" from the {name} benchmark.")
     benchmark_func = classic[name]
     benchmark_func(args)
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
     parser.add_argument("--model", dest='model', nargs='?', help="The OpenAI model to use.",
                         type=str, default='gpt-4o')
-    parser.add_argument("--dataset", dest='dataset', nargs='?', help="The dataset to benchmark.",
+    parser.add_argument("--name", dest='name', nargs='?', help="The name of the benchmark.",
                         type=str, default='amazon-google')
     parser.add_argument("--num_pair", dest='num_pair', nargs='?',
                         help="Number of pairs to run through. Set as <= 0 to run through the entire dataset.",
