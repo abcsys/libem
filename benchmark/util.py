@@ -3,7 +3,6 @@ import json
 import logging
 import numpy as np
 import time
-import argparse
 from pathlib import Path
 from datetime import datetime
 
@@ -14,7 +13,9 @@ from libem.core.eval import confusion_matrix, precision, recall, f1
 def run(dataset, args):
     total_start_time = time.time()
 
-    if not args.verbose:
+    if args.verbose:
+        libem.LIBEM_LOG_LEVEL = logging.INFO
+    else:
         libem.LIBEM_LOG_LEVEL = logging.WARNING
 
     # set configs
@@ -27,7 +28,7 @@ def run(dataset, args):
     total_input_tokens, total_output_tokens = 0, 0
 
     for i, data in enumerate(dataset[args.start:]):
-        if i < args.start:
+        if i + 1 < args.start:
             continue
 
         e1 = data['left']
@@ -85,7 +86,7 @@ def run(dataset, args):
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pair stop condition
-        if args.num_pair > 0 and i + 1 >= args.num_pair:
+        if args.num_pair > 0 and i - args.start + 2 >= args.num_pair:
             break
 
     # save results to ./results
@@ -118,7 +119,7 @@ def run(dataset, args):
             'results': result
         }, f, indent=4)
 
-    print(f"Benchmark: Done in {stats['latency']}.")
+    print(f"Benchmark: Done in {stats['latency']}s.")
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
