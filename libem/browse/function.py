@@ -1,5 +1,5 @@
 import json
-from libem.browse import prompt
+from libem.browse import prompt, parameter
 from libem.core.struct import Prompt
 from langchain_core.tools import Tool
 
@@ -19,12 +19,6 @@ schema = {
                     "type": "string",
                     "description": "Query to search.",
                 },
-                # "engine": {
-                #     "type": "string",
-                #     "description": "The search engine to use. Choose from "
-                #                     "['google', 'duckduckgo'], the default is "
-                #                     "'duckduckgo'.",
-                # },
             },
             "required": ["query"],
         },
@@ -37,8 +31,8 @@ engines_map = {
 }
 
 
-def func(query, engine='duckduckgo'):
-    serch_engine = engines_map[engine]
+def func(query):
+    serch_engine = engines_map[parameter.engine()]
     
     tool = Tool(
         name="online_search",

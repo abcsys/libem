@@ -7,13 +7,12 @@ def search_wrapper(k=1, full_text=False):
     engine = DuckDuckGoSearchRun(api_wrapper=wrapper)
     
     def search(query):
-        tries, result = 0, None
-        while result is None and tries < 3:
-            try:
-                tries += 1
-                result = engine.invoke(query)
-            except TimeoutException:
-                pass
+        result = None
+        # try again if encounters timeout exception
+        try:
+            result = engine.invoke(query)
+        except TimeoutException:
+            result = engine.invoke(query)
         
         if result is not None:
             return result
