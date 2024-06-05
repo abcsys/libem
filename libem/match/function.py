@@ -62,8 +62,9 @@ def parse_output(output: str) -> str:
     answer = "yes" if "yes" in output[-1] else "no"
     
     # parse confidence score if CoT is True
+    output = list(reversed(output))
     if parameter.CoT():
-        for i, line in enumerate(reversed(output)):
+        for i, line in enumerate(output):
             if 'confidence score' in line:
                 confidence = ''.join(filter(str.isdigit, line))
                 

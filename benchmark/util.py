@@ -27,8 +27,10 @@ def run(dataset, args):
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.CoT": True,
-            "libem.match.prompt.output": "Explain your answer step by step, then give a confidence score from 1 to 5, with 1 being just a guess and 5 being extremely confident, and end with a single 'yes' or 'no'"
-                        #  "a confidence score from 1 to 10 and a single 'yes' or 'no' only."
+            "libem.match.prompt.output": "Explain your answer step by step. "
+            "Then give a confidence score from 1 to 10, with 1 being just a guess "
+            "and 10 being extremely confident, give the score only, do not justify. "
+            "Finally, give your final answer in the form of a single 'yes' or 'no' only."
         })
 
     truth, predictions, result = [], [], []
