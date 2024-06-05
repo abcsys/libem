@@ -23,6 +23,12 @@ def run(dataset, args):
         "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],  # turn off sub-tools
         "libem.match.parameter.model": args.model,
     })
+    if args.cot:
+        libem.calibrate({
+            "libem.match.parameter.CoT": True,
+            "libem.match.prompt.output": "Explain your answer step by step and end with "
+                         "a confidence score from 1 to 10 and a single 'yes' or 'no' only."
+        })
 
     truth, predictions, result = [], [], []
     total_input_tokens, total_output_tokens = 0, 0
@@ -41,7 +47,7 @@ def run(dataset, args):
 
         # call match
         with libem.trace as t:
-            is_match = None
+            is_match, confidence = None, None
             start_time = time.time()
 
             while is_match is None:
@@ -53,6 +59,11 @@ def run(dataset, args):
                     num_timeouts += 1
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
+            
+            # if cot, separate answer from confidence level
+            if args.cot:
+                confidence = is_match[1]
+                is_match = is_match[0]
 
             # get unparsed model output and telemetry
             latency = time.time() - start_time
@@ -73,6 +84,8 @@ def run(dataset, args):
                 'latency': round(latency, 2),
                 'tokens': {'input_tokens': input_tokens, 'output_tokens': output_tokens}
             })
+            if args.cot:
+                result[-1]['confidence'] = confidence
 
         # track results for evaluation metrics
         if is_match == 'yes':

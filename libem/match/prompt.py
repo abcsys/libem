@@ -17,7 +17,7 @@ experience = Prompt(
 
 output = Prompt(
     default="Answer with 'Yes' if they do and 'No' if they do not.",
-    options=["Explain your answer step by step and end with 'yes' or 'no' only."  # CoT
+    options=["Explain your answer step by step and end with a confidence score from 1 to 10 and a single 'yes' or 'no' only."  # CoT
              "Answer only 1 or 0.",
              "Answer with 'yes' or 'no' only, in lower case.", ],
 )
