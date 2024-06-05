@@ -124,7 +124,8 @@ def run(dataset, args):
     stats['latency'] = round(time.time() - total_start_time, 2)
     stats['tokens'] = {
         'input_tokens': total_input_tokens,
-        'output_tokens': total_output_tokens
+        'output_tokens': total_output_tokens,
+        'cost': openai.get_cost(args.model, total_input_tokens, total_output_tokens)
     }
     stats['confusion_matrix'] = {
         'tp': int(conf_mat[0]),
