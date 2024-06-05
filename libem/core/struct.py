@@ -17,23 +17,43 @@ class Tunable(abc.ABC):
         pass
 
 
+class Option():
+    def __init__(self, value: typing.Any):
+        self.value = value
+    
+    def __call__(self):
+        return self.value
+    
+
 class Parameter(Tunable):
     def __init__(self,
-                 default: typing.Any,
-                 options: list[typing.Any] = None
+                 default: int | typing.Any = 0,
+                 options: list[Option] = []
                  ):
-        self.value = self.v = default
+        if isinstance(default, int):
+            assert len(options) > default
+            for i in options:
+                if not isinstance(i, Option):
+                    raise TypeError("Wrap all options in an Option struct.")
+        else: # quick assign of a single value: set default to value
+            if len(options) > 0:
+                raise TypeError("Either set 'default' to index in options "
+                                "or leave options empty to assign a single value.")
+            options = [Option(default)]
+            default = 0
+        
+        self.value = self.v = options[default]
         self.default = default
-        self.options = options or []
+        self.options = options
         self.optimal = self.v
         super().__init__()
 
     def __call__(self, *args, **kwargs):
         if isinstance(self.value, str):
             # format the parameter with inputs
-            return self.value.format(*args, **kwargs)
+            return self.value().format(*args, **kwargs)
         else:
-            return self.value
+            return self.value()
 
     def __str__(self):
         return str(self.__call__())
@@ -42,7 +62,12 @@ class Parameter(Tunable):
         return self.__str__()
 
     def update(self, value):
-        self.value = self.v = value
+        if isinstance(value, int):
+            self.value = self.v = self.options[value]
+        elif isinstance(value, Option):
+            self.value = self.v = value
+        else:
+            self.value = self.v = Option(value)
         return self
 
     def learn(self, train_data, metric):
@@ -55,12 +80,12 @@ class Parameter(Tunable):
         if include_all:
             return {
                 'default': self.default,
-                'value': self.value,
-                'options': self.options,
-                'optimal': self.optimal
+                'value': self.value(),
+                'options': [o() for o in self.options],
+                'optimal': self.optimal()
             }
         else:
-            return self.value
+            return self.value()
 
     def copy(self):
         return copy.deepcopy(self)
@@ -155,18 +180,6 @@ class Prompt(Parameter):
         self.update(Prompt.join(*prompts, self.value, sep=sep))
         return self
 
-    def __init__(self, default: str | Rule | Experience,
-                 options: list[str | Rule | Experience] = None):
+    def __init__(self, default: int | str | Rule | Experience,
+                 options: list[str | Rule | Experience] = []):
         super().__init__(default, options)
-
-
-CoT = chain_of_thought = Prompt(
-    default="Explain your answer step by step.",
-    options=[""],
-)
-
-# todo
-ReAct = reason_act = Prompt(
-    default="",
-    options=[""],
-)
