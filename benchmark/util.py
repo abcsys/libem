@@ -7,6 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
+from libem.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
 
@@ -26,8 +27,8 @@ def run(dataset, args):
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.CoT": True,
-            "libem.match.prompt.output": "Explain your answer step by step and end with "
-                         "a confidence score from 1 to 10 and a single 'yes' or 'no' only."
+            "libem.match.prompt.output": "Explain your answer step by step, then give a confidence score from 1 to 5, with 1 being just a guess and 5 being extremely confident, and end with a single 'yes' or 'no'"
+                        #  "a confidence score from 1 to 10 and a single 'yes' or 'no' only."
         })
 
     truth, predictions, result = [], [], []
@@ -82,7 +83,11 @@ def run(dataset, args):
                 'model_output': pred,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
                 'latency': round(latency, 2),
-                'tokens': {'input_tokens': input_tokens, 'output_tokens': output_tokens}
+                'tokens': {
+                    'input_tokens': input_tokens,
+                    'output_tokens': output_tokens,
+                    'cost': openai.get_cost(args.model, input_tokens, output_tokens)
+                    }
             })
             if args.cot:
                 result[-1]['confidence'] = confidence
@@ -99,7 +104,7 @@ def run(dataset, args):
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
-        if args.num_pairs > 0 and i - args.start + 2 >= args.num_pairs:
+        if args.num_pairs > 0 and i - args.start + 1 >= args.num_pairs:
             break
 
     # save results to ./results
