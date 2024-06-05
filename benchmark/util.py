@@ -85,8 +85,8 @@ def run(dataset, args):
             print(pred)
             print(f"Match: {is_match}; Label: {label}\n")
 
-        # check num_pair stop condition
-        if args.num_pair > 0 and i - args.start + 2 >= args.num_pair:
+        # check num_pairs stop condition
+        if args.num_pairs > 0 and i - args.start + 2 >= args.num_pairs:
             break
 
     # save results to ./results
