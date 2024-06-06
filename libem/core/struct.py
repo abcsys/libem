@@ -49,11 +49,12 @@ class Parameter(Tunable):
         super().__init__()
 
     def __call__(self, *args, **kwargs):
-        if isinstance(self.value, str):
+        value = self.value()
+        if isinstance(value, str):
             # format the parameter with inputs
-            return self.value().format(*args, **kwargs)
+            return value.format(*args, **kwargs)
         else:
-            return self.value()
+            return value
 
     def __str__(self):
         return str(self.__call__())
