@@ -8,13 +8,13 @@ from libem.core.log import header
 from libem.match.prompt import rule as match_rule_prompt
 from libem.match.prompt import experience as match_experience_prompt
 
-calibrate = libem.toolchain("calibrate")
+calibrate = libem.toolchain("tune.calibrate")
 
 
 def main():
     num_iter = 1
-    num_train_sample = 200
-    num_test_sample = 400
+    num_train_sample = 100
+    num_test_sample = 100
     rnd = random.Random(43)
 
     match_model = "gpt-3.5-turbo"

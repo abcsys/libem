@@ -1,5 +1,5 @@
-from libem.optimize.cost import cache
-from libem.optimize.cost import openai
+from libem.tune.optimize.cost import cache
+from libem.tune.optimize.cost import openai
 
 
 def refresh_price_cache():

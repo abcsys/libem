@@ -55,5 +55,22 @@ def func(left, right):
 
 def parse_output(output: str) -> str:
     libem.debug("Match raw output:", output)
-    output = output.split("\n")[-1].lower()
-    return "yes" if "yes" in output else "no"
+    output = [line.lower() for line in output.split("\n")]
+    confidence, answer = None, None
+    
+    # parse answer
+    answer = "yes" if "yes" in output[-1] else "no"
+    
+    # parse confidence score if CoT is True
+    output = list(reversed(output))
+    if parameter.CoT():
+        for i, line in enumerate(output):
+            if 'confidence score' in line:
+                confidence = ''.join(filter(str.isdigit, line))
+                
+                # catch cases when score is on a new line
+                if len(confidence) == 0:
+                    confidence = ''.join(filter(str.isdigit, output[i-1]))
+                return answer, int(confidence)
+    
+    return answer

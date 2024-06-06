@@ -8,3 +8,4 @@ tools = Parameter(
     default=["libem.browse"],
     options=[[], ],
 )
+CoT = Parameter(default=False)
