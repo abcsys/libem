@@ -30,6 +30,7 @@ def openai(prompt: str | list,
            ) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
+
     client = OpenAI()
 
     num_model_calls = 0
@@ -100,8 +101,6 @@ def openai(prompt: str | list,
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
-
-                libem.info(f"Tool: {function_name} - running ..")
                 function_response = function_to_call(**function_args)
                 messages.append(
                     {
