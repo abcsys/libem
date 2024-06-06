@@ -120,6 +120,7 @@ def openai(prompt: str | list,
                 })
                 if verbose:
                     libem.info(f"Tool: {function_name} - {function_response}")
+            tool_calls = []
 
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
