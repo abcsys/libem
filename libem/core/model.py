@@ -26,6 +26,7 @@ def openai(prompt: str | list,
            temperature: float = 0.0,
            seed: int = None,
            max_model_call: int = 3,
+           verbose: bool = True,
            ) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
@@ -94,7 +95,7 @@ def openai(prompt: str | list,
         # Call the tools
         while tool_calls:
             messages.append(response_message)
-            
+
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
@@ -118,7 +119,8 @@ def openai(prompt: str | list,
                         "response": function_response
                     }
                 })
-                libem.info(f"Tool: {function_name} - {function_response}")
+                if verbose:
+                    libem.info(f"Tool: {function_name} - {function_response}")
 
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
