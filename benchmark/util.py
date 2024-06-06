@@ -7,6 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
+from libem.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
 
@@ -23,6 +24,14 @@ def run(dataset, args):
         "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],  # turn off sub-tools
         "libem.match.parameter.model": args.model,
     })
+    if args.cot:
+        libem.calibrate({
+            "libem.match.parameter.CoT": True,
+            "libem.match.prompt.output": "Explain your answer step by step. "
+            "Then give a confidence score from 1 to 10, with 1 being just a guess "
+            "and 10 being extremely confident, give the score only, do not justify. "
+            "Finally, give your final answer in the form of a single 'yes' or 'no' only."
+        })
 
     truth, predictions, result = [], [], []
     total_input_tokens, total_output_tokens = 0, 0
@@ -41,7 +50,7 @@ def run(dataset, args):
 
         # call match
         with libem.trace as t:
-            is_match = None
+            is_match, confidence = None, None
             start_time = time.time()
 
             while is_match is None:
@@ -53,6 +62,11 @@ def run(dataset, args):
                     num_timeouts += 1
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
+            
+            # if cot, separate answer from confidence level
+            if args.cot:
+                confidence = is_match[1]
+                is_match = is_match[0]
 
             # get unparsed model output and telemetry
             latency = time.time() - start_time
@@ -71,8 +85,14 @@ def run(dataset, args):
                 'model_output': pred,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
                 'latency': round(latency, 2),
-                'tokens': {'input_tokens': input_tokens, 'output_tokens': output_tokens}
+                'tokens': {
+                    'input_tokens': input_tokens,
+                    'output_tokens': output_tokens,
+                    'cost': openai.get_cost(args.model, input_tokens, output_tokens)
+                    }
             })
+            if args.cot:
+                result[-1]['confidence'] = confidence
 
         # track results for evaluation metrics
         if is_match == 'yes':
@@ -86,7 +106,7 @@ def run(dataset, args):
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
-        if args.num_pairs > 0 and i - args.start + 2 >= args.num_pairs:
+        if args.num_pairs > 0 and i - args.start + 1 >= args.num_pairs:
             break
 
     # save results to ./results
@@ -104,7 +124,8 @@ def run(dataset, args):
     stats['latency'] = round(time.time() - total_start_time, 2)
     stats['tokens'] = {
         'input_tokens': total_input_tokens,
-        'output_tokens': total_output_tokens
+        'output_tokens': total_output_tokens,
+        'cost': openai.get_cost(args.model, total_input_tokens, total_output_tokens)
     }
     stats['confusion_matrix'] = {
         'tp': int(conf_mat[0]),

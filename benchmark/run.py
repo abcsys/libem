@@ -49,6 +49,8 @@ if __name__ == "__main__":
                         action='store_true', default=False)
     parser.add_argument("-b", "--browse", dest='browse', help="Enable the browse tool.",
                         action='store_true', default=False)
+    parser.add_argument("-cot", "--cot", dest='cot', help="Enable chain of thought.",
+                        action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")
     args = parser.parse_args()
