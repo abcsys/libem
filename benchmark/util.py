@@ -7,6 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
+from libem.core.struct import Index
 from libem.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
@@ -27,7 +28,7 @@ def run(dataset, args):
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.CoT": True,
-            "libem.match.prompt.output": 1
+            "libem.match.prompt.output": Index(1)
         })
 
     truth, predictions, result = [], [], []

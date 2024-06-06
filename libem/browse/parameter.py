@@ -1,9 +1,9 @@
-from libem.core.struct import Option, Parameter
+from libem.core.struct import Index, Parameter
 import libem.parameter as libem
 
 model = libem.model.copy()
 temperature = libem.temperature.copy()
 engine = Parameter(
-    default=1,
-    options=[Option("google"), Option("duckduckgo")],
+    default=Index(1),
+    options=["google", "duckduckgo"],
 )

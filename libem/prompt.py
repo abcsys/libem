@@ -1,4 +1,4 @@
-from libem.core.struct import Option, Prompt
+from libem.core.struct import Prompt
 
 role = Prompt(
     default="You are Libem, an entity matcher that determine "

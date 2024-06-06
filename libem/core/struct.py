@@ -17,44 +17,41 @@ class Tunable(abc.ABC):
         pass
 
 
-class Option():
-    def __init__(self, value: typing.Any):
-        self.value = value
+class Index():
+    def __init__(self, index: int):
+        assert isinstance(index, int)
+        self.index = index
     
     def __call__(self):
-        return self.value
+        return self.index
     
 
 class Parameter(Tunable):
     def __init__(self,
-                 default: int | typing.Any = 0,
-                 options: list[Option] = []
+                 default: Index | typing.Any = 0,
+                 options: list[typing.Any] = []
                  ):
-        if isinstance(default, int):
-            assert len(options) > default
-            for i in options:
-                if not isinstance(i, Option):
-                    raise TypeError("Wrap all options in an Option struct.")
+        if isinstance(default, Index):
+            assert len(options) > default()
         else: # quick assign of a single value: set default to value
             if len(options) > 0:
-                raise TypeError("Either set 'default' to index in options "
-                                "or leave options empty to assign a single value.")
-            options = [Option(default)]
-            default = 0
+                raise TypeError("Either set 'default' to an Index into the options list "
+                                "or leave options empty to quick assign a single value.")
+            options = [default]
+            default = Index(0)
         
-        self.value = self.v = options[default]
+        self.value = self.v = options[default()]
         self.default = default
         self.options = options
         self.optimal = self.v
         super().__init__()
 
     def __call__(self, *args, **kwargs):
-        value = self.value()
-        if isinstance(value, str):
+        if isinstance(self.value, str):
             # format the parameter with inputs
-            return value.format(*args, **kwargs)
+            return self.value.format(*args, **kwargs)
         else:
-            return value
+            return self.value
 
     def __str__(self):
         return str(self.__call__())
@@ -63,12 +60,10 @@ class Parameter(Tunable):
         return self.__str__()
 
     def update(self, value):
-        if isinstance(value, int):
-            self.value = self.v = self.options[value]
-        elif isinstance(value, Option):
-            self.value = self.v = value
+        if isinstance(value, Index):
+            self.value = self.v = self.options[value()]
         else:
-            self.value = self.v = Option(value)
+            self.value = self.v = value
         return self
 
     def learn(self, train_data, metric):
@@ -80,13 +75,13 @@ class Parameter(Tunable):
     def export(self, include_all=False):
         if include_all:
             return {
-                'default': self.default,
-                'value': self.value(),
-                'options': [o() for o in self.options],
-                'optimal': self.optimal()
+                'default': self.default(),
+                'value': self.value,
+                'options': self.options,
+                'optimal': self.optimal
             }
         else:
-            return self.value()
+            return self.value
 
     def copy(self):
         return copy.deepcopy(self)
@@ -181,6 +176,6 @@ class Prompt(Parameter):
         self.update(Prompt.join(*prompts, self.value, sep=sep))
         return self
 
-    def __init__(self, default: int | str | Rule | Experience,
+    def __init__(self, default: Index | str | Rule | Experience,
                  options: list[str | Rule | Experience] = []):
         super().__init__(default, options)
