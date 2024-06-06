@@ -1,5 +1,4 @@
 from libem.core.struct import Parameter
-from libem.core.struct import Parameter
 import libem.parameter as libem
 
 model = libem.model.copy()
