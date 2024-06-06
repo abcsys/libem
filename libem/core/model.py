@@ -20,26 +20,37 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str, tools: list[str] = None,
-           model: str = "gpt-4o", temperature: float = 0.0,
+def openai(prompt: str | list,
+           tools: list[str] = None,
+           model: str = "gpt-4o",
+           temperature: float = 0.0,
+           seed: int = None,
            max_model_call: int = 3,
-           seed: int = None) -> str:
+           ) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
     client = OpenAI()
 
-    # todo: simplify accounting using model response
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
 
+    # format the prompt messages
+    match prompt:
+        case list():
+            messages = prompt
+        case str():
+            messages = [{"role": "user", "content": prompt}]
+        case _:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
+
+    """ Call with no tool use """
     if not tools:
-        """ Call with no tool use """
         try:
             response = client.chat.completions.create(
+                messages=messages,
                 model=model,
-                messages=[{"role": "user", "content": prompt}],
-                seed=seed,
                 temperature=temperature,
+                seed=seed,
             )
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
@@ -61,15 +72,14 @@ def openai(prompt: str, tools: list[str] = None,
         tools = [tool.schema for tool in tools]
 
         # Call the model
-        messages = [{"role": "user", "content": prompt}]
         try:
             response = client.chat.completions.create(
-                model=model,
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
-                seed=seed,
+                model=model,
                 temperature=temperature,
+                seed=seed,
             )
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
@@ -82,8 +92,9 @@ def openai(prompt: str, tools: list[str] = None,
         num_output_tokens += response.usage.completion_tokens
 
         # Call the tools
-        while tool_calls and num_model_calls < max_model_call:
+        while tool_calls:
             messages.append(response_message)
+            
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
@@ -109,28 +120,29 @@ def openai(prompt: str, tools: list[str] = None,
                 })
                 libem.info(f"Tool: {function_name} - {function_response}")
 
-            # Call the model again with the tool outcomes
-            try:
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    tools=tools,
-                    tool_choice="auto",
-                    seed=seed,
-                    temperature=temperature,
-                )
-            except APITimeoutError as e:  # catch timeout error
-                raise libem.ModelTimedoutException(e)
+            if num_model_calls < max_model_call:
+                # Call the model again with the tool outcomes
+                try:
+                    response = client.chat.completions.create(
+                        messages=messages,
+                        tools=tools,
+                        tool_choice="auto",
+                        model=model,
+                        temperature=temperature,
+                        seed=seed,
+                    )
+                except APITimeoutError as e:  # catch timeout error
+                    raise libem.ModelTimedoutException(e)
 
-            response_message = response.choices[0].message
-            tool_calls = response_message.tool_calls
+                response_message = response.choices[0].message
+                tool_calls = response_message.tool_calls
 
-            num_model_calls += 1
-            num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-            num_output_tokens += response.usage.completion_tokens
+                num_model_calls += 1
+                num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+                num_output_tokens += response.usage.completion_tokens
 
-        if num_model_calls == max_model_call:
-            libem.warn(f"Max call reached: {messages}\n{response_message}")
+            if num_model_calls == max_model_call:
+                libem.debug(f"Max call reached: {messages}\n{response_message}")
 
     # add model calls to trace
     libem.trace.add({
