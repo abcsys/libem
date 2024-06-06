@@ -26,7 +26,7 @@ def openai(prompt: str | list,
            temperature: float = 0.0,
            seed: int = None,
            max_model_call: int = 3,
-           return_tool_output: bool = False,
+           return_tool_outputs: bool = False,
            verbose: bool = True,
            ) -> str or (str, dict):
     if not os.environ.get("OPENAI_API_KEY"):
@@ -159,7 +159,7 @@ def openai(prompt: str | list,
         }
     })
 
-    if return_tool_output:
+    if return_tool_outputs:
         return response_message.content, tool_outputs
     else:
         return response_message.content
