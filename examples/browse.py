@@ -4,8 +4,6 @@ import libem
 def positive():
     e1 = "mighty freedom gundam"
     e2 = "ZGMF/A-262PD-P"
-    
-    libem.LIBEM_LOG_LEVEL = 0
 
     is_match = libem.match(e1, e2)
 
