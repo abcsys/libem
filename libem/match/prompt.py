@@ -16,7 +16,7 @@ experience = Prompt(
 )
 
 output = Prompt(
-    default="Answer with 'Yes' if they do and 'No' if they do not.",
+    default="Answer with a single 'Yes' if they do and 'No' if they do not.",
     options=["Explain your answer step by step. " \
              "Then give a confidence score from 1 to 10, with 1 being just a guess " \
              "and 10 being extremely confident, give the score only, do not justify. " \
