@@ -28,9 +28,9 @@ def run(dataset, args):
         libem.calibrate({
             "libem.match.parameter.CoT": True,
             "libem.match.prompt.output": "Explain your answer step by step. "
-            "Then give a confidence score from 1 to 10, with 1 being just a guess "
-            "and 10 being extremely confident, give the score only, do not justify. "
-            "Finally, give your final answer in the form of a single 'yes' or 'no' only."
+                                         "Then give a confidence score from 1 to 10, with 1 being just a guess "
+                                         "and 10 being extremely confident, give the score only, do not justify. "
+                                         "Finally, give your final answer in the form of a single 'yes' or 'no' only."
         })
 
     truth, predictions, result = [], [], []
@@ -62,7 +62,7 @@ def run(dataset, args):
                     num_timeouts += 1
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
-            
+
             # if cot, separate answer from confidence level
             if args.cot:
                 confidence = is_match[1]
@@ -89,7 +89,7 @@ def run(dataset, args):
                     'input_tokens': input_tokens,
                     'output_tokens': output_tokens,
                     'cost': openai.get_cost(args.model, input_tokens, output_tokens)
-                    }
+                }
             })
             if args.cot:
                 result[-1]['confidence'] = confidence
@@ -144,4 +144,5 @@ def run(dataset, args):
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
+    print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
     print(f"Benchmark: Results saved to: {out_file}")

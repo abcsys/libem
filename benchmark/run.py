@@ -29,8 +29,6 @@ def benchmark(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
-    parser.add_argument("-m", "--model", dest='model', nargs='?', help="The OpenAI model to use.",
-                        type=str, default='gpt-4o')
     parser.add_argument("-n", "--name", dest='name', nargs='?', help="The name of the benchmark.",
                         type=str, default='amazon-google')
     parser.add_argument("-p", "--num-pairs", dest='num_pairs', nargs='?',
@@ -41,17 +39,19 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", dest='file', nargs='?',
                         help="Name of the file to save to, will append '.json'.",
                         type=str, default='')
-    parser.add_argument("-ns", "--no-schema", dest='schema', help="Turn off the dataset schema.",
-                            action='store_false', default=True)
-    parser.add_argument("-nsh", "--no-shuffle", dest='shuffle', help="Don't shuffle the dataset.",
+    parser.add_argument("-m", "--model", dest='model', nargs='?', help="The OpenAI model to use.",
+                        type=str, default='gpt-4o')
+    parser.add_argument("--no-shuffle", dest='shuffle', help="Don't shuffle the dataset.",
                         action='store_false', default=True)
-    parser.add_argument("-v", "--verbose", dest='verbose', help="Print intermediate results for each pair to console.",
+    parser.add_argument("--no-schema", dest='schema', help="Turn off the dataset schema.",
+                            action='store_false', default=True)
+    parser.add_argument("--browse", dest='browse', help="Enable the browse tool.",
                         action='store_true', default=False)
-    parser.add_argument("-b", "--browse", dest='browse', help="Enable the browse tool.",
-                        action='store_true', default=False)
-    parser.add_argument("-cot", "--cot", dest='cot', help="Enable chain of thought.",
+    parser.add_argument("--cot", dest='cot', help="Enable chain of thought.",
                         action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")
+    parser.add_argument("-v", "--verbose", dest='verbose', help="Print intermediate results for each pair to console.",
+                        action='store_true', default=False)
     args = parser.parse_args()
     benchmark(args)
