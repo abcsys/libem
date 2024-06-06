@@ -20,26 +20,40 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str, tools: list[str] = None,
-           model: str = "gpt-4o", temperature: float = 0.0,
+def openai(prompt: str | list,
+           tools: list[str] = None,
+           model: str = "gpt-4o",
+           temperature: float = 0.0,
+           seed: int = None,
            max_model_call: int = 3,
-           seed: int = None) -> str:
+           return_tool_outputs: bool = False,
+           verbose: bool = True,
+           ) -> str or (str, dict):
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
+
     client = OpenAI()
 
-    # todo: simplify accounting using model response
+    # format the prompt messages
+    match prompt:
+        case list():
+            messages = prompt
+        case str():
+            messages = [{"role": "user", "content": prompt}]
+        case _:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
+
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
-
+    tool_outputs = {}
+    """ Call with no tool use """
     if not tools:
-        """ Call with no tool use """
         try:
             response = client.chat.completions.create(
+                messages=messages,
                 model=model,
-                messages=[{"role": "user", "content": prompt}],
-                seed=seed,
                 temperature=temperature,
+                seed=seed,
             )
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
@@ -61,15 +75,14 @@ def openai(prompt: str, tools: list[str] = None,
         tools = [tool.schema for tool in tools]
 
         # Call the model
-        messages = [{"role": "user", "content": prompt}]
         try:
             response = client.chat.completions.create(
-                model=model,
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
-                seed=seed,
+                model=model,
                 temperature=temperature,
+                seed=seed,
             )
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
@@ -82,15 +95,18 @@ def openai(prompt: str, tools: list[str] = None,
         num_output_tokens += response.usage.completion_tokens
 
         # Call the tools
-        while tool_calls and num_model_calls < max_model_call:
+        while tool_calls:
             messages.append(response_message)
+
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
-
-                libem.info(f"Tool: {function_name} - running ..")
                 function_response = function_to_call(**function_args)
+                tool_outputs[function_name] = function_response
+                if verbose:
+                    libem.info(f"Tool: {function_name} - {function_response}")
+
                 messages.append(
                     {
                         "role": "tool",
@@ -99,6 +115,7 @@ def openai(prompt: str, tools: list[str] = None,
                         "tool_call_id": tool_call.id,
                     }
                 )
+
                 libem.trace.add({
                     'tool': {
                         "id": tool_call.id,
@@ -107,30 +124,31 @@ def openai(prompt: str, tools: list[str] = None,
                         "response": function_response
                     }
                 })
-                libem.info(f"Tool: {function_name} - {function_response}")
+            tool_calls = []
 
-            # Call the model again with the tool outcomes
-            try:
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    tools=tools,
-                    tool_choice="auto",
-                    seed=seed,
-                    temperature=temperature,
-                )
-            except APITimeoutError as e:  # catch timeout error
-                raise libem.ModelTimedoutException(e)
+            if num_model_calls < max_model_call:
+                # Call the model again with the tool outcomes
+                try:
+                    response = client.chat.completions.create(
+                        messages=messages,
+                        tools=tools,
+                        tool_choice="auto",
+                        model=model,
+                        temperature=temperature,
+                        seed=seed,
+                    )
+                except APITimeoutError as e:  # catch timeout error
+                    raise libem.ModelTimedoutException(e)
 
-            response_message = response.choices[0].message
-            tool_calls = response_message.tool_calls
+                response_message = response.choices[0].message
+                tool_calls = response_message.tool_calls
 
-            num_model_calls += 1
-            num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-            num_output_tokens += response.usage.completion_tokens
+                num_model_calls += 1
+                num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+                num_output_tokens += response.usage.completion_tokens
 
-        if num_model_calls == max_model_call:
-            libem.warn(f"Max call reached: {messages}\n{response_message}")
+            if num_model_calls == max_model_call:
+                libem.debug(f"Max call reached: {messages}\n{response_message}")
 
     # add model calls to trace
     libem.trace.add({
@@ -141,4 +159,7 @@ def openai(prompt: str, tools: list[str] = None,
         }
     })
 
-    return response_message.content
+    if return_tool_outputs:
+        return response_message.content, tool_outputs
+    else:
+        return response_message.content
