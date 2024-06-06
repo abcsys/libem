@@ -26,15 +26,13 @@ def openai(prompt: str | list,
            temperature: float = 0.0,
            seed: int = None,
            max_model_call: int = 3,
+           return_tool_output: bool = False,
            verbose: bool = True,
-           ) -> str:
+           ) -> str or (str, dict):
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
 
     client = OpenAI()
-
-    num_model_calls = 0
-    num_input_tokens, num_output_tokens = 0, 0
 
     # format the prompt messages
     match prompt:
@@ -45,6 +43,9 @@ def openai(prompt: str | list,
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
+    num_model_calls = 0
+    num_input_tokens, num_output_tokens = 0, 0
+    tool_outputs = {}
     """ Call with no tool use """
     if not tools:
         try:
@@ -102,6 +103,10 @@ def openai(prompt: str | list,
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
                 function_response = function_to_call(**function_args)
+                tool_outputs[function_name] = function_response
+                if verbose:
+                    libem.info(f"Tool: {function_name} - {function_response}")
+
                 messages.append(
                     {
                         "role": "tool",
@@ -110,6 +115,7 @@ def openai(prompt: str | list,
                         "tool_call_id": tool_call.id,
                     }
                 )
+
                 libem.trace.add({
                     'tool': {
                         "id": tool_call.id,
@@ -118,8 +124,6 @@ def openai(prompt: str | list,
                         "response": function_response
                     }
                 })
-                if verbose:
-                    libem.info(f"Tool: {function_name} - {function_response}")
             tool_calls = []
 
             if num_model_calls < max_model_call:
@@ -155,4 +159,7 @@ def openai(prompt: str | list,
         }
     })
 
-    return response_message.content
+    if return_tool_output:
+        return response_message.content, tool_outputs
+    else:
+        return response_message.content

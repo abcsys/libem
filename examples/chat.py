@@ -3,7 +3,7 @@ import libem
 
 def positive():
     e1 = "Dyson Hot+Cool AM09 Jet Focus heater and fan, White/Silver"
-    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - Black japan"
+    e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - W/S - japan"
 
     is_match = libem.chat(f"Match two entities entity 1: {e1}; entity 2: {e2}")
 
