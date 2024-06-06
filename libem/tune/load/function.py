@@ -1,7 +1,0 @@
-schema = {
-
-}
-
-
-def func():
-    pass
