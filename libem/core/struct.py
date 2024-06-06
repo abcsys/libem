@@ -17,14 +17,32 @@ class Tunable(abc.ABC):
         pass
 
 
+class Index():
+    def __init__(self, index: int):
+        assert isinstance(index, int)
+        self.index = index
+    
+    def __call__(self):
+        return self.index
+    
+
 class Parameter(Tunable):
     def __init__(self,
-                 default: typing.Any,
-                 options: list[typing.Any] = None
+                 default: Index | typing.Any = 0,
+                 options: list[typing.Any] = []
                  ):
-        self.value = self.v = default
+        if isinstance(default, Index):
+            assert len(options) > default()
+        else: # quick assign of a single value: set default to value
+            if len(options) > 0:
+                raise TypeError("Either set 'default' to an Index into the options list "
+                                "or leave options empty to quick assign a single value.")
+            options = [default]
+            default = Index(0)
+        
+        self.value = self.v = options[default()]
         self.default = default
-        self.options = options or []
+        self.options = options
         self.optimal = self.v
         super().__init__()
 
@@ -42,7 +60,10 @@ class Parameter(Tunable):
         return self.__str__()
 
     def update(self, value):
-        self.value = self.v = value
+        if isinstance(value, Index):
+            self.value = self.v = self.options[value()]
+        else:
+            self.value = self.v = value
         return self
 
     def learn(self, train_data, metric):
@@ -54,7 +75,7 @@ class Parameter(Tunable):
     def export(self, include_all=False):
         if include_all:
             return {
-                'default': self.default,
+                'default': self.default(),
                 'value': self.value,
                 'options': self.options,
                 'optimal': self.optimal
@@ -140,11 +161,11 @@ class Prompt(Parameter):
         for prompt in prompts:
             match prompt:
                 case str():
-                    to_join.append(prompt)
-                case cls.Rule():
-                    to_join.append(prompt())
-                case cls.Experience():
-                    to_join.append(prompt())
+                    if len(prompt) > 0:
+                        to_join.append(prompt)
+                case cls.Rule() | cls.Experience():
+                    if len(prompt()) > 0:
+                        to_join.append(prompt())
         return sep.join(to_join)
 
     def add(self, *prompts, sep="\n"):
@@ -155,18 +176,6 @@ class Prompt(Parameter):
         self.update(Prompt.join(*prompts, self.value, sep=sep))
         return self
 
-    def __init__(self, default: str | Rule | Experience,
-                 options: list[str | Rule | Experience] = None):
+    def __init__(self, default: Index | str | Rule | Experience,
+                 options: list[str | Rule | Experience] = []):
         super().__init__(default, options)
-
-
-CoT = chain_of_thought = Prompt(
-    default="Explain your answer step by step.",
-    options=[""],
-)
-
-# todo
-ReAct = reason_act = Prompt(
-    default="",
-    options=[""],
-)
