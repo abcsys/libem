@@ -21,10 +21,10 @@ chat:
 	python examples/chat.py
 all: match no_match browse chat
 
-# self-refinement examples
-.PHONY: learn
-learn:
-	python examples/learn.py
+# tuning examples
+.PHONY: tune
+tune:
+	python examples/tune/rule_from_mistake.py
 
 
 # benchmarks

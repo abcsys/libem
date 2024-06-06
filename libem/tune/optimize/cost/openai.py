@@ -1,4 +1,4 @@
-from libem.optimize.cost import cache
+from libem.tune.optimize.cost import cache
 
 model_info = None
 
