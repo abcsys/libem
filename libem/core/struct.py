@@ -161,11 +161,11 @@ class Prompt(Parameter):
         for prompt in prompts:
             match prompt:
                 case str():
-                    to_join.append(prompt)
-                case cls.Rule():
-                    to_join.append(prompt())
-                case cls.Experience():
-                    to_join.append(prompt())
+                    if len(prompt) > 0:
+                        to_join.append(prompt)
+                case cls.Rule() | cls.Experience():
+                    if len(prompt()) > 0:
+                        to_join.append(prompt())
         return sep.join(to_join)
 
     def add(self, *prompts, sep="\n"):
