@@ -11,7 +11,7 @@ from libem.tune.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 
 
-def run(dataset, args):
+def benchmark(dataset, args):
     total_start_time = time.time()
 
     if args.verbose:
@@ -40,8 +40,8 @@ def run(dataset, args):
     truth, predictions, result = [], [], []
     total_input_tokens, total_output_tokens = 0, 0
 
-    for i, data in enumerate(dataset[args.start:]):
-        if i + 1 < args.start:
+    for i, data in enumerate(dataset[args.start_index:]):
+        if i + 1 < args.start_index:
             continue
 
         e1 = data['left']
@@ -112,7 +112,7 @@ def run(dataset, args):
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
-        if args.num_pairs > 0 and i - args.start + 1 >= args.num_pairs:
+        if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
             break
 
     # save results to ./results

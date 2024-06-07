@@ -1,13 +1,11 @@
 import random
 
-import libem
-from libem.core.struct import Prompt
 from libem.prepare.datasets import challenging
 
-from benchmark.util import run as benchmark_run
+from benchmark import util
 
 
-def benchmark(args):
+def run(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -41,4 +39,4 @@ def benchmark(args):
     if args.shuffle:
         random.shuffle(dataset)
 
-    benchmark_run(dataset, args)
+    util.benchmark(dataset, args)
