@@ -1,8 +1,8 @@
 import libem.parameter as libem
 from libem.core.struct import Parameter
 
-model = libem.model.copy()
-temperature = libem.temperature.copy()
+model = libem.model
+temperature = libem.temperature
 
 tools = Parameter(
     default=[],
