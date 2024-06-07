@@ -1,3 +1,7 @@
+import libem
+from libem.tune.optimize.cost import openai
+
+
 class Trace:
     """Collects a trace of structured outputs"""
 
@@ -45,9 +49,9 @@ class Trace:
     def stats(self):
         trace = self.get()
         latencies = []
-        # todo: parse not only match tool
         num_model_calls, num_input_tokens, num_output_tokens = [], [], []
         for span in trace:
+            # todo: parse not only match tool
             if "match" in span:
                 latencies.append(span["match"]["latency"])
             elif "model" in span:
@@ -63,8 +67,15 @@ class Trace:
             "total_model_calls": sum(num_model_calls),
             "total_input_tokens": sum(num_input_tokens),
             "total_output_tokens": sum(num_output_tokens),
+            # todo:
+            #  compartmentalize the cost in each model call
+            #  since the model can be different across calls
+            "cost": openai.get_cost(
+                model=libem.parameter.model(),
+                num_input_tokens=sum(num_input_tokens),
+                num_output_tokens=sum(num_output_tokens),
+            ),
         }
-
 
 """A global tracer object that libem tools reports to."""
 trace = Trace().start()
