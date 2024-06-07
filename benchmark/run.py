@@ -49,6 +49,8 @@ if __name__ == "__main__":
                         action='store_true', default=False)
     parser.add_argument("--cot", dest='cot', help="Enable chain of thought.",
                         action='store_true', default=False)
+    parser.add_argument("--confidence", dest='confidence', help="Report confidence score.",
+                        action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")
     parser.add_argument("-v", "--verbose", dest='verbose', help="Print intermediate results for each pair to console.",

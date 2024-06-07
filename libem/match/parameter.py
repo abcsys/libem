@@ -8,4 +8,10 @@ tools = Parameter(
     default=["libem.browse"],
     options=[[], ],
 )
-CoT = Parameter(default=False)
+
+cot = chain_of_thought = Parameter(
+    default=False
+)
+confidence = Parameter(
+    default=False
+)

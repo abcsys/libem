@@ -105,7 +105,7 @@ def openai(prompt: str | list,
                 function_response = function_to_call(**function_args)
                 tool_outputs[function_name] = function_response
                 if verbose:
-                    libem.info(f"Tool: {function_name} - {function_response}")
+                    libem.info(f"[{function_name}] {function_response}")
 
                 messages.append(
                     {
@@ -148,7 +148,7 @@ def openai(prompt: str | list,
                 num_output_tokens += response.usage.completion_tokens
 
             if num_model_calls == max_model_call:
-                libem.debug(f"Max call reached: {messages}\n{response_message}")
+                libem.debug(f"[model] max call reached: {messages}\n{response_message}")
 
     # add model calls to trace
     libem.trace.add({

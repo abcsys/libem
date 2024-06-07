@@ -19,18 +19,20 @@ def run(dataset, args):
     else:
         libem.LIBEM_LOG_LEVEL = logging.WARNING
 
-    # set configs
+    # set configs, sub-tools default off
     libem.calibrate({
-        "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],  # turn off sub-tools
+        "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],
         "libem.match.parameter.model": args.model,
     })
+
+    # chain-of-thought and confidence score
     if args.cot:
         libem.calibrate({
-            "libem.match.parameter.CoT": True,
-            "libem.match.prompt.output": "Explain your answer step by step. "
-                                         "Then give a confidence score from 1 to 10, with 1 being just a guess "
-                                         "and 10 being extremely confident, give the score only, do not justify. "
-                                         "Finally, give your final answer in the form of a single 'yes' or 'no' only."
+            "libem.match.parameter.cot": True,
+        })
+    if args.confidence:
+        libem.calibrate({
+            "libem.match.parameter.confidence": True,
         })
 
     truth, predictions, result = [], [], []

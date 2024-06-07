@@ -3,6 +3,7 @@ import time
 import libem
 from libem.match import prompt, parameter
 from libem.core.struct import Prompt
+from libem.core import struct
 from libem.core import model
 
 schema = {
@@ -28,8 +29,9 @@ schema = {
 }
 
 
-def func(left, right):
+def func(left, right, cot=False, confidence=False):
     start = time.time()
+
     match_prompt = Prompt.join(
         prompt.query(
             left=left,
@@ -37,6 +39,8 @@ def func(left, right):
         ),
         prompt.rule(),
         prompt.experience(),
+        struct.CoT() if cot else "",
+        struct.Confidence() if confidence else "",
         prompt.output(),
     )
     model_output = model.call(
@@ -46,7 +50,11 @@ def func(left, right):
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
+    libem.debug(f"[match] prompt:\n{match_prompt}\n"
+                f"[match] raw output:\n{model_output}")
+
     pred = parse_output(model_output)
+
     libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
                                "pred": pred, "prompt": match_prompt,
                                "latency": time.time() - start}})
@@ -54,23 +62,22 @@ def func(left, right):
 
 
 def parse_output(output: str) -> str:
-    libem.debug("Match raw output:", output)
     output = [line.lower() for line in output.split("\n")]
     confidence, answer = None, None
-    
+
     # parse answer
     answer = "yes" if "yes" in output[-1] else "no"
-    
+
     # parse confidence score if CoT is True
     output = list(reversed(output))
-    if parameter.CoT():
-        for i, line in enumerate(output):
-            if 'confidence score' in line:
-                confidence = ''.join(filter(str.isdigit, line))
-                
-                # catch cases when score is on a new line
-                if len(confidence) == 0:
-                    confidence = ''.join(filter(str.isdigit, output[i-1]))
-                return answer, int(confidence)
-    
+    # if parameter.CoT():
+    #     for i, line in enumerate(output):
+    #         if 'confidence score' in line:
+    #             confidence = ''.join(filter(str.isdigit, line))
+    #
+    #             # catch cases when score is on a new line
+    #             if len(confidence) == 0:
+    #                 confidence = ''.join(filter(str.isdigit, output[i - 1]))
+    #             return answer, int(confidence)
+
     return answer

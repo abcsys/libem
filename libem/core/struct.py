@@ -138,13 +138,19 @@ class Prompt(Parameter):
     def join(cls, *prompts, sep="\n"):
         to_join = []
         for prompt in prompts:
+            _prompt = ""
             match prompt:
                 case str():
-                    to_join.append(prompt)
+                    _prompt = prompt
                 case cls.Rule():
-                    to_join.append(prompt())
+                    _prompt = prompt()
                 case cls.Experience():
-                    to_join.append(prompt())
+                    _prompt = prompt()
+                case _:
+                    raise ValueError(f"Invalid prompt type "
+                                     f"{type(prompt)} for {prompt}")
+            if len(_prompt.strip()) > 0:
+                to_join.append(_prompt)
         return sep.join(to_join)
 
     def add(self, *prompts, sep="\n"):
@@ -162,11 +168,14 @@ class Prompt(Parameter):
 
 CoT = chain_of_thought = Prompt(
     default="Explain your answer step by step.",
-    options=[""],
+)
+
+Confidence = Prompt(
+    default="Give a confidence score from 1 to 5, with 1 being a guess "
+            "and 5 being fully confident, give the score only, do not justify.",
 )
 
 # todo
 ReAct = reason_act = Prompt(
     default="",
-    options=[""],
 )

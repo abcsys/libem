@@ -16,12 +16,25 @@ def main():
                         type=parse_key_value_pair, nargs='+',
                         help="Key-value pairs separated by '=', "
                              "e.g., key1=value1 key2=value2")
+    parser.add_argument("--cot", dest='cot', help="Enable chain of thought.",
+                        action='store_true', default=False)
+    parser.add_argument("--confidence", dest='confidence', help="Report confidence score.",
+                        action='store_true', default=False)
+    parser.add_argument("-d", "--debug", dest='debug', help="Enable debug mode.",
+                        action='store_true', default=False)
 
     args = parser.parse_args()
 
     entity1 = args.e1
     entity2 = args.e2
     configs = args.calibrate
+
+    if args.cot:
+        configs.append(('libem.match.parameter.cot', True))
+    if args.confidence:
+        configs.append(('libem.match.parameter.confidence', True))
+    if args.debug:
+        libem.LIBEM_LOG_LEVEL = 0
     if configs:
         libem.calibrate(dict(configs))
 
