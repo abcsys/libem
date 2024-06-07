@@ -8,6 +8,7 @@ classic = {
     'abt-buy': classic.benchmark_abt_buy,
     'amazon-google': classic.benchmark_amazon_google,
     'beer': classic.benchmark_beer,
+    'challenging': classic.benchmark_challenging,
     'dblp-acm': classic.benchmark_dblp_acm,
     'dblp-scholar': classic.benchmark_dblp_scholar,
     'fodors-zagats': classic.benchmark_fodors_zagats,
