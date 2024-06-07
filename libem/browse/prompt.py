@@ -1,7 +1,7 @@
 from libem.core.struct import Prompt
 
 description = Prompt(
-    default="Searches the internet. Returns a snippet "
+    default="Searches the internet about an entity. Returns a snippet "
             "of the top 3 results if available.",
     options=[]
 )

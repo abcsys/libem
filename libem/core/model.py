@@ -128,6 +128,9 @@ def openai(prompt: str | list,
                     }
                 })
             tool_calls = []
+            
+            if num_model_calls == max_model_call:
+                libem.debug(f"Max call reached: {messages}\n{response_message}")
 
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
@@ -149,9 +152,7 @@ def openai(prompt: str | list,
                 num_model_calls += 1
                 num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
                 num_output_tokens += response.usage.completion_tokens
-
-            if num_model_calls == max_model_call:
-                libem.debug(f"Max call reached: {messages}\n{response_message}")
+                
 
     # add model calls to trace
     libem.trace.add({
