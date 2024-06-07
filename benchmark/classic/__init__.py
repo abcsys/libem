@@ -1,6 +1,7 @@
 from benchmark.classic.abt_buy import benchmark as benchmark_abt_buy
 from benchmark.classic.amazon_google import benchmark as benchmark_amazon_google
 from benchmark.classic.beer import benchmark as benchmark_beer
+from benchmark.classic.challenging import benchmark as benchmark_challenging
 from benchmark.classic.dblp_acm import benchmark as benchmark_dblp_acm
 from benchmark.classic.dblp_scholar import benchmark as benchmark_dblp_scholar
 from benchmark.classic.fodors_zagats import benchmark as benchmark_fodors_zagats
