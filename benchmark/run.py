@@ -42,6 +42,7 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("benchmark.py")
+
     # benchmark configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",

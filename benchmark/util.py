@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import logging
 import numpy as np
@@ -128,7 +129,7 @@ def benchmark(dataset, args):
         ]
         if args.cot:
             signature.append('cot')
-        out_file = os.path.join(results_folder, f'{"_".join(signature)}.json')
+        out_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
     # get stats
     metrics = [precision, recall, f1]
@@ -153,9 +154,10 @@ def benchmark(dataset, args):
 
     with open(out_file, 'w') as f:
         json.dump({
+            'command': sys.argv[1:],
             'stats': stats,
             'results': result,
-            'setup': libem.config(),
+            'configs': libem.config(),
         }, f, indent=4)
 
     print(f"Benchmark: Done in {stats['latency']}s.")
