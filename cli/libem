@@ -16,6 +16,8 @@ def main():
                         type=parse_key_value_pair, nargs='+',
                         help="Key-value pairs separated by '=', "
                              "e.g., key1=value1 key2=value2")
+    parser.add_argument("--browse", dest='browse', help="Enable the browse tool.",
+                        action='store_true', default=False)
     parser.add_argument("--cot", dest='cot', help="Enable chain of thought.",
                         action='store_true', default=False)
     parser.add_argument("--confidence", dest='confidence', help="Report confidence score.",
@@ -33,6 +35,9 @@ def main():
         configs.append(('libem.match.parameter.cot', True))
     if args.confidence:
         configs.append(('libem.match.parameter.confidence', True))
+    if args.browse:
+        from libem.match.parameter import tools
+        configs.append(('libem.match.parameter.tools', tools() + ['libem.browse']))
     if args.debug:
         libem.LIBEM_LOG_LEVEL = 0
     if configs:

@@ -24,7 +24,7 @@ all: match no_match browse chat
 # tuning examples
 .PHONY: tune
 tune:
-	python examples/tune/rule_from_mistake.py
+	python examples/tune/rule_from_mistakes.py
 
 
 # benchmarks
