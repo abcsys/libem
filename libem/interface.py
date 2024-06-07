@@ -5,6 +5,11 @@ import libem.core.model as model
 from libem.core.struct import Prompt
 from libem import prompt, parameter
 
+from libem.match import func as match_func
+from libem.tune.calibrate import func as calibrate_func
+from libem.tune.calibrate import export
+from libem.tune import func as tune_func
+
 """Chat access"""
 
 
@@ -19,9 +24,6 @@ def chat(message):
 
 
 """Programmatic access"""
-from libem.match import func as match_func
-from libem.tune.calibrate import func as calibrate_func
-from libem.tune import func as tune_func
 
 
 def match(left, right,
@@ -43,3 +45,10 @@ def calibrate(*args, **kwargs):
 
 def tune(*args, **kwargs):
     return tune_func(*args, **kwargs)
+
+
+def config():
+    return export(
+        toolchain="libem",
+        nest=True,
+    )

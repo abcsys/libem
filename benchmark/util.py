@@ -92,7 +92,9 @@ def run(dataset, args):
                 'tokens': {
                     'input_tokens': input_tokens,
                     'output_tokens': output_tokens,
-                    'cost': openai.get_cost(args.model, input_tokens, output_tokens)
+                    'cost': openai.get_cost(
+                        args.model, input_tokens, output_tokens
+                    )
                 }
             })
             if args.cot:
@@ -116,10 +118,16 @@ def run(dataset, args):
     # save results to ./results
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
-    if len(args.file) > 0:
+    if args.file:
         out_file = os.path.join(results_folder, f'{args.file}.json')
     else:
-        out_file = os.path.join(results_folder, f'{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}.json')
+        signature = [
+            datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
+            args.name, args.model, str(args.num_pairs),
+        ]
+        if args.cot:
+            signature.append('cot')
+        out_file = os.path.join(results_folder, f'{"_".join(signature)}.json')
 
     # get stats
     metrics = [precision, recall, f1]
@@ -129,7 +137,11 @@ def run(dataset, args):
     stats['tokens'] = {
         'input_tokens': total_input_tokens,
         'output_tokens': total_output_tokens,
-        'cost': openai.get_cost(args.model, total_input_tokens, total_output_tokens)
+        'cost': openai.get_cost(
+            args.model,
+            total_input_tokens,
+            total_output_tokens
+        )
     }
     stats['confusion_matrix'] = {
         'tp': int(conf_mat[0]),
@@ -140,6 +152,7 @@ def run(dataset, args):
 
     with open(out_file, 'w') as f:
         json.dump({
+            'setup': libem.config(),
             'stats': stats,
             'results': result
         }, f, indent=4)

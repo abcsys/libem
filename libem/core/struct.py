@@ -32,6 +32,8 @@ class Parameter(Tunable):
         if isinstance(self.value, str):
             # format the parameter with inputs
             return self.value.format(*args, **kwargs)
+        elif callable(self.value):
+            return self.value(*args, **kwargs)
         else:
             return self.value
 
