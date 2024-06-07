@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import ast
 import argparse
+import pprint
 
 import libem
 
 
-# TBD: configure command
 # TBD: chat command for session
 
 def main():
@@ -16,13 +16,20 @@ def main():
                         type=parse_key_value_pair, nargs='+',
                         help="Key-value pairs separated by '=', "
                              "e.g., key1=value1 key2=value2")
-    parser.add_argument("--browse", dest='browse', help="Enable the browse tool.",
+    parser.add_argument("--browse", dest='browse',
+                        help="Enable the browse tool.",
                         action='store_true', default=False)
-    parser.add_argument("--cot", dest='cot', help="Enable chain of thought.",
+    parser.add_argument("--cot", dest='cot',
+                        help="Enable chain of thought.",
                         action='store_true', default=False)
-    parser.add_argument("--confidence", dest='confidence', help="Report confidence score.",
+    parser.add_argument("--confidence", dest='confidence',
+                        help="Report confidence score.",
                         action='store_true', default=False)
-    parser.add_argument("-d", "--debug", dest='debug', help="Enable debug mode.",
+    parser.add_argument("-d", "--debug", dest='debug',
+                        help="Enable debug mode.",
+                        action='store_true', default=False)
+    parser.add_argument("-s", "--stats", dest='stats',
+                        help="Print trace.",
                         action='store_true', default=False)
 
     args = parser.parse_args()
@@ -42,8 +49,14 @@ def main():
         libem.LIBEM_LOG_LEVEL = 0
     if configs:
         libem.calibrate(dict(configs))
-    result = libem.match(entity1, entity2)
+
+    with libem.trace as t:
+        result = libem.match(entity1, entity2)
     print("Match result:", result)
+
+    if args.stats:
+        pp = pprint.PrettyPrinter(sort_dicts=False)
+        pp.pprint(t.stats())
 
 
 def parse_key_value_pair(arg_value):

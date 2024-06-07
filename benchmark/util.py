@@ -18,6 +18,8 @@ def run(dataset, args):
         libem.LIBEM_LOG_LEVEL = logging.INFO
     else:
         libem.LIBEM_LOG_LEVEL = logging.WARNING
+    if args.debug:
+        libem.LIBEM_LOG_LEVEL = logging.DEBUG
 
     # set configs, sub-tools default off
     libem.calibrate({
@@ -66,9 +68,9 @@ def run(dataset, args):
                 print(f"Model timed out {num_timeouts} time(s).")
 
             # if cot, separate answer from confidence level
-            if args.cot:
-                confidence = is_match[1]
-                is_match = is_match[0]
+            # if args.cot:
+            #     confidence = is_match[1]
+            #     is_match = is_match[0]
 
             # get unparsed model output and telemetry
             latency = time.time() - start_time

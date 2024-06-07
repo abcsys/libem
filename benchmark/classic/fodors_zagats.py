@@ -1,11 +1,10 @@
 import random
+
 import libem
 from libem.core.struct import Prompt
 from libem.prepare.datasets import fodors_zagats
 
 from benchmark.util import run as benchmark_run
-
-random.seed(libem.LIBEM_SEED)
 
 
 def benchmark(args):
@@ -17,6 +16,8 @@ def benchmark(args):
                             empty to include all fields. Do not include _left/_right.
         domain_prompt (bool): if True, modifies the prompt to be domain-specific.
     '''
+    random.seed(args.seed)
+
     # construct kwargs dict
     kwargs = {
         'schema': args.schema,
