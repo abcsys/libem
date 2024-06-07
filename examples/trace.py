@@ -9,9 +9,6 @@ def main():
     e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - W/S japan"
 
     print("Trace 1:")
-    libem.calibrate({
-        "libem.match.parameter.tools": [],
-    })
     with libem.trace as t:
         _ = libem.match(e1, e2)
         pp.pprint(t.get())

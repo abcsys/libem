@@ -17,6 +17,6 @@ experience = Prompt(
 )
 
 output = Prompt(
-    default="Give your answer in the form of a single 'yes' or 'no' only.",
+    default="At the end, give your answer in the form of a single 'yes' or 'no'.",
     options=[],
 )

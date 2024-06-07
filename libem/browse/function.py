@@ -22,7 +22,7 @@ schema = {
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "Query to search.",
+                    "description": "Search query.",
                 },
             },
             "required": ["query"],
@@ -40,9 +40,10 @@ def func(query):
     engine = engines[parameter.engine()]
 
     libem.info(f"[browse] search {parameter.engine()}: {query}")
+
     tool = Tool(
         name="online_search",
-        description="Search the internet and return up to 3 results if available.",
+        description="Search the web and return up to 3 results if available.",
         func=engine.search(k=3, full_text=False),
     )
     desc = tool.run(query)

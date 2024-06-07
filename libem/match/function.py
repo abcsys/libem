@@ -29,7 +29,7 @@ schema = {
 }
 
 
-def func(left, right, cot=False, confidence=False):
+def func(left, right):
     start = time.time()
 
     match_prompt = Prompt.join(
@@ -39,8 +39,8 @@ def func(left, right, cot=False, confidence=False):
         ),
         prompt.rule(),
         prompt.experience(),
-        struct.CoT() if cot else "",
-        struct.Confidence() if confidence else "",
+        struct.CoT() if parameter.cot() else "",
+        struct.Confidence() if parameter.confidence() else "",
         prompt.output(),
     )
     model_output = model.call(

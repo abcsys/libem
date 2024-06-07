@@ -5,8 +5,8 @@ model = libem.model.copy()
 temperature = libem.temperature.copy()
 
 tools = Parameter(
-    default=["libem.browse"],
-    options=[[], ],
+    default=[],
+    options=[],
 )
 
 cot = chain_of_thought = Parameter(

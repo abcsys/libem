@@ -2,6 +2,9 @@ import libem
 
 
 def positive():
+    libem.calibrate({
+        "libem.match.parameter.tools": ["libem.browse"],
+    })
     e1 = "mighty strike freedom gundam"
     e2 = "ZGMF/A-262PD-P"
 

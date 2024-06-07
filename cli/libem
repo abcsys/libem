@@ -27,7 +27,7 @@ def main():
 
     entity1 = args.e1
     entity2 = args.e2
-    configs = args.calibrate
+    configs = args.calibrate or []
 
     if args.cot:
         configs.append(('libem.match.parameter.cot', True))
@@ -37,7 +37,6 @@ def main():
         libem.LIBEM_LOG_LEVEL = 0
     if configs:
         libem.calibrate(dict(configs))
-
     result = libem.match(entity1, entity2)
     print("Match result:", result)
 

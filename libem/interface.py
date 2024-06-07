@@ -27,7 +27,7 @@ from libem.tune import func as tune_func
 def match(left, right,
           always=None,
           guess=False) -> str:
-    if always is not None:
+    if always:
         return always
 
     if guess:

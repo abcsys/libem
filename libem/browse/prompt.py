@@ -1,11 +1,11 @@
 from libem.core.struct import Prompt
 
 description = Prompt(
-    default="Browse the web to find relevant information for "
-            "the given entity."
+    default="Browse the web to find relevant information about the entities."
 )
 rule = Prompt(
     default=Prompt.Rule([
-        "Use only when you think it would help with the matching task. "
+        "Do not use this tool if you can already decide "
+        "with the entity descriptions.",
     ])
 )
