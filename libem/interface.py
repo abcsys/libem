@@ -26,13 +26,11 @@ def chat(message):
 """Programmatic access"""
 
 
-def match(left, right,
-          always=None,
-          guess=False) -> str:
-    if always:
-        return always
+def match(left, right) -> str:
+    if parameter.always():
+        return parameter.always()
 
-    if guess:
+    if parameter.guess():
         random.seed(libem.LIBEM_SEED)
         return random.choice(["yes", "no"])
 

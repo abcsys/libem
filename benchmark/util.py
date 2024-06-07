@@ -21,6 +21,10 @@ def benchmark(dataset, args):
         libem.LIBEM_LOG_LEVEL = logging.WARNING
     if args.debug:
         libem.LIBEM_LOG_LEVEL = logging.DEBUG
+    if args.guess:
+        libem.calibrate({
+            "libem.parameter.guess": True,
+        })
 
     # set configs, sub-tools default off
     libem.calibrate({
@@ -75,7 +79,8 @@ def benchmark(dataset, args):
 
             # get unparsed model output and telemetry
             latency = time.time() - start_time
-            pred = [i['match']['model_output'] for i in t.get() if 'match' in i][0]
+            model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
+            model_output = model_output[0] if model_output else None
             input_tokens = sum([i['model']['num_input_tokens'] for i in t.get() if 'model' in i])
             output_tokens = sum([i['model']['num_output_tokens'] for i in t.get() if 'model' in i])
             total_input_tokens += input_tokens
@@ -87,7 +92,7 @@ def benchmark(dataset, args):
                 'entity_2': e2,
                 'pred': is_match,
                 'label': label,
-                'model_output': pred,
+                'model_output': model_output,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
                 'latency': round(latency, 2),
                 'tokens': {
@@ -109,7 +114,7 @@ def benchmark(dataset, args):
         truth.append(label)
 
         if args.verbose:
-            print(pred)
+            print(model_output)
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
@@ -129,6 +134,8 @@ def benchmark(dataset, args):
         ]
         if args.cot:
             signature.append('cot')
+        if args.guess:
+            signature.append('guess')
         out_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
     # get stats
@@ -160,7 +167,7 @@ def benchmark(dataset, args):
             'configs': libem.config(),
         }, f, indent=4)
 
-    print(f"Benchmark: Done in {stats['latency']}s.")
+    print(f"Benchmark: Done {len(truth)} matches in {stats['latency']}s.")
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")

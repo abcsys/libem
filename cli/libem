@@ -33,6 +33,9 @@ def main():
     parser.add_argument("--confidence", dest='confidence',
                         help="Report confidence score.",
                         action='store_true', default=False)
+    parser.add_argument("-g", "--guess", dest='guess',
+                        help="Match by guessing.",
+                        action='store_true', default=False)
     # output options
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
@@ -55,6 +58,8 @@ def main():
         configs.append(('libem.match.parameter.confidence', True))
     if args.browse:
         configs.append(('libem.match.parameter.tools', tools() + ['libem.browse']))
+    if args.guess:
+        print("Libem never guesses.")
     if args.debug:
         libem.LIBEM_LOG_LEVEL = 0
 

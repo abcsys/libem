@@ -87,6 +87,9 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
                         action='store_true', default=False)
+    parser.add_argument("-g", "--guess", dest='guess',
+                        help="Match by guessing.",
+                        action='store_true', default=False)
 
     args = parser.parse_args()
     run(args)
