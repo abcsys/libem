@@ -118,6 +118,7 @@ def benchmark(dataset, args):
     # save results to ./results
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
+
     if args.file:
         out_file = os.path.join(results_folder, f'{args.file}.json')
     else:
@@ -152,9 +153,9 @@ def benchmark(dataset, args):
 
     with open(out_file, 'w') as f:
         json.dump({
-            'setup': libem.config(),
             'stats': stats,
-            'results': result
+            'results': result,
+            'setup': libem.config(),
         }, f, indent=4)
 
     print(f"Benchmark: Done in {stats['latency']}s.")
