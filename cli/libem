@@ -61,7 +61,7 @@ def main():
     if args.guess:
         configs.append(('libem.match.parameter.guess', True))
     if args.debug:
-        libem.LIBEM_LOG_LEVEL = 0
+        libem.debug_on()
 
     if configs:
         libem.calibrate(dict(configs))

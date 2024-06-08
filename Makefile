@@ -30,7 +30,7 @@ tune:
 # benchmarks
 .PHONY: benchmark
 benchmark:
-	python -m benchmark.run
+	python -m benchmark.run -q
 
 
 # tests clean

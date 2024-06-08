@@ -1,3 +1,4 @@
+import logging
 import random
 
 import libem
@@ -50,3 +51,11 @@ def config():
         toolchain="libem",
         nest=True,
     )
+
+
+def debug_on():
+    libem.LIBEM_LOG_LEVEL = logging.DEBUG
+
+
+def quiet():
+    libem.LIBEM_LOG_LEVEL = logging.WARNING

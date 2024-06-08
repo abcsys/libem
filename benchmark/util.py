@@ -15,12 +15,10 @@ from libem.core.eval import confusion_matrix, precision, recall, f1
 def benchmark(dataset, args):
     total_start_time = time.time()
 
-    if args.verbose:
-        libem.LIBEM_LOG_LEVEL = logging.INFO
-    else:
-        libem.LIBEM_LOG_LEVEL = logging.WARNING
+    if args.quiet:
+        libem.quiet()
     if args.debug:
-        libem.LIBEM_LOG_LEVEL = logging.DEBUG
+        libem.debug_on()
     if args.guess:
         libem.calibrate({
             "libem.parameter.guess": True,
@@ -53,9 +51,10 @@ def benchmark(dataset, args):
         e2 = data['right']
         label = data['label']
 
-        if args.verbose:
-            print("\nPair: ", i + 1)
-            print(f"Entity 1: {e1}\nEntity 2: {e2}")
+        if not args.quiet:
+            print("Pair: #", i + 1, "\n")
+            print("Entity 1: ", e1, "\n")
+            print("Entity 2: ", e2)
 
         # call match
         with libem.trace as t:
@@ -113,8 +112,8 @@ def benchmark(dataset, args):
             predictions.append(0)
         truth.append(label)
 
-        if args.verbose:
-            print(model_output)
+        if not args.quiet:
+            print()
             print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
@@ -130,7 +129,7 @@ def benchmark(dataset, args):
     else:
         signature = [
             datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-            args.name, args.model, str(args.num_pairs),
+            args.name, args.model, str(args.num_pairs if args.num_pairs > 0 else 'all'),
         ]
         if args.cot:
             signature.append('cot')
@@ -173,3 +172,21 @@ def benchmark(dataset, args):
     print(f"Benchmark: F1 score\t {stats['f1']}")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
     print(f"Benchmark: Results saved to: {out_file}")
+
+
+def ordinal_suffix(num):
+    # Special cases for 11th, 12th, 13th
+    if 10 <= num % 100 <= 13:
+        suffix = 'th'
+    else:
+        # Last digit of num
+        last_digit = num % 10
+        if last_digit == 1:
+            suffix = 'st'
+        elif last_digit == 2:
+            suffix = 'nd'
+        elif last_digit == 3:
+            suffix = 'rd'
+        else:
+            suffix = 'th'
+    return str(num) + suffix

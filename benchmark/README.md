@@ -2,7 +2,7 @@
 
 To reproduce the benchmark in `/classic`:
 ```
-python -m benchmark.run --name <benchmark-name> --num_pairs -1
+python -m benchmark.run --name <benchmark-name> --num-pairs -1
 ```
 
 ----
