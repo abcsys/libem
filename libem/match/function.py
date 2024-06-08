@@ -29,55 +29,66 @@ schema = {
 }
 
 
-def func(left, right):
+def func(left, right) -> str | tuple[str, int]:
     start = time.time()
 
-    match_prompt = Prompt.join(
-        prompt.query(
-            left=left,
-            right=right
-        ),
+    system_prompt = Prompt.join(
+        prompt.role(),
         prompt.rule(),
         prompt.experience(),
         struct.CoT() if parameter.cot() else "",
         struct.Confidence() if parameter.confidence() else "",
         prompt.output(),
     )
+    match_prompt = Prompt.join(
+        prompt.query(
+            left=left,
+            right=right
+        ),
+    )
+
     model_output = model.call(
-        prompt=match_prompt,
+        prompt=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": match_prompt},
+        ],
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
-    libem.debug(f"[match] prompt:\n{match_prompt}\n"
+    libem.debug(f"[match] prompt:\n{system_prompt}\n{match_prompt}\n\n"
                 f"[match] raw output:\n{model_output}")
 
-    pred = parse_output(model_output)
+    pred, confidence = parse_output(model_output)
 
     libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
                                "pred": pred, "prompt": match_prompt,
                                "latency": time.time() - start}})
-    return pred
+
+    if parameter.confidence():
+        return pred, confidence
+    else:
+        return pred
 
 
-def parse_output(output: str) -> str:
+def parse_output(output: str) -> tuple[str, int | None]:
     output = [line.lower() for line in output.split("\n")]
-    # confidence, answer = None, None
 
-    # parse answer
     answer = "yes" if "yes" in output[-1] else "no"
 
-    # parse confidence score if CoT is True
-    # output = list(reversed(output))
-    # if parameter.CoT():
-    #     for i, line in enumerate(output):
-    #         if 'confidence score' in line:
-    #             confidence = ''.join(filter(str.isdigit, line))
-    #
-    #             # catch cases when score is on a new line
-    #             if len(confidence) == 0:
-    #                 confidence = ''.join(filter(str.isdigit, output[i - 1]))
-    #             return answer, int(confidence)
+    confidence = None
 
-    return answer
+    if parameter.confidence():
+        for i, line in enumerate(list(reversed(output))):
+            if 'confidence score' in line:
+                confidence = ''.join(filter(str.isdigit, line))
+
+                # catch cases when score is on a new line
+                if len(confidence) == 0:
+                    confidence = ''.join(filter(str.isdigit, output[i - 1]))
+
+                confidence = int(confidence)
+                break
+
+    return answer, confidence

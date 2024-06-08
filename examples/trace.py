@@ -13,7 +13,7 @@ def main():
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
 
-    e1 = "mighty freedom gundam"
+    e1 = "mighty strike freedom gundam"
     e2 = "ZGMF/A-262PD-P"
 
     print("Trace 2:")

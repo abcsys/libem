@@ -52,9 +52,9 @@ def benchmark(dataset, args):
         label = data['label']
 
         if not args.quiet:
-            print("Pair: #", i + 1, "\n")
-            print("Entity 1: ", e1, "\n")
-            print("Entity 2: ", e2)
+            print(f"Pair #{i+1}\n")
+            print(f"Entity 1: {e1}\n")
+            print(f"Entity 2: {e2}")
 
         # call match
         with libem.trace as t:
@@ -65,21 +65,21 @@ def benchmark(dataset, args):
                 # retry if model times out
                 num_timeouts = 0
                 try:
-                    is_match = libem.match(e1, e2)
+                    if args.confidence:
+                        is_match, confidence = libem.match(e1, e2)
+                    else:
+                        is_match = libem.match(e1, e2)
                 except libem.ModelTimedoutException:
                     num_timeouts += 1
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
 
-            # if cot, separate answer from confidence level
-            # if args.cot:
-            #     confidence = is_match[1]
-            #     is_match = is_match[0]
-
             # get unparsed model output and telemetry
             latency = time.time() - start_time
+
             model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
             model_output = model_output[0] if model_output else None
+
             input_tokens = sum([i['model']['num_input_tokens'] for i in t.get() if 'model' in i])
             output_tokens = sum([i['model']['num_output_tokens'] for i in t.get() if 'model' in i])
             total_input_tokens += input_tokens
@@ -102,7 +102,7 @@ def benchmark(dataset, args):
                     )
                 }
             })
-            if args.cot:
+            if args.confidence:
                 result[-1]['confidence'] = confidence
 
         # track results for evaluation metrics
@@ -114,7 +114,10 @@ def benchmark(dataset, args):
 
         if not args.quiet:
             print()
-            print(f"Match: {is_match}; Label: {label}\n")
+            if args.confidence:
+                print(f"Match: {is_match}; Confidence: {confidence}; Label: {label}\n")
+            else:
+                print(f"Match: {is_match}; Label: {label}\n")
 
         # check num_pairs stop condition
         if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
