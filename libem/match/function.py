@@ -63,7 +63,7 @@ def func(left, right):
 
 def parse_output(output: str) -> str:
     output = [line.lower() for line in output.split("\n")]
-    confidence, answer = None, None
+    # confidence, answer = None, None
 
     # parse answer
     answer = "yes" if "yes" in output[-1] else "no"

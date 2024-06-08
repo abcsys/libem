@@ -9,7 +9,8 @@ tools = Parameter(
     options=[],
 )
 
-cot = chain_of_thought = Parameter(
+# chain-of-thought and confidence score
+cot = Parameter(
     default=False
 )
 confidence = Parameter(

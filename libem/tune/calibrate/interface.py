@@ -3,8 +3,9 @@ import pprint
 from libem.tune.calibrate.function import collect, flatten
 
 
-def export(toolchain="libem", nest=True):
-    params = collect(toolchain)
+def export(toolchain="libem",
+           nest=True, tool_only=False):
+    params = collect(toolchain, tool_only=tool_only)
     if nest:
         return params
     else:

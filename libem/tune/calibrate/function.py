@@ -26,13 +26,17 @@ def func(config, verbose=False):
         parameter.update(value)
 
     if verbose:
-        libem.info(f"Tool: calibrate - {config}")
+        libem.info(f"[calibrate] {config}")
 
 
-def collect(tool: str, depth=sys.maxsize, include_all=False) -> dict:
+def collect(tool: str, depth=sys.maxsize,
+            full_attr=False, tool_only=False,
+            stringify=False) -> dict:
     """Collect all parameters in the tool as nested dict.
     depth: the maximum depth in module hierarchy to search for parameters.
-    include_all: whether to include all attributes of the parameters.
+    full_attr: whether to include all attributes of the parameters.
+    tool_only: whether to include only the tool name in the output.
+    stringify: whether to stringify the output.
 
     :return: a dictionary of parameters with flattened paths.
     """
@@ -43,28 +47,29 @@ def collect(tool: str, depth=sys.maxsize, include_all=False) -> dict:
     mod_prompt = _import_or_none(f"{tool}.prompt")
 
     # get all parameters in the tool
-    if mod_parameter is not None:
+    if mod_parameter is not None and not tool_only:
         for p, v in mod_parameter.__dict__.items():
             if isinstance(v, Parameter):
                 if "parameter" not in parameters:
                     parameters["parameter"] = {}
-                parameters["parameter"][p] = v.export(include_all)
+                parameters["parameter"][p] = str(v.export(full_attr))
 
     # get all prompts in the tool
-    if mod_prompt is not None:
+    if mod_prompt is not None and not tool_only:
         for p, v in mod_prompt.__dict__.items():
             if isinstance(v, (Prompt, Prompt.Rule, Prompt.Experience)):
                 if "prompt" not in parameters:
                     parameters["prompt"] = {}
-                parameters["prompt"][p] = v.export(include_all)
+                parameters["prompt"][p] = str(v.export(full_attr))
 
     if depth > 0:
         for sub_mod_name, is_mod in _list_top_level_modules(mod_tool):
             if is_mod:
-                parameters.update(collect(sub_mod_name, depth - 1, include_all))
+                parameters.update(collect(sub_mod_name, depth - 1,
+                                          full_attr, tool_only))
 
     parameters = dict(parameters)
-    if len(parameters) > 0:
+    if len(parameters) > 0 or tool_only:
         return {tool.split(".")[-1]: parameters}
     else:
         return {}

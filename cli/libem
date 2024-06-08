@@ -59,7 +59,7 @@ def main():
     if args.browse:
         configs.append(('libem.match.parameter.tools', tools() + ['libem.browse']))
     if args.guess:
-        print("Libem never guesses.")
+        configs.append(('libem.match.parameter.guess', True))
     if args.debug:
         libem.LIBEM_LOG_LEVEL = 0
 
