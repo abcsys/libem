@@ -65,7 +65,7 @@ def benchmark(dataset, args):
                 # retry if model times out
                 num_timeouts = 0
                 try:
-                    if args.confidence:
+                    if args.confidence and not args.guess:
                         is_match, confidence = libem.match(e1, e2)
                     else:
                         is_match = libem.match(e1, e2)

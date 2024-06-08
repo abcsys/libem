@@ -32,7 +32,6 @@ def match(left, right) -> str:
         return parameter.always()
 
     if parameter.guess():
-        random.seed(libem.LIBEM_SEED)
         return random.choice(["yes", "no"])
 
     return match_func(left, right)
@@ -59,3 +58,8 @@ def debug_on():
 
 def quiet():
     libem.LIBEM_LOG_LEVEL = logging.WARNING
+
+
+def seed(seed=42):
+    libem.LIBEM_SEED = seed
+    random.seed(seed)
