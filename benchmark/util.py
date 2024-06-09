@@ -133,6 +133,8 @@ def benchmark(dataset, args):
             datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
             args.name, args.model, str(args.num_pairs if args.num_pairs > 0 else 'all'),
         ]
+        if args.train:
+            signature.append('train')
         if args.cot:
             signature.append('cot')
         if args.guess:

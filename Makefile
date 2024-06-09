@@ -28,18 +28,19 @@ tune:
 
 
 # benchmarks
-.PHONY: benchmark analyze
+.PHONY: benchmark analyze plot
 benchmark:
 	python -m benchmark.run -q
 analyze:
 	python -m benchmark.analyze -m
+plot:
+	python -m benchmark.plot
 
 
 # tests clean
 .PHONY: test clean
 test: all
 clean:
-	rm -r benchmark/results > /dev/null 2>&1 || true
 	rm -r logs > /dev/null 2>&1 || true
 
 # refresh price

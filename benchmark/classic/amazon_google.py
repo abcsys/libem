@@ -45,7 +45,10 @@ def run(args):
             kwargs['price_diff'] = args.kwargs['price_diff']
 
     # get dataset with kwargs
-    dataset = list(amazon_google.read_test(**kwargs))
+    if args.train:
+        dataset = list(amazon_google.read_train(**kwargs))
+    else:
+        dataset = list(amazon_google.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 

@@ -35,7 +35,10 @@ def run(args):
             kwargs['fields'] = args.kwargs['fields']
 
     # get dataset with kwargs
-    dataset = list(itunes_amazon.read_test(**kwargs))
+    if args.train:
+        dataset = list(itunes_amazon.read_train(**kwargs))
+    else:
+        dataset = list(itunes_amazon.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 

@@ -39,7 +39,10 @@ def run(args):
             kwargs['fields'] = args.kwargs['fields']
 
     # get dataset with kwargs
-    dataset = list(dblp_acm.read_test(**kwargs))
+    if args.train:
+        dataset = list(dblp_acm.read_train(**kwargs))
+    else:
+        dataset = list(dblp_acm.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 

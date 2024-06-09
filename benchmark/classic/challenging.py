@@ -35,7 +35,10 @@ def run(args):
             kwargs['price_diff'] = args.kwargs['price_diff']
 
     # get dataset with kwargs
-    dataset = list(challenging.read_test(**kwargs))
+    if args.train:
+        raise NotImplementedError("Training data not available for this dataset.")
+    else:
+        dataset = list(challenging.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 

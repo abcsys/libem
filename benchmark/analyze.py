@@ -17,6 +17,10 @@ def get_mistakes(input_file):
         elif case['pred'] == 'no' and case['label'] == 1:
             fn_cases.append(case)
     return {
+        "stats": {
+            "fp": len(fp_cases),
+            "fn": len(fn_cases),
+        },
         "fp": fp_cases,
         "fn": fn_cases,
     }
@@ -54,6 +58,10 @@ if __name__ == "__main__":
         files = sorted(files, key=lambda x: os.path.getmtime(os.path.join(_result_dir, x)))
         input_file = os.path.join(_result_dir, files[-1])
 
+    """if input_file does not have directory, add _result_dir"""
+    if not os.path.exists(input_file):
+        input_file = os.path.join(_result_dir, input_file)
+
     if args.mistake:
         mistakes = get_mistakes(input_file)
         if not output_file:
@@ -63,3 +71,5 @@ if __name__ == "__main__":
                 f'_mistakes.json'
             )
         write(output_file, mistakes)
+
+    ...

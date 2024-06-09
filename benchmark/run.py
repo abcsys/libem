@@ -57,6 +57,9 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", dest='file', nargs='?',
                         help="Name of the file to save to, will append '.json'.",
                         type=str, default='')
+    parser.add_argument("--train", dest='train',
+                        help="Use the training set.",
+                        action='store_true', default=True)
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
