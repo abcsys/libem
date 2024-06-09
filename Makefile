@@ -28,9 +28,11 @@ tune:
 
 
 # benchmarks
-.PHONY: benchmark
+.PHONY: benchmark analyze
 benchmark:
 	python -m benchmark.run -q
+analyze:
+	python -m benchmark.analyze -m
 
 
 # tests clean

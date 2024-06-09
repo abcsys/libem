@@ -1,4 +1,5 @@
 benchmark/results
+benchmark/analysis
 logs/
 catalog.db*
 

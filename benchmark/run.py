@@ -41,7 +41,7 @@ def run(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("benchmark.py")
+    parser = argparse.ArgumentParser("benchmark")
 
     # benchmark configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
@@ -66,7 +66,8 @@ if __name__ == "__main__":
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
-    parser.add_argument("-q", "--quiet", dest='quiet', help="Suppress messages for matching each pair.",
+    parser.add_argument("-q", "--quiet", dest='quiet',
+                        help="Suppress messages for matching each pair.",
                         action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")

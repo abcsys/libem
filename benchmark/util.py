@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import logging
 import numpy as np
 import time
 from pathlib import Path
@@ -52,7 +51,7 @@ def benchmark(dataset, args):
         label = data['label']
 
         if not args.quiet:
-            print(f"Pair #{i+1}\n")
+            print(f"Pair #{i + 1}\n")
             print(f"Entity 1: {e1}\n")
             print(f"Entity 2: {e2}")
 
