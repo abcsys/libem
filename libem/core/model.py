@@ -20,7 +20,7 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str | list,
+def openai(prompt: str | list | dict,
            tools: list[str] = None,
            model: str = "gpt-4o",
            temperature: float = 0.0,
@@ -38,6 +38,11 @@ def openai(prompt: str | list,
     match prompt:
         case list():
             messages = prompt
+        case dict():
+            messages = []
+            for role, content in prompt.items():
+                if content:
+                    messages.append({"role": role, "content": content})
         case str():
             messages = [{"role": "user", "content": prompt}]
         case _:
@@ -46,6 +51,7 @@ def openai(prompt: str | list,
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
     tool_outputs = {}
+
     """ Call with no tool use """
     if not tools:
         try:
@@ -104,6 +110,7 @@ def openai(prompt: str | list,
                 function_args = json.loads(tool_call.function.arguments)
                 function_response = function_to_call(**function_args)
                 tool_outputs[function_name] = function_response
+
                 if verbose:
                     libem.info(f"[{function_name}] {function_response}")
 
