@@ -115,7 +115,7 @@ class Prompt(Parameter):
             return len(self.shots)
 
         def __add__(self, other):
-            self.add(other)
+            return self.add(other)
 
         def add(self, *shots):
             """shots.add(shot1, shot2, ...)"""
@@ -165,7 +165,7 @@ class Prompt(Parameter):
             return len(self.rules)
 
         def __add__(self, other):
-            self.add(other)
+            return self.add(other)
 
         def add(self, *rules):
             """rule.add(rule1, rule2, ...)"""
@@ -175,6 +175,8 @@ class Prompt(Parameter):
                         self.rules.append(rule)
                     case list():
                         self.rules.extend(rule)
+                    case Prompt.Rules():
+                        self.rules.extend(rule.rules)
                     case _:
                         raise ValueError(f"Invalid rule type to add:"
                                          f"{type(rule)} for {rule}")
@@ -217,11 +219,10 @@ class Prompt(Parameter):
         return sep.join(to_join)
 
     def __add__(self, other):
-        self.add(other)
+        return self.add(other)
 
     def add(self, *prompts):
-        self.value.add(*prompts)
-        return self
+        return self.value.add(*prompts)
 
     def __init__(self, default: str | Shots | Rules | Experiences,
                  options: list[str | Shots | Rules | Experiences] = None):
@@ -229,7 +230,7 @@ class Prompt(Parameter):
 
 
 CoT = chain_of_thought = Prompt(
-    default="Explain your answer step by step.",
+    default='Explain your answer step by step. Enclose all your work for this step within triple quotes (""")',
 )
 
 Confidence = Prompt(
