@@ -1,5 +1,5 @@
 from libem.tune.learn import func
-from libem.tune.learn.function import check as check_func
+from libem.tune.learn import check as check_func
 
 
 def learn(*args, **kwargs):
