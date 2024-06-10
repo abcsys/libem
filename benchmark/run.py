@@ -1,6 +1,5 @@
 import json
 import argparse
-import random
 
 import libem
 import benchmark.util as util
@@ -88,6 +87,7 @@ def run_from_file(args):
 
 def main():
     parser = argparse.ArgumentParser("benchmark")
+
     # benchmark configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
@@ -102,12 +102,14 @@ def main():
                         help="Number of pairs to run through. "
                              "Set as <= 0 to run through the entire dataset.",
                         type=int, default=5)
-    parser.add_argument("--start-index", dest='start_index', nargs='?',
-                        help="The index of the dataset to start from.",
-                        type=int, default=0)
+
     parser.add_argument("--train", dest='train',
                         help="Use the training set.",
                         action='store_true', default=False)
+    parser.add_argument("--start-index", dest='start_index', nargs='?',
+                        help="The index of the dataset to start from.",
+                        type=int, default=0)
+
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
@@ -117,6 +119,7 @@ def main():
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
+
     parser.add_argument("-q", "--quiet", dest='quiet',
                         help="Suppress messages for matching each pair.",
                         action='store_true', default=False)
@@ -126,7 +129,8 @@ def main():
     # libem configurations
     parser.add_argument("-m", "--model", dest='model', nargs='?',
                         help="The OpenAI model to use.",
-                        type=str, default='gpt-4o')
+                        type=str, default=libem.parameter.model())
+
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
@@ -136,6 +140,11 @@ def main():
     parser.add_argument("--confidence", dest='confidence',
                         help="Report confidence score.",
                         action='store_true', default=False)
+
+    parser.add_argument("-r", "--rules", dest='rules', nargs='*',
+                        help="List of rules to add to match.",
+                        type=str, default='')
+
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
                         action='store_true', default=False)

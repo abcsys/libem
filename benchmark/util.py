@@ -3,12 +3,16 @@ import sys
 import json
 import numpy as np
 import time
+import argparse
+import ast
 from pathlib import Path
 from datetime import datetime
 
 import libem
 from libem.tune.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
+from libem.core.struct import Prompt
+from libem.match.parameter import tools
 
 
 def benchmark(dataset, args):
@@ -22,14 +26,14 @@ def benchmark(dataset, args):
         libem.calibrate({
             "libem.parameter.guess": True,
         })
-
-    # set configs, sub-tools default off
-    libem.calibrate({
-        "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],
-        "libem.match.parameter.model": args.model,
-    })
-
-    # chain-of-thought and confidence score
+    if args.browse:
+        libem.calibrate({
+            "libem.match.parameter.tools": tools + ["libem.browse"],
+        })
+    if args.model:
+        libem.calibrate({
+            "libem.match.parameter.model": args.model,
+        })
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.cot": True,
@@ -37,6 +41,10 @@ def benchmark(dataset, args):
     if args.confidence:
         libem.calibrate({
             "libem.match.parameter.confidence": True,
+        })
+    if args.rules:
+        libem.calibrate({
+            "libem.match.prompt.rules": Prompt.Rules(args.rules),
         })
 
     truth, predictions, result = [], [], []
