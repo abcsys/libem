@@ -230,8 +230,9 @@ class Prompt(Parameter):
 
 
 CoT = chain_of_thought = Prompt(
-    default='Explain your answer step by step. Enclose all your work for this step within triple quotes (""")',
+    default='Explain your answer step by step.',
 )
+# Enclose all your work for this step within triple quotes (""")
 
 Confidence = Prompt(
     default="Give a confidence score from 1 to 5, with 1 being a guess "
