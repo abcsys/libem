@@ -126,8 +126,8 @@ def benchmark(dataset, args):
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
 
-    if args.file:
-        out_file = os.path.join(results_folder, f'{args.file}.json')
+    if args.output_file:
+        output_file = os.path.join(results_folder, f'{args.output_file}.json')
     else:
         signature = [
             datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
@@ -139,7 +139,7 @@ def benchmark(dataset, args):
             signature.append('cot')
         if args.guess:
             signature.append('guess')
-        out_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
+        output_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
     # get stats
     metrics = [precision, recall, f1]
@@ -162,7 +162,7 @@ def benchmark(dataset, args):
         'fn': int(conf_mat[3])
     }
 
-    with open(out_file, 'w') as f:
+    with open(output_file, 'w') as f:
         json.dump({
             'command': sys.argv[1:],
             'stats': stats,
@@ -175,7 +175,7 @@ def benchmark(dataset, args):
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
-    print(f"Benchmark: Results saved to: {out_file}")
+    print(f"Benchmark: Results saved to: {output_file}")
 
 
 def ordinal_suffix(num):

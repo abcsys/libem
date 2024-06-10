@@ -2,9 +2,7 @@ import os
 import json
 import argparse
 
-_dir = os.path.dirname(os.path.realpath(__file__))
-_result_dir = os.path.join(_dir, 'results')
-_analysis_dir = os.path.join(_dir, 'analysis')
+from benchmark import result_dir, analysis_dir
 
 
 def get_mistakes(input_file):
@@ -27,8 +25,8 @@ def get_mistakes(input_file):
 
 
 def write(output_file, data):
-    if not os.path.exists(_analysis_dir):
-        os.makedirs(_analysis_dir)
+    if not os.path.exists(analysis_dir):
+        os.makedirs(analysis_dir)
     with open(output_file, 'w') as f:
         json.dump(data, f, indent=4)
     print(f"Analysis results saved to {output_file}")
@@ -53,20 +51,21 @@ if __name__ == "__main__":
 
     if not input_file:
         """Use the newest result file by default."""
-        files = os.listdir(_result_dir)
+        files = os.listdir(result_dir)
         files = [f for f in files if f.endswith('.json')]
-        files = sorted(files, key=lambda x: os.path.getmtime(os.path.join(_result_dir, x)))
-        input_file = os.path.join(_result_dir, files[-1])
+        files = sorted(files, key=lambda x: os.path.getmtime(
+            os.path.join(result_dir, x)))
+        input_file = os.path.join(result_dir, files[-1])
 
-    """if input_file does not have directory, add _result_dir"""
+    """if input_file does not have directory, add result_dir"""
     if not os.path.exists(input_file):
-        input_file = os.path.join(_result_dir, input_file)
+        input_file = os.path.join(result_dir, input_file)
 
     if args.mistake:
         mistakes = get_mistakes(input_file)
         if not output_file:
             output_file = os.path.join(
-                _analysis_dir,
+                analysis_dir,
                 f'{os.path.basename(input_file).split(".")[0]}'
                 f'_mistakes.json'
             )

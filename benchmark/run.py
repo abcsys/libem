@@ -1,8 +1,9 @@
 import json
 import argparse
+import random
 
 import libem
-
+import benchmark.util as util
 from benchmark.classic import (
     abt_buy,
     amazon_google,
@@ -29,37 +30,84 @@ classic_benchmarks = {
 
 
 def run(args):
+    if args.input_file:
+        args.name = args.input_file.split('/')[-1].split(".")[0]
+        benchmark_func = run_from_file
+    else:
+        args.name = args.name.lower().replace('_', '-')
+        benchmark_func = classic_benchmarks[args.name]
+
     # classic benchmarks
-    name = args.name.lower().replace('_', '-')
     print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'}"
           f" {'pair' if args.num_pairs == 1 else 'pairs'}"
-          f" from the {name} benchmark.")
-    benchmark_func = classic_benchmarks[name]
+          f" from the {args.name} benchmark.")
     benchmark_func(args)
 
-    # ...
+
+def run_from_file(args):
+    """
+    Entity pairs should follow the Libem result format:
+    [{
+        "entity_1": {...},
+        "entity_2": {...},
+        "label": 0,
+      }, ...]
+    These pairs could be nested under a "results",
+    "fp", "fn", "tn", "tp" keys or directly in the JSON file.
+    """
+    pairs = []
+    with open(args.input_file, 'r') as f:
+        input_data = json.load(f)
+
+    if isinstance(input_data, list):
+        pairs = input_data
+    else:
+        if "results" in input_data:
+            pairs = input_data["results"]
+        if "fp" in input_data:
+            pairs.extend(input_data["fp"])
+        if "fn" in input_data:
+            pairs.extend(input_data["fn"])
+        if "tp" in input_data:
+            pairs.extend(input_data["tp"])
+        if "tn" in input_data:
+            pairs.extend(input_data["tn"])
+        if len(pairs) == 0:
+            raise ValueError(f"No entity pairs found in input file, "
+                             f"check the input format {run_from_file.__doc__}.")
+
+    for pair in pairs:
+        pair['left'] = pair['entity_1']
+        pair['right'] = pair['entity_2']
+        del pair['entity_1']
+        del pair['entity_2']
+
+    # ... other processing steps
+    util.benchmark(pairs, args)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser("benchmark")
-
     # benchmark configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
-                        type=str, default='amazon-google')
+                        type=str, default='abt-buy')
+    parser.add_argument("-i", "--input-file", dest='input_file', nargs='?',
+                        help="Name of the input file to use as a dataset.",
+                        type=str, default='')
+    parser.add_argument("-o", "--output-file", dest='output_file', nargs='?',
+                        help="Name of the file to save to, will append '.json'.",
+                        type=str, default='')
     parser.add_argument("-p", "--num-pairs", dest='num_pairs', nargs='?',
                         help="Number of pairs to run through. "
                              "Set as <= 0 to run through the entire dataset.",
                         type=int, default=5)
-    parser.add_argument("-i", "--index", dest='start_index', nargs='?',
+    parser.add_argument("--start-index", dest='start_index', nargs='?',
                         help="The index of the dataset to start from.",
                         type=int, default=0)
-    parser.add_argument("-f", "--file", dest='file', nargs='?',
-                        help="Name of the file to save to, will append '.json'.",
-                        type=str, default='')
     parser.add_argument("--train", dest='train',
                         help="Use the training set.",
-                        action='store_true', default=True)
+                        action='store_true', default=False)
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
@@ -97,3 +145,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     run(args)
+
+
+if __name__ == "__main__":
+    main()
