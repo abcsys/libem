@@ -24,7 +24,7 @@ output = Prompt(
 
 """Assistant prompts"""
 shots = Prompt(
-    default=Prompt.Shots(),
+    default=Prompt.Shots([Shot(),]),
 )
 
 """User prompts"""

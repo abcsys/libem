@@ -25,8 +25,15 @@ class Parameter(Tunable):
         super().__init__()
 
     def __call__(self, *args, **kwargs):
+        """
+        When called, the instance evaluates and returns its current value. If the
+        value is a string, it formats the string with supplied args and kwargs. If
+        the value is callable, it calls the function with supplied args and kwargs.
+        If the value contains other `Parameter` instances or similarly
+        dynamically-resolvable structures, it will recursively resolve these
+        before returning.
+        """
         if isinstance(self.value, str):
-            # format the parameter with inputs
             return self.value.format(*args, **kwargs)
         if callable(self.value):
             return self.value(*args, **kwargs)
@@ -62,7 +69,8 @@ class Parameter(Tunable):
 
 
 class Shot:
-    def __init__(self, question: str, answer: str,
+    def __init__(self, question: str = None,
+                 answer: str = None,
                  question_role="user",
                  answer_role="assistant"):
         self.question = question
@@ -71,10 +79,13 @@ class Shot:
         self.answer_role = answer_role
 
     def __call__(self):
-        return [
-            {"role": self.question_role, "content": self.question},
-            {"role": self.answer_role, "content": self.answer},
-        ]
+        if self.question is None or self.answer is None:
+            return []
+        else:
+            return [
+                {"role": self.question_role, "content": self.question},
+                {"role": self.answer_role, "content": self.answer},
+            ]
 
     def __str__(self):
         return str(self.__call__())
