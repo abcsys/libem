@@ -1,18 +1,19 @@
-from libem.core.struct import Prompt
+from libem.core.struct import Prompt, Shot
 
+"""System prompts"""
 role = Prompt(
-    default="You are an entity matcher that determine whether"
+    default="You are an entity matcher that determines whether "
             "two entity descriptions refer to the same real-world entity.",
     options=[""],
 )
 
-rule = Prompt(
-    default=Prompt.Rule(),
+rules = Prompt(
+    default=Prompt.Rules(),
     options=[],
 )
 
-experience = Prompt(
-    default=Prompt.Experience(),
+experiences = Prompt(
+    default=Prompt.Experiences(),
     options=[],
 )
 
@@ -21,6 +22,12 @@ output = Prompt(
     options=[],
 )
 
+"""Assistant prompts"""
+shots = Prompt(
+    default=Prompt.Shots(),
+)
+
+"""User prompts"""
 query = Prompt(
     default="Entity 1: {left}.\nEntity 2: {right}.",
     options=[],

@@ -9,10 +9,6 @@ class Tunable(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def learn(self, train_data, metric):
-        pass
-
-    @abc.abstractmethod
     def search(self, train_data, metric):
         pass
 
@@ -32,6 +28,8 @@ class Parameter(Tunable):
         if isinstance(self.value, str):
             # format the parameter with inputs
             return self.value.format(*args, **kwargs)
+        if callable(self.value):
+            return self.value(*args, **kwargs)
         else:
             return self.value
 
@@ -44,9 +42,6 @@ class Parameter(Tunable):
     def update(self, value):
         self.value = self.v = value
         return self
-
-    def learn(self, train_data, metric):
-        raise NotImplementedError
 
     def search(self, train_data, metric):
         raise NotImplementedError
@@ -66,8 +61,73 @@ class Parameter(Tunable):
         return copy.deepcopy(self)
 
 
+class Shot:
+    def __init__(self, question: str, answer: str,
+                 question_role="user",
+                 answer_role="assistant"):
+        self.question = question
+        self.answer = answer
+        self.question_role = question_role
+        self.answer_role = answer_role
+
+    def __call__(self):
+        return [
+            {"role": self.question_role, "content": self.question},
+            {"role": self.answer_role, "content": self.answer},
+        ]
+
+    def __str__(self):
+        return str(self.__call__())
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Prompt(Parameter):
-    class Rule:
+    class Shots:
+        def __init__(self, shots: list[Shot] = None):
+            self.shots = shots or []
+
+        def __call__(self):
+            _shots = []
+            for shot in self.shots:
+                _shots.extend(shot())
+            return _shots
+
+        def __str__(self):
+            return str(self.__call__())
+
+        def __repr__(self):
+            return self.__str__()
+
+        def __len__(self):
+            return len(self.shots)
+
+        def __add__(self, other):
+            self.add(other)
+
+        def add(self, *shots):
+            """shots.add(shot1, shot2, ...)"""
+            for shot in shots:
+                match shot:
+                    case Shot():
+                        self.shots.append(shot)
+                    case list():
+                        self.shots.extend(shot)
+                    case Prompt.Shots():
+                        self.shots.extend(shot.shots)
+                    case _:
+                        raise ValueError(f"Invalid shot type "
+                                         f"{type(shot)} for {shot}")
+            return self
+
+        def export(self):
+            return self.__call__()
+
+        def copy(self):
+            return copy.deepcopy(self)
+
+    class Rules:
         def __init__(self, rules: list[str] = None,
                      intro: str = "Rules to follow:",
                      sep="\n", bullet="-"):
@@ -94,16 +154,7 @@ class Prompt(Parameter):
             return len(self.rules)
 
         def __add__(self, other):
-            match other:
-                case str():
-                    return Prompt.Rule(self.rules + [other])
-                case list():
-                    return Prompt.Rule(self.rules + other)
-                case Prompt.Rule():
-                    return Prompt.Rule(self.rules + other.rules)
-                case _:
-                    raise ValueError(f"Invalid rule type "
-                                     f"{type(other)} for {other}")
+            self.add(other)
 
         def add(self, *rules):
             """rule.add(rule1, rule2, ...)"""
@@ -114,18 +165,17 @@ class Prompt(Parameter):
                     case list():
                         self.rules.extend(rule)
                     case _:
-                        raise ValueError(f"Invalid rule type "
+                        raise ValueError(f"Invalid rule type to add:"
                                          f"{type(rule)} for {rule}")
             return self
 
-        def export(self, *args, **kwargs):
-            _, _ = args, kwargs
+        def export(self):
             return self.__call__()
 
         def copy(self):
             return copy.deepcopy(self)
 
-    class Experience(Rule):
+    class Experiences(Rules):
         def __init__(self, mistakes: list[str] = None,
                      intro: str = "Mistakes to avoid:",
                      sep="\n", bullet="*"):
@@ -142,27 +192,28 @@ class Prompt(Parameter):
             match prompt:
                 case str():
                     _prompt = prompt
-                case cls.Rule():
+                case cls.Rules():
                     _prompt = prompt()
-                case cls.Experience():
+                case cls.Experiences():
                     _prompt = prompt()
+                case cls.Shots():
+                    _prompt = str(prompt())
                 case _:
-                    raise ValueError(f"Invalid prompt type "
+                    raise ValueError(f"Invalid prompt type to join:"
                                      f"{type(prompt)} for {prompt}")
             if len(_prompt.strip()) > 0:
                 to_join.append(_prompt)
         return sep.join(to_join)
 
-    def add(self, *prompts, sep="\n"):
-        self.update(Prompt.join(self.value, *prompts, sep=sep))
+    def __add__(self, other):
+        self.add(other)
+
+    def add(self, *prompts):
+        self.value.add(*prompts)
         return self
 
-    def prepend(self, *prompts, sep="\n"):
-        self.update(Prompt.join(*prompts, self.value, sep=sep))
-        return self
-
-    def __init__(self, default: str | Rule | Experience,
-                 options: list[str | Rule | Experience] = None):
+    def __init__(self, default: str | Shots | Rules | Experiences,
+                 options: list[str | Shots | Rules | Experiences] = None):
         super().__init__(default, options)
 
 

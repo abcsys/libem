@@ -13,7 +13,7 @@ def main():
 
     print("Calibrate the match to ignore colors")
     libem.calibrate({
-        "libem.match.prompt.rule": Prompt.Rule(["Ignore colors."]),
+        "libem.match.prompt.rule": Prompt.Rules(["Ignore colors."]),
     }, verbose=True)
     is_match = libem.match(e1, e2)
     print(f"Entity 1: {e1}\nEntity 2: {e2}\n"
@@ -22,7 +22,7 @@ def main():
     print("")
     print("Calibrate the match to consider colors")
     libem.calibrate({
-        "libem.match.prompt.rule": Prompt.Rule(["Color distinguishes entities."]),
+        "libem.match.prompt.rule": Prompt.Rules(["Color distinguishes entities."]),
     }, verbose=True)
     is_match = libem.match(e1, e2)
     print(f"Entity 1: {e1}\nEntity 2: {e2}\n"

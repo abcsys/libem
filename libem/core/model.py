@@ -34,7 +34,7 @@ def openai(prompt: str | list | dict,
 
     client = OpenAI()
 
-    # format the prompt messages
+    # format the prompt to messages
     match prompt:
         case list():
             messages = prompt

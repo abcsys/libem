@@ -5,8 +5,8 @@ from libem.tune import learn, check
 from libem.prepare.datasets import amazon_google
 from libem.core.log import header
 
-from libem.match.prompt import rule as match_rule_prompt
-from libem.match.prompt import experience as match_experience_prompt
+from libem.match.prompt import rules
+from libem.match.prompt import experiences
 
 calibrate = libem.toolchain("tune.calibrate")
 
@@ -64,9 +64,9 @@ def main():
         print("Train score:", score)
         libem.calibrate({
             "libem.match.prompt.rule":
-                match_rule_prompt() + learned_rule,
+                rules + learned_rule,
             "libem.match.prompt.experience":
-                match_experience_prompt() + learned_experience,
+                experiences + learned_experience,
         })
         train_scores.append(score)
     print(header("End Learning"))
