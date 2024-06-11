@@ -11,7 +11,7 @@ def positive():
     })
     is_match = libem.match(e1, e2)
     print(f"Entity 1: {e1}\nEntity 2: {e2}\n"
-          f"Match: {is_match}")
+          f"Match: {is_match['answer']}")
 
     print("With browse:")
     libem.calibrate({
@@ -21,7 +21,7 @@ def positive():
     # libem.debug_on()
     is_match = libem.match(e1, e2)
     print(f"Entity 1: {e1}\nEntity 2: {e2}\n"
-          f"Match: {is_match}")
+          f"Match: {is_match['answer']}")
 
 
 if __name__ == '__main__':

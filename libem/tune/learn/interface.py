@@ -9,7 +9,7 @@ def predict(dataset) -> tuple[list, list, list, list]:
     for i, record in enumerate(dataset):
         left, right, truth = record["left"], record["right"], record["label"]
 
-        pred = libem.match(left, right)
+        pred = libem.match(left, right)["answer"]
         libem.info("[predict] record:", i, "pred:", pred, "true:", truth)
 
         preds.append(1 if pred.lower() == "yes" else 0)

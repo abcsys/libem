@@ -9,7 +9,7 @@ def negative():
     rules.add("Color differentiates entities.")
     is_match = libem.match(e1, e2)
 
-    print(f"Entity 1: {e1}\nEntity 2: {e2}\nMatch: {is_match}")
+    print(f"Entity 1: {e1}\nEntity 2: {e2}\nMatch: {is_match['answer']}")
 
 
 if __name__ == '__main__':

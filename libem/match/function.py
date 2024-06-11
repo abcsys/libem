@@ -30,7 +30,7 @@ schema = {
 }
 
 
-def func(left, right) -> str | tuple[str, int]:
+def func(left, right) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -67,40 +67,41 @@ def func(left, right) -> str | tuple[str, int]:
 
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"
-                f"[match] raw output:\n"
+                f"[match] model output:\n"
                 f"{model_output}")
 
-    pred, confidence = parse_output(model_output)
+    output = parse_output(model_output)
 
     libem.trace.add({"match": {"left": left, "right": right,
+                               "prompt": _prompt,
                                "model_output": model_output,
-                               "pred": pred, "prompt": _prompt,
+                               "answer": output["answer"],
                                "latency": time.time() - start}})
-
-    # todo: return a dict
-    if parameter.confidence():
-        return pred, confidence
-    else:
-        return pred
+    return output
 
 
-def parse_output(output: str) -> tuple[str, int | None]:
-    output = [line.lower() for line in output.split("\n")]
+def parse_output(output: str) -> dict:
+    output = output.split("\n")[::-1]
 
-    answer = "yes" if "yes" in output[-1] else "no"
+    answer = output.pop(0).lower()
+    answer = "yes" if "yes" in answer else "no"
 
-    confidence = None
+    confidence, explanation = None, None
 
     if parameter.confidence():
-        for i, line in enumerate(list(reversed(output))):
-            if 'confidence score' in line:
+        for i, line in enumerate(output):
+            line = line.lower()
+            if 'confidence score' in line or str.isdigit(line):
                 confidence = ''.join(filter(str.isdigit, line))
-
-                # catch cases when score is on a new line
-                if len(confidence) == 0:
-                    confidence = ''.join(filter(str.isdigit, output[i - 1]))
-
                 confidence = int(confidence)
+                output = output[i + 1:]
                 break
 
-    return answer, confidence
+    if parameter.cot():
+        explanation = "\n".join(output[::-1])
+
+    return {
+        "answer": answer,
+        "confidence": confidence,
+        "explanation": explanation,
+    }

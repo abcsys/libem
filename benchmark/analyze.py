@@ -92,7 +92,7 @@ if __name__ == "__main__":
             output_file = os.path.join(
                 analysis_dir,
                 f'{os.path.basename(input_file).split(".")[0]}'
-                f'_mistakes.json'
+                f'-mistakes.json'
             )
         write(output_file, mistakes)
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
             output_file = os.path.join(
                 analysis_dir,
                 f'{os.path.basename(input_file).split(".")[0]}'
-                f'_correct.json'
+                f'-correct.json'
             )
         write(output_file, correct)
 

@@ -118,7 +118,7 @@ def openai(prompt: str | list | dict,
                     {
                         "role": "tool",
                         "name": function_name,
-                        "content": function_response,
+                        "content": str(function_response),
                         "tool_call_id": tool_call.id,
                     }
                 )
@@ -128,7 +128,7 @@ def openai(prompt: str | list | dict,
                         "id": tool_call.id,
                         'name': function_name,
                         "arguments": function_args,
-                        "response": function_response
+                        "response": function_response,
                     }
                 })
             tool_calls = []
