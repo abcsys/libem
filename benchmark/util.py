@@ -1,10 +1,8 @@
 import os
 import sys
+import time
 import json
 import numpy as np
-import time
-import argparse
-import ast
 from pathlib import Path
 from datetime import datetime
 

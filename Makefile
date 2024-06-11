@@ -22,9 +22,11 @@ chat:
 all: match no_match browse chat
 
 # tuning examples
-.PHONY: tune
+.PHONY: tune profile
 tune:
 	python examples/tune/rule_from_mistakes.py
+profile:
+	python examples/tune/profile.py
 
 
 # benchmarks

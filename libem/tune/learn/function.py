@@ -1,8 +1,6 @@
 import typing
 
-import libem
-import libem.core.util as libem_util
-from libem.tune.learn import prompt, parameter
+from libem.tune.learn import parameter
 
 from libem.tune.learn.strategy import (
     random_shots,

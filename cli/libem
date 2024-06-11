@@ -71,7 +71,7 @@ def main():
 
     print("Match:", result['answer'])
     if args.cot:
-        print("Explanation:", result['explanation'])
+        print("Explanation:\n", result['explanation'])
     if args.confidence:
         print("Confidence:", result['confidence'])
 
