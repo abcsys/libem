@@ -143,10 +143,14 @@ def benchmark(dataset, args):
         ]
         if args.train:
             signature.append('train')
+        if not args.schema:
+            signature.append('no-schema')
         if args.cot:
             signature.append('cot')
         if args.guess:
             signature.append('guess')
+        if args.rules:
+            signature.append('rules')
         output_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
     # get stats
