@@ -46,6 +46,18 @@ class Parameter(Tunable):
     def __repr__(self):
         return self.__str__()
 
+    def __add__(self, other):
+        return self.add(other).copy()
+
+    def add(self, *parameters):
+        """parameters.add(param1, param2, ...)"""
+        for param in parameters:
+            if isinstance(param, Parameter):
+                self.value += param.value
+            else:
+                self.value += param
+        return self
+
     def update(self, value):
         self.value = self.v = value
         return self
@@ -115,7 +127,7 @@ class Prompt(Parameter):
             return len(self.shots)
 
         def __add__(self, other):
-            return self.add(other)
+            return self.add(other).copy()
 
         def add(self, *shots):
             """shots.add(shot1, shot2, ...)"""
@@ -165,7 +177,7 @@ class Prompt(Parameter):
             return len(self.rules)
 
         def __add__(self, other):
-            return self.add(other)
+            return self.add(other).copy()
 
         def add(self, *rules):
             """rule.add(rule1, rule2, ...)"""
@@ -218,12 +230,6 @@ class Prompt(Parameter):
                 to_join.append(_prompt)
         return sep.join(to_join)
 
-    def __add__(self, other):
-        return self.add(other)
-
-    def add(self, *prompts):
-        return self.value.add(*prompts)
-
     def __init__(self, default: str | Shots | Rules | Experiences,
                  options: list[str | Shots | Rules | Experiences] = None):
         super().__init__(default, options)
@@ -232,14 +238,8 @@ class Prompt(Parameter):
 CoT = chain_of_thought = Prompt(
     default='Explain your answer step by step.',
 )
-# Enclose all your work for this step within triple quotes (""")
 
 Confidence = Prompt(
     default="Give a confidence score from 1 to 5, with 1 being a guess "
             "and 5 being fully confident, give the score only, do not justify.",
-)
-
-# todo
-ReAct = reason_act = Prompt(
-    default="",
 )
