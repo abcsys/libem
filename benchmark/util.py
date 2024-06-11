@@ -93,10 +93,10 @@ def benchmark(dataset, args):
             result.append({
                 'entity_1': e1,
                 'entity_2': e2,
+                'label': label,
                 'pred': is_match["answer"],
                 'confidence': is_match["confidence"],
                 'explanation': is_match["explanation"],
-                'label': label,
                 'model_output': model_output,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
                 'latency': round(latency, 2),

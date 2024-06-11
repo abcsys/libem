@@ -9,7 +9,9 @@ def positive():
                                f"entity 1: {e1}; "
                                f"entity 2: {e2}")
 
-    print(f"Entity 1: {e1}\nEntity 2: {e2}\nMatch: {is_match}")
+    print("Entity 1:", e1)
+    print("Entity 2:", e2)
+    print("Match:", is_match)
 
 
 if __name__ == '__main__':
