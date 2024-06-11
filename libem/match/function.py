@@ -81,6 +81,13 @@ def func(left, right) -> dict:
 
 
 def parse_output(output: str) -> dict:
+    """Handle the model output of format:
+    ```
+    <explanation> (e.g., "Name Comparison: ...")
+    <confidence> (e.g., "Confidence Score: 5" or "5")
+    <answer> (e.g., yes)
+    ```
+    """
     output = output.split("\n")[::-1]
 
     answer = output.pop(0).lower()
