@@ -21,7 +21,7 @@ const EntityBox = ({ entity, className }) => {
     )
 }
 
-const ResultScreen = ({ userAns, libemAns, label, hidden, closeResultScreen, setEndScreen }) => {
+const ResultScreen = ({ userAns, libemAns, label, final, hidden, closeResultScreen, setEndScreen }) => {
 
     const resultClasses = hidden 
                             ? "result hidden" 
@@ -45,11 +45,20 @@ const ResultScreen = ({ userAns, libemAns, label, hidden, closeResultScreen, set
                           </>
                     }
                     <div>Libem chose <b>{libemAns ? "Match" : "No Match"}</b>.</div>
-                    <p className="value">Click <b>Next</b> to try another pair, or <b>End</b> to compare your results.</p>
+                    {final === true
+                        ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
+                        : <p className="value">Click <b>Next</b> to try another pair, 
+                            or <b>End</b> to see your final results.</p>
+                    }
+                    
                 </div>
                 <div className="hstack">
-                    <div className="button red" onClick={() => setEndScreen(true)}>End</div>
-                    <div className="button green" onClick={closeResultScreen}>Next</div>
+                    <div className="button rect red" onClick={() => setEndScreen(true)}>End</div>
+                    {
+                        final === true
+                        ? <></>
+                        : <div className="button rect green" onClick={closeResultScreen}>Next</div>
+                    }
                 </div>
             </div>
         </>
@@ -101,6 +110,11 @@ const EndScreen = ({ userAns, libemAns, userTime, libemTime, labels, returnHome 
             return "kv_pair"
     }
 
+    useEffect(() => {
+        // scroll to top
+        window.scrollTo(0, 0);
+    }, [])
+
     return (
         <div className="center">
             <div className="pad"></div>
@@ -133,7 +147,7 @@ const EndScreen = ({ userAns, libemAns, userTime, libemTime, labels, returnHome 
                     )}
                 </div>
             </div>
-            <div className="button fade-in-bottom" onClick={returnHome}>Home</div>
+            <div className="button rect fade-in-bottom" onClick={returnHome}>Home</div>
         </div>
         
     )
@@ -152,11 +166,22 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
 
     const [timer, setTimer] = useState(false)
     const timeElapsed = useRef(0)
+
+    const ex =  <svg viewBox='0 0 50 50' className={'icon'}>
+                    <path d="M 12 12 L 38 38"/>
+                    <path d="M 12 38 L 38 12"/>
+                </svg>
+    const check = <svg viewBox='0 0 50 50' className={'icon'}>
+                    <path d="M 20 35 L 40 12"/>
+                    <path d="M 10 25 L 20 35"/>
+                 </svg>
     
     const fetchNext = () => {
         fetch(`http://127.0.0.1:8000/fetch?dataset=${dataset}&index=${index}`)
         .then(r => r.json())
         .then(r => {
+            // scroll to top
+            window.scrollTo(0, 0)
             setPair(r)
             setTimer(true)
         })
@@ -196,7 +221,6 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
 
     return (
         <>
-            <div className="header indent select" onClick={returnHome}>Libem Arena</div>
             {endScreen
                 ? <EndScreen userAns={userAns.current} libemAns={libemAns.current} userTime={timeElapsed.current / 1000}
                             libemTime={libemTime.current} labels={labels.current} returnHome={returnHome} />
@@ -206,7 +230,7 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
                         : <div className="vstack-wide">
                             <div className="vstack fade-in-top">
                                 <div className="title-bar">
-                                    <div className="title-left">{index+1}/{size}</div>
+                                    <div className="title-left">Pair: {index+1}</div>
                                     <div>{dataset}</div>
                                     <div className="title-right">
                                         <Timer active={timer} timeElapsed={timeElapsed} />
@@ -221,13 +245,13 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
                                 <EntityBox entity={pair['left']} className={resultScreen ? "entity-box" : "entity-box fade-in-left"} />
                                 <EntityBox entity={pair['right']} className={resultScreen ? "entity-box" : "entity-box fade-in-right"} />
                             </div>
-                            <div className={resultScreen ? "adaptive-stack" : "adaptive-stack fade-in-bottom"}>
-                                <div className="button red" onClick={() => match(false)}>No Match</div>
-                                <div className="button green" onClick={() => match(true)}>Match</div>
+                            <div className={resultScreen ? "hstack" : "hstack fade-in-bottom"}>
+                                <div className="button circle red" onClick={() => match(false)}>{ex}</div>
+                                <div className="button circle green" onClick={() => match(true)}>{check}</div>
                             </div>
                           </div>}
                     <ResultScreen userAns={userAns.current.at(-1)} libemAns={libemAns.current.at(-1)} 
-                                label={labels.current.at(-1)} hidden={!resultScreen} 
+                                label={labels.current.at(-1)} final={index+1 === size} hidden={!resultScreen} 
                                 closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
                   </div>
             }

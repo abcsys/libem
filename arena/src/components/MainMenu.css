@@ -18,7 +18,6 @@
     align-items: center;
     height: 48vh;
     overflow-y: auto;
-    border-radius: 5px;
 }
 
 .dataset-box.selected {

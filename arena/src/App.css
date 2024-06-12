@@ -16,6 +16,11 @@ h1 {
 
 .button {
     margin: 1rem 1em;
+    cursor: pointer;
+    transition-duration: 250ms;
+}
+
+.rect {
     padding: 0.5em 0;
     text-align: center;
     font-size: x-large;
@@ -24,8 +29,18 @@ h1 {
     background-color: #ffc400;
     color: #000;
     border-radius: 5px;
-    cursor: pointer;
-    transition-duration: 250ms;
+}
+
+.circle {
+    margin: 2rem clamp(0px, 6vw, 5rem);
+    width: 6rem;
+    height: 6rem;
+    max-width: 25vw;
+    max-height: 25vw;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .select {
@@ -167,7 +182,7 @@ h1 {
 @media (hover: hover) and (pointer: fine) {
     .button:hover {
         transition: 250ms;
-        transform: scale(1.02);
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transform: scale(1.04);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 }

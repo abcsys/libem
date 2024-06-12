@@ -25,7 +25,7 @@ def read_demo(ds_name):
 
 def read_result(ds_name):
     ds_name = ds_name.lower()
-    results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'libem_results')
+    results_folder = os.path.join(os.path.join(ds.LIBEM_SAMPLE_DATA_PATH, 'libem-results'), 'demo')
     file = os.path.join(results_folder, f'{ds_name}.json')
     with open(file, 'r') as f:
         return json.load(f)

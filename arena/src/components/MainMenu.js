@@ -28,7 +28,7 @@ const MainMenu = ({ datasets, selected, setSelected, setActive }) => {
                     </div>
                 )}
             </div>
-            <div className={selected !== null ? "button fade-in-right" : "button fade-in-right inactive"} onClick={() => setActive(selected)}>START</div>
+            <div className={selected !== null ? "button rect fade-in-right" : "button rect fade-in-right inactive"} onClick={() => setActive(selected)}>START</div>
         </div>
         
         
