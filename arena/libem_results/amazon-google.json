@@ -1,0 +1,2279 @@
+{
+    "command": [
+        "--name",
+        "amazon-google",
+        "--num-pairs",
+        "0"
+    ],
+    "stats": {
+        "precision": 89.13,
+        "recall": 82.0,
+        "f1": 85.42,
+        "latency": 58.94,
+        "tokens": {
+            "input_tokens": 12172,
+            "output_tokens": 355,
+            "cost": 0.06618500000000001
+        },
+        "confusion_matrix": {
+            "tp": 41,
+            "tn": 45,
+            "fp": 5,
+            "fn": 9
+        }
+    },
+    "results": [
+        {
+            "entity_1": {
+                "title": "adobe soundbooth cs3",
+                "manufacturer": "adobe",
+                "price": "199.0"
+            },
+            "entity_2": {
+                "title": "adobe soundbooth cs3 audio editing software windows music production software",
+                "manufacturer": "",
+                "price": "198.95"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 1.44,
+            "tokens": {
+                "input_tokens": 120,
+                "output_tokens": 1,
+                "cost": 0.0006150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! home design architectura series 18",
+                "manufacturer": "punch ! software",
+                "price": "129.99"
+            },
+            "entity_2": {
+                "title": "punch software 38100 punch ! super home suite complete product architectural 1 user complete productcomplete productstandard english pc",
+                "manufacturer": "",
+                "price": "45.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 135,
+                "output_tokens": 1,
+                "cost": 0.0006900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "webroot spysweeper antispyware 3 user",
+                "manufacturer": "webroot software",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "webroot software 65210 spy sweeper 3 pc",
+                "manufacturer": "webroot software",
+                "price": "31.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.27,
+            "tokens": {
+                "input_tokens": 128,
+                "output_tokens": 1,
+                "cost": 0.0006550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft onenote 2007 upgrade",
+                "manufacturer": "microsoft",
+                "price": "79.95"
+            },
+            "entity_2": {
+                "title": "164-04052 microsoft office publisher 2007 version upgrade package 1 pc cd win en",
+                "manufacturer": "",
+                "price": "88.8"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 127,
+                "output_tokens": 1,
+                "cost": 0.0006500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "individual small business advantage deluxe 2006",
+                "manufacturer": "individual",
+                "price": "49.99"
+            },
+            "entity_2": {
+                "title": "math success deluxe 2006",
+                "manufacturer": "",
+                "price": "12.9"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 112,
+                "output_tokens": 1,
+                "cost": 0.0005750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft visio standard 2007 version upgrade",
+                "manufacturer": "microsoft",
+                "price": "129.95"
+            },
+            "entity_2": {
+                "title": "microsoft office outlook 2007",
+                "manufacturer": "",
+                "price": "109.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.81,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 2,
+                "cost": 0.00061
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sony super duper music looper",
+                "manufacturer": "sony-media-software",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "sony media software super duper music looper software music production software",
+                "manufacturer": "sony-media-software",
+                "price": "19.95"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hp dss software v. 4.0 complete package t1936aa ua0 )",
+                "manufacturer": "hewlett-packard - ( consumables )",
+                "price": "630.36"
+            },
+            "entity_2": {
+                "title": "hewlett packard t1936aa ua0 hp digital sending software 4.0 complete product document management 1 device ( s ) complete product standard multilingual pc",
+                "manufacturer": "hewlett-packard - ( consumables )",
+                "price": "342.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 168,
+                "output_tokens": 1,
+                "cost": 0.0008550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "quickbooks premier professional services edition 2007",
+                "manufacturer": "intuit",
+                "price": "399.95"
+            },
+            "entity_2": {
+                "title": "intuit quickbooks pro 2007 for mac",
+                "manufacturer": "",
+                "price": "185.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.48,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 1,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "mac os x server v10 .4.7 10-client",
+                "manufacturer": "apple",
+                "price": "499.0"
+            },
+            "entity_2": {
+                "title": "apple apple mac os x server 10 4 7 10 client",
+                "manufacturer": "",
+                "price": "499.0"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.49,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "burning monkey mahjongg ( mac )",
+                "manufacturer": "freeverse software",
+                "price": "24.99"
+            },
+            "entity_2": {
+                "title": "freeverse burning monkey mahjong 3d",
+                "manufacturer": "",
+                "price": "24.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 1,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe dreamweaver cs3 [ mac ]",
+                "manufacturer": "adobe",
+                "price": "399.0"
+            },
+            "entity_2": {
+                "title": "adobe dreamweaver cs3",
+                "manufacturer": "",
+                "price": "415.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.64,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 1,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "pop-up stopper professional",
+                "manufacturer": "panicware",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "omnioutliner professional 3.0 for mac",
+                "manufacturer": "",
+                "price": "69.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.56,
+            "tokens": {
+                "input_tokens": 114,
+                "output_tokens": 1,
+                "cost": 0.0005850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe acrobat 7.0 professional",
+                "manufacturer": "adobe",
+                "price": "449.99"
+            },
+            "entity_2": {
+                "title": "i copydvds 2 professional edition",
+                "manufacturer": "me-too-software",
+                "price": "27.9"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 121,
+                "output_tokens": 1,
+                "cost": 0.0006200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "quicken 2007 home & business",
+                "manufacturer": "intuit",
+                "price": "89.95"
+            },
+            "entity_2": {
+                "title": "intuit quicken home and business 2007 software for windows tax & finance software",
+                "manufacturer": "",
+                "price": "89.95"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 124,
+                "output_tokens": 1,
+                "cost": 0.000635
+            }
+        },
+        {
+            "entity_1": {
+                "title": "instant immersion spanish 2.0",
+                "manufacturer": "topics entertainment",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "instant immersion spanish 2.0 topics",
+                "manufacturer": "",
+                "price": "19.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 114,
+                "output_tokens": 1,
+                "cost": 0.0005850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "mia 's math adventure : just in time",
+                "manufacturer": "kutoka",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "kutoka interactive 61208 mia 's math adventure : just in time !",
+                "manufacturer": "kutoka interactive",
+                "price": "24.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.28,
+            "tokens": {
+                "input_tokens": 128,
+                "output_tokens": 1,
+                "cost": 0.0006550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sibelius 4 educational edition",
+                "manufacturer": "sibelius-software-ltd .",
+                "price": "329.0"
+            },
+            "entity_2": {
+                "title": "steinberg software halion symphonic orchestra educational edition",
+                "manufacturer": "",
+                "price": "545.51"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 120,
+                "output_tokens": 1,
+                "cost": 0.0006150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "norton antivirus 2007",
+                "manufacturer": "symantec",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "zonealarm antivirus 2007 ( pc ) zonelabs",
+                "manufacturer": "",
+                "price": "29.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 117,
+                "output_tokens": 1,
+                "cost": 0.0006000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! home design architectura series 18",
+                "manufacturer": "punch ! software",
+                "price": "129.99"
+            },
+            "entity_2": {
+                "title": "punch software 41100 punch ! home design architectural series 18 complete product architectural 1 user ( s ) complete product standard english pc",
+                "manufacturer": "",
+                "price": "112.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 139,
+                "output_tokens": 1,
+                "cost": 0.0007100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe photoshop cs2 advanced techniques by julieanne kost",
+                "manufacturer": "software cinema",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "adobe photoshop cs3 extended for mac upgrade",
+                "manufacturer": "",
+                "price": "329.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.52,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 2,
+                "cost": 0.00061
+            }
+        },
+        {
+            "entity_1": {
+                "title": "system care professional",
+                "manufacturer": "avanquest",
+                "price": "49.95"
+            },
+            "entity_2": {
+                "title": "avanquest usa llc system care professional",
+                "manufacturer": "",
+                "price": "43.32"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 110,
+                "output_tokens": 1,
+                "cost": 0.0005650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "instant immersion french 2.0",
+                "manufacturer": "topics entertainment",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "topics entertainment 80542 instant immersion french 2.0 781735805428",
+                "manufacturer": "",
+                "price": "18.2"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hasbro classic collection 2006 )",
+                "manufacturer": "encore",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "encore software 11273 hasbro family collection 2006 sb cs by hasbro",
+                "manufacturer": "",
+                "price": "17.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 125,
+                "output_tokens": 2,
+                "cost": 0.000655
+            }
+        },
+        {
+            "entity_1": {
+                "title": "tomb raider : legend",
+                "manufacturer": "eidos interactive",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "eidos interactive 40022 tomb raider : legend ds 788687400220",
+                "manufacturer": "",
+                "price": "19.8"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "wanted : a wild western adventure",
+                "manufacturer": "dreamcatcher interactive",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "dreamcatcher interactive wanted wild willy west",
+                "manufacturer": "",
+                "price": "17.55"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 2,
+                "cost": 0.00061
+            }
+        },
+        {
+            "entity_1": {
+                "title": "palo alto business plan pro 2007",
+                "manufacturer": "palo-alto-software",
+                "price": "99.95"
+            },
+            "entity_2": {
+                "title": "business planmaker deluxe",
+                "manufacturer": "",
+                "price": "49.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 1,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! home design architectural series 18",
+                "manufacturer": "punch ! software",
+                "price": "129.99"
+            },
+            "entity_2": {
+                "title": "punch software 42100 punch ! home design architectural series 18 ( small box )",
+                "manufacturer": "punch software",
+                "price": "119.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.24,
+            "tokens": {
+                "input_tokens": 132,
+                "output_tokens": 1,
+                "cost": 0.0006750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "high school advantage 2007",
+                "manufacturer": "encore software",
+                "price": "29.95"
+            },
+            "entity_2": {
+                "title": "encore software 10449 high school advantage 2007 win 98 me 2000 xp",
+                "manufacturer": "",
+                "price": "26.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "acad vegas movie studio + dvd 8 platinum",
+                "manufacturer": "sony-pictures-digital-entertainment",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "madison media software aspvms8000 acad vegas movie studio + dvd 8 platinum",
+                "manufacturer": "sony-pictures-digital-entertainment",
+                "price": "81.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 137,
+                "output_tokens": 1,
+                "cost": 0.0007000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "musicalis guitar workshop",
+                "manufacturer": "global-software-publishing",
+                "price": "9.99"
+            },
+            "entity_2": {
+                "title": "musicalis universal guitar workshop",
+                "manufacturer": "global-software-publishing",
+                "price": "12.9"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.29,
+            "tokens": {
+                "input_tokens": 119,
+                "output_tokens": 1,
+                "cost": 0.0006100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "reader rabbit learning system 1st grade",
+                "manufacturer": "encore software",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "reader rabbit 1st grade",
+                "manufacturer": "",
+                "price": "17.9"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 114,
+                "output_tokens": 1,
+                "cost": 0.0005850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe creative suite cs3 web premium upsell [ mac ]",
+                "manufacturer": "adobe",
+                "price": "1399.0"
+            },
+            "entity_2": {
+                "title": "adobe cs3 web premium upsell",
+                "manufacturer": "",
+                "price": "1434.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 122,
+                "output_tokens": 1,
+                "cost": 0.0006250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft virtual pc for mac 7.0 with windows 2000",
+                "manufacturer": "microsoft",
+                "price": "249.99"
+            },
+            "entity_2": {
+                "title": "microsoft ( r ) windows ( r ) xp home edition with sp2",
+                "manufacturer": "",
+                "price": "199.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 1.87,
+            "tokens": {
+                "input_tokens": 129,
+                "output_tokens": 1,
+                "cost": 0.0006600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "restricted area",
+                "manufacturer": "whiptail",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "restricted area ( win 98 me 2000 xp )",
+                "manufacturer": "",
+                "price": "19.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 114,
+                "output_tokens": 1,
+                "cost": 0.0005850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "phonics success deluxe 2006 ( large box )",
+                "manufacturer": "topics entertainment",
+                "price": "49.99"
+            },
+            "entity_2": {
+                "title": "elementary school success deluxe 2006",
+                "manufacturer": "",
+                "price": "12.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.49,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 1,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "i copy dvds 2 professional edition",
+                "manufacturer": "me-too-software",
+                "price": "69.99"
+            },
+            "entity_2": {
+                "title": "adobe premiere pro 2.0 software professional editing software",
+                "manufacturer": "",
+                "price": "848.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 121,
+                "output_tokens": 1,
+                "cost": 0.0006200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft office 2004 professional ( mac )",
+                "manufacturer": "microsoft",
+                "price": "499.99"
+            },
+            "entity_2": {
+                "title": "microsoft ( r ) frontpage 2002",
+                "manufacturer": "",
+                "price": "169.56"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 5.73,
+            "tokens": {
+                "input_tokens": 119,
+                "output_tokens": 2,
+                "cost": 0.000625
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft office small business 2007",
+                "manufacturer": "microsoft software",
+                "price": "735.33"
+            },
+            "entity_2": {
+                "title": "individual software professor teaches microsoft office 2007",
+                "manufacturer": "",
+                "price": "29.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 117,
+                "output_tokens": 2,
+                "cost": 0.000615
+            }
+        },
+        {
+            "entity_1": {
+                "title": "professor teaches windows xp",
+                "manufacturer": "individual software",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "individual software professor teaches windows xp",
+                "manufacturer": "",
+                "price": "19.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 110,
+                "output_tokens": 1,
+                "cost": 0.0005650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "extensis smartscale 1-user pxe-11433 )",
+                "manufacturer": "extensis corporation",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "onone software pxe-11433 pxl smartscale elect 1-user english mac/win",
+                "manufacturer": "onone software",
+                "price": "158.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 133,
+                "output_tokens": 1,
+                "cost": 0.00068
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe creative suite cs3 web premium upgrade [ mac ]",
+                "manufacturer": "adobe",
+                "price": "499.0"
+            },
+            "entity_2": {
+                "title": "adobe creative suite 3 design standard complete package 1 user academic windows",
+                "manufacturer": "",
+                "price": "369.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 2,
+                "cost": 0.00066
+            }
+        },
+        {
+            "entity_1": {
+                "title": "40 years of the x-men",
+                "manufacturer": "git corp",
+                "price": "49.99"
+            },
+            "entity_2": {
+                "title": "git 40 years of marvel x-men dvd-rom",
+                "manufacturer": "",
+                "price": "42.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 115,
+                "output_tokens": 1,
+                "cost": 0.0005900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft data analyzer 2002",
+                "manufacturer": "microsoft",
+                "price": "179.0"
+            },
+            "entity_2": {
+                "title": "microsoft ( r ) frontpage 2002",
+                "manufacturer": "",
+                "price": "169.56"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 1,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "final draft av 2.5 win/mac",
+                "manufacturer": "final draft",
+                "price": "199.99"
+            },
+            "entity_2": {
+                "title": "final-draft final draft av 2.5 screenwriting software mac/win screen writing software",
+                "manufacturer": "",
+                "price": "199.95"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 127,
+                "output_tokens": 1,
+                "cost": 0.0006500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft windows xp professional full version with sp2",
+                "manufacturer": "microsoft",
+                "price": "299.99"
+            },
+            "entity_2": {
+                "title": "microsoft office and windows training professional",
+                "manufacturer": "",
+                "price": "29.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 1.64,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 2,
+                "cost": 0.00061
+            }
+        },
+        {
+            "entity_1": {
+                "title": "quicken 2007 deluxe",
+                "manufacturer": "intuit",
+                "price": "59.95"
+            },
+            "entity_2": {
+                "title": "quicken 2007 premier win cd",
+                "manufacturer": "intuit",
+                "price": "73.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.29,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 2,
+                "cost": 0.00061
+            }
+        },
+        {
+            "entity_1": {
+                "title": "printmaster platinum v 17.0",
+                "manufacturer": "encore software",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "print master platinum v17",
+                "manufacturer": "",
+                "price": "29.9"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe indesign cs3 upgrade [ mac ]",
+                "manufacturer": "adobe",
+                "price": "199.0"
+            },
+            "entity_2": {
+                "title": "adobe dreamweaver cs3 upgrade windows",
+                "manufacturer": "",
+                "price": "236.74"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.47,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 2,
+                "cost": 0.00062
+            }
+        },
+        {
+            "entity_1": {
+                "title": "bias peak pro 5 macintosh )",
+                "manufacturer": "bias",
+                "price": "599.0"
+            },
+            "entity_2": {
+                "title": "bias peak pro xt 5 software bundle music production software",
+                "manufacturer": "",
+                "price": "999.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 117,
+                "output_tokens": 1,
+                "cost": 0.0006000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "mcafee internet security suite 2007 3 users",
+                "manufacturer": "mcafee",
+                "price": "89.99"
+            },
+            "entity_2": {
+                "title": "pcnf0040 pc-cillin internet security 2007 complete package 3 users federal win",
+                "manufacturer": "",
+                "price": "29.02"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 131,
+                "output_tokens": 1,
+                "cost": 0.0006700000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "instant home design 3.0 [ lb ]",
+                "manufacturer": "topics entertainment",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "instant home design 3.0",
+                "manufacturer": "",
+                "price": "15.9"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 1,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "cinescore professional soundtrack edition",
+                "manufacturer": "sony-pictures-digital-entertainment",
+                "price": "249.95"
+            },
+            "entity_2": {
+                "title": "the sky 6 professional edition astronomy software",
+                "manufacturer": "",
+                "price": "189.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 119,
+                "output_tokens": 1,
+                "cost": 0.0006100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "starry night astronomy screensaver win/mac",
+                "manufacturer": "imaginova",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "orion/imaginova starry night screensaver",
+                "manufacturer": "",
+                "price": "16.27"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 1,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "spy sweeper w/antivirus family edition",
+                "manufacturer": "webroot software",
+                "price": "49.95"
+            },
+            "entity_2": {
+                "title": "webroot software inc 50210 spy sweeper w/antivirus family edition ( mass merchant ) win 2000 xp",
+                "manufacturer": "",
+                "price": "41.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 134,
+                "output_tokens": 1,
+                "cost": 0.0006850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "acad vegas movie studio + dvd 8 platinum",
+                "manufacturer": "sony-pictures-digital-entertainment",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "vegas movie studiodvd +8 plat",
+                "manufacturer": "sony creative software",
+                "price": "92.99"
+            },
+            "pred": "yes",
+            "label": 0,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.28,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft windows vista business full version [ dvd ]",
+                "manufacturer": "microsoft",
+                "price": "299.95"
+            },
+            "entity_2": {
+                "title": "microsoft ( r ) windows ( r ) xp professional edition with sp2",
+                "manufacturer": "",
+                "price": "199.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 124,
+                "output_tokens": 1,
+                "cost": 0.000635
+            }
+        },
+        {
+            "entity_1": {
+                "title": "instant immersion french deluxe 2.0",
+                "manufacturer": "topics entertainment",
+                "price": "49.99"
+            },
+            "entity_2": {
+                "title": "instant immers spanish dlux 2",
+                "manufacturer": "",
+                "price": "36.11"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 114,
+                "output_tokens": 2,
+                "cost": 0.0006000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe creative suite cs3 master collection upsell",
+                "manufacturer": "adobe",
+                "price": "1999.0"
+            },
+            "entity_2": {
+                "title": "adobe production premium cs3 software suite for mac av production software",
+                "manufacturer": "",
+                "price": "1698.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 124,
+                "output_tokens": 1,
+                "cost": 0.000635
+            }
+        },
+        {
+            "entity_1": {
+                "title": "the sims 2 ( mac )",
+                "manufacturer": "aspyr media",
+                "price": "49.99"
+            },
+            "entity_2": {
+                "title": "aspyr the sims 2",
+                "manufacturer": "",
+                "price": "45.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "family tree maker version 16 collectors edition sb cs",
+                "manufacturer": "encore software",
+                "price": "99.99"
+            },
+            "entity_2": {
+                "title": "encore software 10861 family tree maker version 16 collectors edition sb cs",
+                "manufacturer": "",
+                "price": "81.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hoyle texas hold 'em poker ( jewel case )",
+                "manufacturer": "encore",
+                "price": "9.99"
+            },
+            "entity_2": {
+                "title": "eagle games egl 150 tournament poker no limit texas hold 'em",
+                "manufacturer": "eagle games",
+                "price": "7.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 128,
+                "output_tokens": 1,
+                "cost": 0.0006550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "multiplication and division grades 3-4",
+                "manufacturer": "school zone",
+                "price": "9.99"
+            },
+            "entity_2": {
+                "title": "school zone interactive multiplication & division 3-4 on track software",
+                "manufacturer": "",
+                "price": "9.45"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 121,
+                "output_tokens": 2,
+                "cost": 0.000635
+            }
+        },
+        {
+            "entity_1": {
+                "title": "e-mu em8685 beat garden x emulator x2/proteus x2 soundset",
+                "manufacturer": "e-mu",
+                "price": "129.99"
+            },
+            "entity_2": {
+                "title": "e-mu beat garden x for emulator x and proteus x software modules sounds for software",
+                "manufacturer": "",
+                "price": "69.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 137,
+                "output_tokens": 1,
+                "cost": 0.0007000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "i spy fantasy v. 2 with i spy book & mini cd",
+                "manufacturer": "topics entertainment",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "topics entertainment i spy fantasy w / i spy bk & mini cd",
+                "manufacturer": "",
+                "price": "17.55"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.49,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! master landscape professional & home design v 10.0",
+                "manufacturer": "punch ! software",
+                "price": "69.95"
+            },
+            "entity_2": {
+                "title": "punch software 85100 master landscape professional & home design v 10.0",
+                "manufacturer": "",
+                "price": "61.8"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 132,
+                "output_tokens": 1,
+                "cost": 0.0006750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "instant immersion hawaiian audio",
+                "manufacturer": "topics entertainment",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "instant immers italian dlux 2 .",
+                "manufacturer": "",
+                "price": "36.11"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 109,
+                "output_tokens": 1,
+                "cost": 0.0005600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "human body 360",
+                "manufacturer": "megasystems",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "human body 360 megasystems",
+                "manufacturer": "",
+                "price": "29.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 111,
+                "output_tokens": 1,
+                "cost": 0.0005700000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microspot macdraft professional ( mac )",
+                "manufacturer": "microspot ltd.",
+                "price": "349.99"
+            },
+            "entity_2": {
+                "title": "orgchart professional 1.3",
+                "manufacturer": "",
+                "price": "39.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.82,
+            "tokens": {
+                "input_tokens": 115,
+                "output_tokens": 2,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "mediapilot kit",
+                "manufacturer": "susteen",
+                "price": "39.95"
+            },
+            "entity_2": {
+                "title": "mediapilot kit",
+                "manufacturer": "",
+                "price": "29.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 108,
+                "output_tokens": 1,
+                "cost": 0.000555
+            }
+        },
+        {
+            "entity_1": {
+                "title": "cosmic blobs : lab rat edition ( win & mac )",
+                "manufacturer": "solidworks corporation",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "cosmic blobs : the lab rat edition by solidworks",
+                "manufacturer": "",
+                "price": "33.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! professional home design",
+                "manufacturer": "punch ! software",
+                "price": "89.99"
+            },
+            "entity_2": {
+                "title": "punch software 14100 punch ! professional home design suite for windows",
+                "manufacturer": "punch software",
+                "price": "62.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 125,
+                "output_tokens": 1,
+                "cost": 0.00064
+            }
+        },
+        {
+            "entity_1": {
+                "title": "professor teaches windows xp",
+                "manufacturer": "individual software",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "microsoft windows xp professional edition ( upgrade )",
+                "manufacturer": "",
+                "price": "199.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.68,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "3d home architect home v. 8 by encore software",
+                "manufacturer": "encore software",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "marine aquarium & goldfish screen saver by encore software",
+                "manufacturer": "",
+                "price": "19.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.28,
+            "tokens": {
+                "input_tokens": 122,
+                "output_tokens": 1,
+                "cost": 0.0006250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe audition 2.0",
+                "manufacturer": "adobe",
+                "price": "349.0"
+            },
+            "entity_2": {
+                "title": "adobe 22011152 audition2 win retail ue 1u",
+                "manufacturer": "",
+                "price": "296.2"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 120,
+                "output_tokens": 1,
+                "cost": 0.0006150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "marine aquarium 2.0 ( mac )",
+                "manufacturer": "encore",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "marine aquarium & goldfish screen saver by encore software",
+                "manufacturer": "",
+                "price": "19.99"
+            },
+            "pred": "yes",
+            "label": 0,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 118,
+                "output_tokens": 1,
+                "cost": 0.0006050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "webroot spy sweeper antispyware 5.x",
+                "manufacturer": "webroot software",
+                "price": "29.95"
+            },
+            "entity_2": {
+                "title": "webroot software inc 66210 spy sweeper ( mass merchant ) ( win 98 me 2000 xp )",
+                "manufacturer": "",
+                "price": "25.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.63,
+            "tokens": {
+                "input_tokens": 135,
+                "output_tokens": 1,
+                "cost": 0.0006900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "photo explosion 3.0",
+                "manufacturer": "nova development",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "photo explosion deluxe 3.0 nova",
+                "manufacturer": "",
+                "price": "49.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 2.78,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "elementary school advantage 2007",
+                "manufacturer": "encore software",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "encore software 10444 elementary school advantage 2007 sb cs by encore",
+                "manufacturer": "",
+                "price": "25.97"
+            },
+            "pred": "yes",
+            "label": 0,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.47,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "power on now up to date & contact windows",
+                "manufacturer": "power-on-software",
+                "price": "129.99"
+            },
+            "entity_2": {
+                "title": "now software nuw45e1k now up-to-date & contact for windows",
+                "manufacturer": "now software",
+                "price": "114.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 129,
+                "output_tokens": 1,
+                "cost": 0.0006600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe creative suite cs3 design standard upgrade",
+                "manufacturer": "adobe",
+                "price": "399.0"
+            },
+            "entity_2": {
+                "title": "adobe creative suite 3 ( cs3 ) design premium upgrade mac",
+                "manufacturer": "",
+                "price": "569.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 122,
+                "output_tokens": 1,
+                "cost": 0.0006250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "singing coach unlimited",
+                "manufacturer": "carry-a-tune technologies",
+                "price": "99.99"
+            },
+            "entity_2": {
+                "title": "singing coach unlimited electronic learning products",
+                "manufacturer": "",
+                "price": "82.5"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "final draft 7/syd field 's screenwriting workshop dvd bundle",
+                "manufacturer": "final draft",
+                "price": "249.99"
+            },
+            "entity_2": {
+                "title": "final-draft scriptwriter 's suite 2.5 screenwriting software mac/win screen writing software",
+                "manufacturer": "",
+                "price": "279.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 134,
+                "output_tokens": 1,
+                "cost": 0.0006850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "family tree maker version 16 essentials",
+                "manufacturer": "encore",
+                "price": "29.95"
+            },
+            "entity_2": {
+                "title": "encore software 10871 family tree maker version 16 deluxe sb cs by family tree maker",
+                "manufacturer": "",
+                "price": "57.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 125,
+                "output_tokens": 2,
+                "cost": 0.000655
+            }
+        },
+        {
+            "entity_1": {
+                "title": "station access collection",
+                "manufacturer": "sony-creative-software",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "the stevie wonder collection",
+                "manufacturer": "",
+                "price": "34.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 110,
+                "output_tokens": 2,
+                "cost": 0.00058
+            }
+        },
+        {
+            "entity_1": {
+                "title": "coreldraw graphics suite x3 upgrade",
+                "manufacturer": "corel",
+                "price": "179.0"
+            },
+            "entity_2": {
+                "title": "coreldraw graphics suite x3 upgrade windows",
+                "manufacturer": "",
+                "price": "184.5"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 116,
+                "output_tokens": 1,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "test and improve your memory ( dvd box )",
+                "manufacturer": "tri synergy",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "tri synergy inc test & improve your memory scientific brain training",
+                "manufacturer": "",
+                "price": "24.31"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 119,
+                "output_tokens": 1,
+                "cost": 0.0006100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "punch ! master landscape & home design",
+                "manufacturer": "punch ! software",
+                "price": "99.99"
+            },
+            "entity_2": {
+                "title": "punch software 25100 punch ! master landscape and home design",
+                "manufacturer": "punch software",
+                "price": "45.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "the print shop 22 pro publisher deluxe sb cs by the print shop",
+                "manufacturer": "encore software",
+                "price": "99.95"
+            },
+            "entity_2": {
+                "title": "encore software 10731 the print shop 22 pro publisherdeluxe sb cs by the print shop",
+                "manufacturer": "",
+                "price": "81.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 135,
+                "output_tokens": 1,
+                "cost": 0.0006900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "brain food games : cranium collection 2006",
+                "manufacturer": "encore",
+                "price": "19.95"
+            },
+            "entity_2": {
+                "title": "encore software 11250 brain food games : cranium collection 2006 win 98 me 2000 xp",
+                "manufacturer": "",
+                "price": "18.97"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 133,
+                "output_tokens": 1,
+                "cost": 0.00068
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft excel 2004 ( mac )",
+                "manufacturer": "microsoft",
+                "price": "229.99"
+            },
+            "entity_2": {
+                "title": "microsoft office 2004 for students and teachers ( mac )",
+                "manufacturer": "",
+                "price": "134.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 121,
+                "output_tokens": 1,
+                "cost": 0.0006200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft data analyzer 2002",
+                "manufacturer": "microsoft",
+                "price": "179.0"
+            },
+            "entity_2": {
+                "title": "microsoft office outlook 2007",
+                "manufacturer": "",
+                "price": "109.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 1,
+                "cost": 0.0005800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft windows small business server cal 2003 license pack 20 client addpack device",
+                "manufacturer": "microsoft software",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "eq771av aba microsoft windows xp professional license and media 1 user cto english -",
+                "manufacturer": "",
+                "price": "137.09"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 2.47,
+            "tokens": {
+                "input_tokens": 132,
+                "output_tokens": 1,
+                "cost": 0.0006750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "learning quickbooks 2007",
+                "manufacturer": "intuit",
+                "price": "39.95"
+            },
+            "entity_2": {
+                "title": "quickbooks ( r )",
+                "manufacturer": "",
+                "price": "103.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 110,
+                "output_tokens": 1,
+                "cost": 0.0005650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe creative suite cs3 design premium upsell",
+                "manufacturer": "adobe",
+                "price": "1599.0"
+            },
+            "entity_2": {
+                "title": "adobe cs3 design premium upgrade",
+                "manufacturer": "",
+                "price": "619.99"
+            },
+            "pred": "yes",
+            "label": 0,
+            "model_output": "To determine if these two entities refer to the same real-world entity, let's compare their attributes:\n\n1. **Title**:\n   - Entity 1: \"adobe creative suite cs3 design premium upsell\"\n   - Entity 2: \"adobe cs3 design premium upgrade\"\n   - Both titles refer to \"Adobe CS3 Design Premium\" and include terms that suggest an upgrade or upsell.\n\n2. **Manufacturer**:\n   - Entity 1: \"adobe\"\n   - Entity 2: \"\"\n   - The manufacturer is explicitly mentioned as \"adobe\" in Entity 1, while it is missing in Entity 2. However, given the product title, it is reasonable to infer that the manufacturer is Adobe.\n\n3. **Price**:\n   - Entity 1: \"1599.0\"\n   - Entity 2: \"619.99\"\n   - There is a significant difference in price. This could be due to different pricing strategies, versions, or market conditions.\n\nDespite the price discrepancy, the titles and inferred manufacturer suggest that both entities refer to the same product, which is an upgrade version of Adobe CS3 Design Premium.\n\nAnswer: **yes**",
+            "tools_used": [],
+            "latency": 6.06,
+            "tokens": {
+                "input_tokens": 117,
+                "output_tokens": 240,
+                "cost": 0.0041849999999999995
+            }
+        },
+        {
+            "entity_1": {
+                "title": "adobe after effects cs3 upgrade",
+                "manufacturer": "adobe",
+                "price": "299.0"
+            },
+            "entity_2": {
+                "title": "adobe software 22070152 after effects 6.5 pbupgrd",
+                "manufacturer": "",
+                "price": "507.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 123,
+                "output_tokens": 1,
+                "cost": 0.0006300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "national geographic presents : redshift planetarium",
+                "manufacturer": "topics entertainment",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "redshift 5 ( national geographic presents ) ( win 98 me 2000 xp )",
+                "manufacturer": "",
+                "price": "39.99"
+            },
+            "pred": "yes",
+            "label": 0,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 126,
+                "output_tokens": 1,
+                "cost": 0.0006450000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "trudy 's time and place house ages 3-6",
+                "manufacturer": "ibm",
+                "price": ""
+            },
+            "entity_2": {
+                "title": "trudys time & place house",
+                "manufacturer": "",
+                "price": "9.9"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 115,
+                "output_tokens": 1,
+                "cost": 0.0005900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft office & windows training professional",
+                "manufacturer": "topics entertainment",
+                "price": "49.95"
+            },
+            "entity_2": {
+                "title": "microsoft office outlook 2007",
+                "manufacturer": "",
+                "price": "109.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 113,
+                "output_tokens": 2,
+                "cost": 0.000595
+            }
+        },
+        {
+            "entity_1": {
+                "title": "webroot spysweeper antispyware 3 user",
+                "manufacturer": "webroot software",
+                "price": "39.99"
+            },
+            "entity_2": {
+                "title": "webroot software 65210 spy sweeper 3 pc",
+                "manufacturer": "webroot software",
+                "price": "31.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 128,
+                "output_tokens": 1,
+                "cost": 0.0006550000000000001
+            }
+        }
+    ],
+    "configs": {
+        "libem": {
+            "parameter": {
+                "model": "gpt-4o",
+                "temperature": "0",
+                "guess": "False",
+                "always": "None"
+            },
+            "prompt": {
+                "role": "You are Libem, an entity matcher that determine if two entity descriptions refer to the same entity."
+            },
+            "browse": {
+                "parameter": {
+                    "engine": "duckduckgo"
+                },
+                "prompt": {
+                    "description": "Browse the web to find additional information for a given entity.",
+                    "rule": "Rules to follow:\n- Use only when you think it would help with the matching task."
+                }
+            },
+            "match": {
+                "parameter": {
+                    "model": "gpt-4o",
+                    "temperature": "0",
+                    "tools": "[]",
+                    "cot": "False",
+                    "confidence": "False"
+                },
+                "prompt": {
+                    "role": "You are an entity matcher that determine whethertwo entity descriptions refer to the same real-world entity.",
+                    "rule": "",
+                    "experience": "",
+                    "output": "At the end, give your answer in the form of a single 'yes' or 'no'.",
+                    "query": "Entity 1: {left}.\nEntity 2: {right}."
+                }
+            },
+            "tune": {
+                "learn": {
+                    "parameter": {
+                        "model": "gpt-4-turbo",
+                        "temperature": "0"
+                    },
+                    "prompt": {
+                        "recap_success": "You achieve successes on entity matching in the following examples: {successes}",
+                        "gen_rules": "generate rules to follow from the mistakes,in the form of a rule list line by line,with each rule in a new line with no bullet point.",
+                        "recap_mistake": "You made mistakes on entity matching in the following examples: {mistakes}",
+                        "gen_experiences": "summarize the type(s) of error(s) you made,if you notice multiple errors, put them in a list,with each error in a new line with no bullet point."
+                    }
+                }
+            }
+        }
+    }
+}

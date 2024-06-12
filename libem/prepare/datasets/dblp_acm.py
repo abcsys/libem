@@ -3,7 +3,7 @@ import json
 
 import libem.prepare.datasets as datasets
 
-description = "The DBLP-ACM dataset for entity resolution derives " \
+description = "The DBLP-ACM dataset derives " \
               "from the DBLP and ACM digital libraries."
 
 # sample data:

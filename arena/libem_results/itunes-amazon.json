@@ -1,0 +1,3279 @@
+{
+    "command": [
+        "--name",
+        "itunes-amazon",
+        "--num-pairs",
+        "0"
+    ],
+    "stats": {
+        "precision": 100.0,
+        "recall": 86.0,
+        "f1": 92.47,
+        "latency": 44.11,
+        "tokens": {
+            "input_tokens": 25435,
+            "output_tokens": 124,
+            "cost": 0.129035
+        },
+        "confusion_matrix": {
+            "tp": 43,
+            "tn": 50,
+            "fp": 0,
+            "fn": 7
+        }
+    },
+    "results": [
+        {
+            "entity_1": {
+                "song_name": "I Know ( feat . Chris Brown , Wiz Khalifa & Seven )",
+                "artist_name": "Diddy - Dirty Money , Chris Brown , Wiz Khalifa & Seven",
+                "album_name": "Last Train to Paris",
+                "genre": "Hip-Hop/Rap , Music , R&B / Soul , Contemporary R&B , Dance , Rap",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2010 Bad Boy/Interscope Records",
+                "time": "4:31",
+                "released": "14-Dec-10"
+            },
+            "entity_2": {
+                "song_name": "I Know [ feat . Wiz Khalifa ] [ Explicit ]",
+                "artist_name": "Diddy - Dirty Money",
+                "album_name": "Last Train To Paris [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2010 Bad Boy/Interscope Records",
+                "time": "4:31",
+                "released": "December 14 , 2010"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 276,
+                "output_tokens": 1,
+                "cost": 0.0013950000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Titanium ( Cazzette 's Ant Seeking Hamster Mix ) [ feat . Sia ]",
+                "artist_name": "David Guetta",
+                "album_name": "Titanium ( Remixes ) [ feat . Sia ]",
+                "genre": "Dance , Music , Electronic",
+                "price": "$ 0.99",
+                "copyright": "2011 What A Music Ltd , licence exclusive Parlophone Music France",
+                "time": "6:37",
+                "released": "20-Jan-12"
+            },
+            "entity_2": {
+                "song_name": "Hey Mama ( feat . Nicki Minaj , Bebe Rexha & Afrojack ) [ DJ LBR Remix ]",
+                "artist_name": "David Guetta",
+                "album_name": "Hey Mama ( feat . Nicki Minaj , Bebe Rexha & Afrojack ) [ Remixes EP ]",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 Michelle Kelly",
+                "time": "3:23",
+                "released": "May 12 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 283,
+                "output_tokens": 2,
+                "cost": 0.001445
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "True Colors ( feat . Nicki Minaj )",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood",
+                "genre": "Hip-Hop/Rap , Music , Rap , East Coast Rap , Hardcore Rap , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "4:15",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "True Colors ( feat . Nicki Minaj ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "4:15",
+                "released": "August 19 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 292,
+                "output_tokens": 1,
+                "cost": 0.0014750000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "As Long As You Love Me ( feat . Big Sean ) [ Audien Luvstep Mix ]",
+                "artist_name": "Justin Bieber",
+                "album_name": "As Long As You Love Me ( Remixes ) [ feat . Big Sean ]",
+                "genre": "Dance , Music , Rock",
+                "price": "$ 1.29",
+                "copyright": "2012 The Island Def Jam Music Group",
+                "time": "4:40",
+                "released": "11-Sep-12"
+            },
+            "entity_2": {
+                "song_name": "Love Me Like You Do ( Sax Instrumental Version )",
+                "artist_name": "Justin Ward",
+                "album_name": "Love Me Like You Do - Made Popular By Ellie Goulding",
+                "genre": "Pop",
+                "price": "$ 0.89",
+                "copyright": "( c ) 2015 Covered Records",
+                "time": "3:16",
+                "released": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 250,
+                "output_tokens": 1,
+                "cost": 0.001265
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Every Time You Go",
+                "artist_name": "Ellie Goulding",
+                "album_name": "Bright Lights ( Deluxe Version )",
+                "genre": "Pop , Music , Dance , Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2010 Polydor Ltd. ( UK )",
+                "time": "3:25",
+                "released": "29-Nov-10"
+            },
+            "entity_2": {
+                "song_name": "I Know You Care",
+                "artist_name": "Ellie Goulding",
+                "album_name": "Halcyon ( Deluxe )",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Polydor Ltd. ( UK )",
+                "time": "3:26",
+                "released": "August 27 , 2013"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 237,
+                "output_tokens": 1,
+                "cost": 0.0012000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "The Whisperer ( feat . Sia )",
+                "artist_name": "David Guetta",
+                "album_name": "Listen",
+                "genre": "Dance , Music , Electronic , House , Rock , French Pop",
+                "price": "$ 1.29",
+                "copyright": "2014 What A Music Ltd. under exclusive license to Parlophone/Warner Music France , under exclusive license to Atlantic Recording Corporation for the United States . All rights reserved",
+                "time": "3:54",
+                "released": "24-Nov-14"
+            },
+            "entity_2": {
+                "song_name": "No Money no Love ( feat . Elliphant & Ms. Dynamite )",
+                "artist_name": "David Guetta",
+                "album_name": "Listen ( Deluxe )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 If Moving Your Mine",
+                "time": "3:57",
+                "released": "November 24 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 264,
+                "output_tokens": 1,
+                "cost": 0.0013350000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Backwoods Beauty Queen",
+                "artist_name": "Florida Georgia Line",
+                "album_name": "Anything Like Me - EP",
+                "genre": "Country , Music , Honky Tonk , Urban Cowboy , Contemporary Country",
+                "price": "$ 0.99",
+                "copyright": "2011 Florida Georgia Line",
+                "time": "4:15",
+                "released": "14-Dec-10"
+            },
+            "entity_2": {
+                "song_name": "Backwoods Beauty Queen",
+                "artist_name": "Florida Georgia Line",
+                "album_name": "Anything Like Me",
+                "genre": "Country",
+                "price": "$ 0.99",
+                "copyright": "2011 Florida Georgia Line",
+                "time": "4:15",
+                "released": "December 14 , 2010"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 220,
+                "output_tokens": 1,
+                "cost": 0.001115
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "If I Am a Stranger ( Live In Amsterdam )",
+                "artist_name": "Ryan Adams",
+                "album_name": "Live After Deaf ( Live ) [ Complete Collection ]",
+                "genre": "Singer/Songwriter , Music , Rock",
+                "price": "$ 0.99",
+                "copyright": "2012 PAXAM RECORDS",
+                "time": "5:10",
+                "released": "2-Jul-12"
+            },
+            "entity_2": {
+                "song_name": "The Rescue Blues ( Live in London 1 )",
+                "artist_name": "Ryan Adams",
+                "album_name": "Live After Deaf ( Collection )",
+                "genre": "Folk , Rock",
+                "price": "$ 0.99",
+                "copyright": "2012 PAXAM RECORDS",
+                "time": "3:25",
+                "released": "July 2 , 2012"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 239,
+                "output_tokens": 2,
+                "cost": 0.0012250000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Clean",
+                "artist_name": "Ryan Adams",
+                "album_name": "1989",
+                "genre": "Rock , Music",
+                "price": "$ 1.29",
+                "copyright": "2015 PaxAmericana Recording Company Under Exclusive License To Blue Note Records",
+                "time": "4:23",
+                "released": "21-Sep-15"
+            },
+            "entity_2": {
+                "song_name": "Clean",
+                "artist_name": "Ryan Adams",
+                "album_name": "1989",
+                "genre": "Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 PaxAmericana Recording Company Under Exclusive License To Blue Note Records",
+                "time": "4:23",
+                "released": "September 21 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 219,
+                "output_tokens": 1,
+                "cost": 0.00111
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Going Away For a While",
+                "artist_name": "Brett Eldredge",
+                "album_name": "Illinois",
+                "genre": "Country , Music , Contemporary Country , Honky Tonk , Traditional Country",
+                "price": "$ 1.29",
+                "copyright": "2015 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:13",
+                "released": "11-Sep-15"
+            },
+            "entity_2": {
+                "song_name": "Going Away For A While",
+                "artist_name": "Brett Eldredge",
+                "album_name": "Illinois",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( c ) Phonotype",
+                "time": "3:15",
+                "released": "September 11 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 245,
+                "output_tokens": 1,
+                "cost": 0.0012400000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Know",
+                "artist_name": "Fifth Harmony",
+                "album_name": "Reflection",
+                "genre": "Pop , Music , R&B / Soul , Teen Pop , Dance , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 , 2015 Simco Ltd. under exclusive license to Epic Records , a division of Sony Music Entertainment",
+                "time": "2:57",
+                "released": "30-Jan-15"
+            },
+            "entity_2": {
+                "song_name": "We Know",
+                "artist_name": "Fifth Harmony",
+                "album_name": "Reflection",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Big Machine Records , LLC .",
+                "time": "2:57",
+                "released": "January 30 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 235,
+                "output_tokens": 1,
+                "cost": 0.00119
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Dangerous ( feat . Sam Martin ) [ Robin Schulz Remix ] [ Radio Edit ]",
+                "artist_name": "David Guetta",
+                "album_name": "Listen ( Deluxe Version )",
+                "genre": "Dance , Music , Rock , House , Electronic , French Pop",
+                "price": "$ 1.29",
+                "copyright": "2014 What A Music Ltd. under exclusive license to Parlophone/Warner Music France , under exclusive license to Atlantic Recording Corporation for the United States . All rights reserved .",
+                "time": "3:20",
+                "released": "24-Nov-14"
+            },
+            "entity_2": {
+                "song_name": "S.T.O.P ( feat . Ryan Tedder )",
+                "artist_name": "David Guetta",
+                "album_name": "Listen",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 If Moving Your Mine",
+                "time": "3:34",
+                "released": "November 24 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 270,
+                "output_tokens": 1,
+                "cost": 0.0013650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Toyfriend ( feat . Wynter Gordon ) [ Continuous Mix Version ]",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2010 Gum Prod licence exclusive Parlophone Music France",
+                "time": "2:51",
+                "released": "21-Aug-09"
+            },
+            "entity_2": {
+                "song_name": "Still Pimpin ' ( Album Version ( Explicit ) ) [ feat . Kamikazi ] [ Explicit ]",
+                "artist_name": "David Banner",
+                "album_name": "Mississippi-The Album ( Explicit Version )",
+                "genre": "Pop",
+                "price": "$ 0.99",
+                "copyright": "( C ) 2003 Universal Records , a Division of UMG Recordings , Inc.",
+                "time": "7:11",
+                "released": "May 20 , 2003"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 258,
+                "output_tokens": 1,
+                "cost": 0.0013050000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Dem Boyz",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Rap , Hardcore Rap , East Coast Rap , Rock",
+                "price": "$ 1.99",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "We Dem Boyz Remix ( feat . Rick Ross , ScHoolboy Q & Nas ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe ) [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "5:19",
+                "released": "August 19 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.56,
+            "tokens": {
+                "input_tokens": 302,
+                "output_tokens": 1,
+                "cost": 0.001525
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Toyfriend ( feat . Wynter Gordon ) [ Continuous Mix Version ]",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2010 Gum Prod licence exclusive Parlophone Music France",
+                "time": "2:51",
+                "released": "21-Aug-09"
+            },
+            "entity_2": {
+                "song_name": "Choose Me ( Album Version ( Edited ) ) [ feat . Sky ] [ Clean ]",
+                "artist_name": "David Banner",
+                "album_name": "Mississippi-The Album ( Explicit Version )",
+                "genre": "Pop",
+                "price": "$ 0.99",
+                "copyright": "( C ) 2003 Universal Records , a Division of UMG Recordings , Inc.",
+                "time": "4:24",
+                "released": "May 20 , 2003"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.54,
+            "tokens": {
+                "input_tokens": 254,
+                "output_tokens": 2,
+                "cost": 0.0013000000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "6PM In New York",
+                "artist_name": "Drake",
+                "album_name": "If You 're Reading This It 's Too Late",
+                "genre": "Hip-Hop/Rap , Music , Hardcore Rap , Rap , R&B / Soul , Contemporary R&B",
+                "price": "$ 1.29",
+                "copyright": "2015 Cash Money Records Inc.",
+                "time": "4:43",
+                "released": "13-Feb-15"
+            },
+            "entity_2": {
+                "song_name": "6PM In New York [ Explicit ]",
+                "artist_name": "Drake",
+                "album_name": "If You 're Reading This It 's Too Late [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 Cash Money Records Inc.",
+                "time": "4:43",
+                "released": "February 13 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 254,
+                "output_tokens": 1,
+                "cost": 0.0012850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Skrillex Orchestral Suite By Varien ( Bonus Track )",
+                "artist_name": "Skrillex",
+                "album_name": "Bangarang",
+                "genre": "Dance , Music , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2012 Big Beat Records , Inc. for the United States and WEA International for the world outside the United States .",
+                "time": "6:54",
+                "released": "27-Dec-11"
+            },
+            "entity_2": {
+                "song_name": "Skrillex Orchestral Suite By Varien ( Bonus Track )",
+                "artist_name": "Skrillex",
+                "album_name": "Bangarang EP [ Explicit ]",
+                "genre": "Dance & Electronic , Dubstep",
+                "price": "$ 1.29",
+                "copyright": "Elektroshok Records",
+                "time": "6:54",
+                "released": "December 27 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.65,
+            "tokens": {
+                "input_tokens": 260,
+                "output_tokens": 1,
+                "cost": 0.0013150000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Dem Boyz ( Louis Futon Remix )",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "We Dem Boyz ( Louis Futon Remix ) - Single",
+                "genre": "Electronic,Music,Hip-Hop / Rap , Rap",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "4:19",
+                "released": "1-Jul-14"
+            },
+            "entity_2": {
+                "song_name": "We Dem Boyz [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "We Dem Boyz [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:45",
+                "released": "February 11 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 289,
+                "output_tokens": 1,
+                "cost": 0.0014600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Son of Sam ( Bonus Track )",
+                "artist_name": "Shinedown",
+                "album_name": "The Sound of Madness ( Deluxe Version )",
+                "genre": "Rock , Music , Metal , Alternative , Grunge , Hard Rock",
+                "price": "Album Only",
+                "copyright": "2008 Atlantic Recording Corp. for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "3:37",
+                "released": "23-Jun-08"
+            },
+            "entity_2": {
+                "song_name": "Son Of Sam ( Bonus Track )",
+                "artist_name": "Shinedown",
+                "album_name": "The Sound Of Madness [ Explicit ] [ Deluxe ]",
+                "genre": "Rock",
+                "price": "$ 0.99",
+                "copyright": "2005 Z Records",
+                "time": "3:37",
+                "released": "June 24 , 2008"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 251,
+                "output_tokens": 2,
+                "cost": 0.0012850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Who I Am With You",
+                "artist_name": "Chris Young",
+                "album_name": "A.M.",
+                "genre": "Country , Music , Urban Cowboy , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 Sony Music Entertainment",
+                "time": "3:13",
+                "released": "16-Sep-13"
+            },
+            "entity_2": {
+                "song_name": "Who I Am With You",
+                "artist_name": "Chris Young",
+                "album_name": "A.M.",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2010 Hollywood Records , Inc.",
+                "time": "3:11",
+                "released": "September 16 , 2013"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 221,
+                "output_tokens": 2,
+                "cost": 0.0011350000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Over When It 's Over ( Live )",
+                "artist_name": "Eric Church",
+                "album_name": "Caught In the Act ( Live )",
+                "genre": "Country , Music , Contemporary Country , Urban Cowboy",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 EMI Records Nashville . All rights reserved . Unauthorized reproduction is a violation of applicable laws . Manufactured by Capitol Records Nashville , 401 Commerce Street , Suite 1100 , Nashville , TN 37219",
+                "time": "2:59",
+                "released": "5-Apr-13"
+            },
+            "entity_2": {
+                "song_name": "Over When It 's Over",
+                "artist_name": "Eric Church",
+                "album_name": "Caught In The Act : Live",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 EMI Records Nashville",
+                "time": "2:59",
+                "released": "April 5 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 269,
+                "output_tokens": 1,
+                "cost": 0.00136
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Whateva ( feat . Monty )",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe )",
+                "genre": "Hip-Hop/Rap , Music , Rap",
+                "price": "Album Only",
+                "copyright": "2015 300 Entertainment/RGF Productions",
+                "time": "5:11",
+                "released": ""
+            },
+            "entity_2": {
+                "song_name": "Whateva ( feat . Monty ) [ Explicit ]",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe ) [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2000 Mute Records Ltd. , a BMG Company , under exclusive license to INgrooves",
+                "time": "5:11",
+                "released": "September 25 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 1,
+                "cost": 0.0012900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I 'm a Machine ( feat . Crystal Nicole and Tyrese Gibson )",
+                "artist_name": "David Guetta",
+                "album_name": "Nothing But the Beat",
+                "genre": "Dance , Music , Rock , House , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2011 What A Music Ltd , Licence exclusive Parlophone Music France",
+                "time": "3:34",
+                "released": "26-Aug-11"
+            },
+            "entity_2": {
+                "song_name": "I Can Only Imagine ( Feat . Chris Brown & Lil Wayne )",
+                "artist_name": "David Guetta",
+                "album_name": "Nothing But The Beat",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2009 Andy Henningsen",
+                "time": "3:29",
+                "released": "August 26 , 2011"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 1.53,
+            "tokens": {
+                "input_tokens": 248,
+                "output_tokens": 2,
+                "cost": 0.00127
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "VHS Outro ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "1:25",
+                "released": "30-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "Moving Day ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS [ Clean ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "0:19",
+                "released": "June 30 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 236,
+                "output_tokens": 1,
+                "cost": 0.001195
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Over When It 's Over",
+                "artist_name": "Eric Church",
+                "album_name": "Chief",
+                "genre": "Country , Music , Rock , Contemporary Country , Urban Cowboy",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2011 EMI Records Nashville . All rights reserved . Unauthorized reproduction is a violation of applicable laws . Manufactured by Capitol Records Nashville , 3322 West End Avenue , 11th Floor , Nashville , TN 37203",
+                "time": "2:39",
+                "released": "22-Jul-11"
+            },
+            "entity_2": {
+                "song_name": "Over When It 's Over",
+                "artist_name": "Eric Church",
+                "album_name": "Chief",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2011 EMI Records Nashville",
+                "time": "2:39",
+                "released": "July 22 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 259,
+                "output_tokens": 1,
+                "cost": 0.0013100000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "My Armor Is Iron",
+                "artist_name": "Howard Shore",
+                "album_name": "The Hobbit : The Desolation of Smaug ( Original Motion Picture Soundtrack ) [ Special Edition ]",
+                "genre": "Soundtrack , Music , Soundtrack , Classical , Original Score",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 WaterTower Music",
+                "time": "5:16",
+                "released": "10-Dec-13"
+            },
+            "entity_2": {
+                "song_name": "My Armor Is Iron",
+                "artist_name": "Howard Shore",
+                "album_name": "The Hobbit : The Desolation of Smaug ( Original Motion Picture Soundtrack ) [ Special Edition ]",
+                "genre": "Soundtracks",
+                "price": "$ 1.29",
+                "copyright": "2013 WaterTower Music / Warner Bros. . Entertainment / Metro - Goldwyn Mayer Pictures Inc.",
+                "time": "5:16",
+                "released": "December 10 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.47,
+            "tokens": {
+                "input_tokens": 268,
+                "output_tokens": 1,
+                "cost": 0.001355
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "The Tin Man",
+                "artist_name": "Kenny Chesney",
+                "album_name": "All I Need to Know",
+                "genre": "Country , Music , Urban Cowboy , Contemporary Country",
+                "price": "$ 0.99",
+                "copyright": "1995 , BMG Entertainment",
+                "time": "3:25",
+                "released": "13-Jun-95"
+            },
+            "entity_2": {
+                "song_name": "The Tin Man",
+                "artist_name": "Kenny Chesney",
+                "album_name": "All I Need To Know",
+                "genre": "Country",
+                "price": "$ 0.99",
+                "copyright": "2014 Scotty 2 Music Ascap",
+                "time": "3:26",
+                "released": "June 13 , 1995"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 222,
+                "output_tokens": 1,
+                "cost": 0.0011250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Dem Boyz",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Rap , East Coast Rap , Hardcore Rap , Rock",
+                "price": "$ 1.99",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "We Dem Boyz Remix ( feat . Rick Ross , ScHoolboy Q & Nas ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe ) [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "5:19",
+                "released": "August 19 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.5,
+            "tokens": {
+                "input_tokens": 302,
+                "output_tokens": 2,
+                "cost": 0.0015400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Toyfriend ( feat . Wynter Gordon ) [ Continuous Mix Version ]",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2010 Gum Prod licence exclusive Parlophone Music France",
+                "time": "2:51",
+                "released": "21-Aug-09"
+            },
+            "entity_2": {
+                "song_name": "Still Pimpin ' ( Album Version ( Explicit ) ) [ feat . Kamikazi ] [ Explicit ]",
+                "artist_name": "David Banner",
+                "album_name": "Mississippi-The Album ( Explicit Version )",
+                "genre": "Pop",
+                "price": "$ 0.99",
+                "copyright": "( C ) 2003 Universal Records , a Division of UMG Recordings , Inc.",
+                "time": "7:11",
+                "released": "May 20 , 2003"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 258,
+                "output_tokens": 1,
+                "cost": 0.0013050000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Sunburn ( Bonus Track )",
+                "artist_name": "Ed Sheeran",
+                "album_name": "#NAME ?",
+                "genre": "Singer/Songwriter , Music",
+                "price": "$ 1.29",
+                "copyright": "2011 Warner Music UK Limited",
+                "time": "4:35",
+                "released": "9-Sep-11"
+            },
+            "entity_2": {
+                "song_name": "Sunburn ( Deluxe Edition )",
+                "artist_name": "Ed Sheeran",
+                "album_name": "#NAME ?",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "Doll records",
+                "time": "4:35",
+                "released": "September 9 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 210,
+                "output_tokens": 1,
+                "cost": 0.0010650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Get Free ( Andy C remix )",
+                "artist_name": "Major Lazer",
+                "album_name": "Get Free - Single",
+                "genre": "Electronic , Music , Dance , Rock , Electronica",
+                "price": "$ 1.29",
+                "copyright": "2013 Secretly Canadian / Mad Decent",
+                "time": "5:31",
+                "released": "27-Feb-13"
+            },
+            "entity_2": {
+                "song_name": "Break Free [ feat . Zedd ]",
+                "artist_name": "Major Lazer",
+                "album_name": "Get It : Hip-Hop & Pop for Now [ Explicit ]",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2013 Secretly Canadian / Mad Decent",
+                "time": "3:34",
+                "released": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 233,
+                "output_tokens": 1,
+                "cost": 0.00118
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Thinking About You ( feat . Ayah Marar ) [ Michael Brun Remix ]",
+                "artist_name": "Calvin Harris",
+                "album_name": "Thinking About You ( feat . Ayah Marar ) [ Remixes ]",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2013 Sony Music Entertainment UK Limited",
+                "time": "5:42",
+                "released": "2-Aug-13"
+            },
+            "entity_2": {
+                "song_name": "Blame ( Burns Remix )",
+                "artist_name": "Calvin Harris feat . John Newman",
+                "album_name": "Blame ( Remixes )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2013 1i Music",
+                "time": "4:17",
+                "released": "November 10 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 245,
+                "output_tokens": 1,
+                "cost": 0.0012400000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Shining",
+                "artist_name": "X Ambassadors",
+                "album_name": "The Reason - EP",
+                "genre": "Alternative , Music , Rock , Adult Alternative , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "3:40",
+                "released": "10-Aug-15"
+            },
+            "entity_2": {
+                "song_name": "Shining",
+                "artist_name": "X Ambassadors",
+                "album_name": "The Reason EP",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "3:37",
+                "released": "August 10 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 229,
+                "output_tokens": 1,
+                "cost": 0.0011600000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Are You Leaving With Him",
+                "artist_name": "Luke Bryan",
+                "album_name": "Spring Break ... Checkin ' Out",
+                "genre": "Country , Music , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "2015 Capitol Records Nashville",
+                "time": "3:23",
+                "released": "10-Mar-15"
+            },
+            "entity_2": {
+                "song_name": "Are You Leaving With Him",
+                "artist_name": "Luke Bryan",
+                "album_name": "Spring Break ... Checkin ' Out",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 Capitol Records Nashville",
+                "time": "3:24",
+                "released": "March 10 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.51,
+            "tokens": {
+                "input_tokens": 221,
+                "output_tokens": 1,
+                "cost": 0.0011200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Turn Down for What ( feat . Juicy J , 2 Chainz & French Montana ) [ Remix ]",
+                "artist_name": "DJ Snake & Lil Jon",
+                "album_name": "Turn Down for What ( feat . Juicy J , 2 Chainz & French Montana ) [ Remix ] - Single",
+                "genre": "Hip-Hop/Rap , Music",
+                "price": "$ 1.29",
+                "copyright": "2014 Columbia Records , a Division of Sony Music Entertainment",
+                "time": "3:45",
+                "released": "19-May-14"
+            },
+            "entity_2": {
+                "song_name": "Lean On ( Piano Karaoke Accompaniment ) [ Original Key ] [ feat . M\u00cc \u00f7 ]",
+                "artist_name": "Major Lazer , DJ Snake",
+                "album_name": "Lean On ( Piano Karaoke Accompaniment ) [ feat . M\u00cc\u00fc ]",
+                "genre": "Miscellaneous",
+                "price": "$ 0.69",
+                "copyright": "Sing as a star",
+                "time": "3:14",
+                "released": "August 31 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 290,
+                "output_tokens": 2,
+                "cost": 0.0014800000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Dem Boyz",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Rap , East Coast Rap , Hardcore Rap , Rock",
+                "price": "$ 1.99",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "We Dem Boyz Remix ( feat . Rick Ross , ScHoolboy Q & Nas ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe ) [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "5:19",
+                "released": "August 19 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.52,
+            "tokens": {
+                "input_tokens": 302,
+                "output_tokens": 2,
+                "cost": 0.0015400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Whateva ( feat . Monty )",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe )",
+                "genre": "Hip-Hop/Rap , Music , Rap",
+                "price": "Album Only",
+                "copyright": "2015 300 Entertainment/RGF Productions",
+                "time": "5:11",
+                "released": ""
+            },
+            "entity_2": {
+                "song_name": "Whateva ( feat . Monty ) [ Clean ]",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe ) [ Clean ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2000 Mute Records Ltd. , a BMG Company , under exclusive license to INgrooves",
+                "time": "5:11",
+                "released": "September 25 , 2015"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 1,
+                "cost": 0.0012900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Turn Around ( 5,4,3,2,1 ) [ AK Remix ]",
+                "artist_name": "Flo Rida",
+                "album_name": "Turn Around ( 5,4,3,2,1 ) [ Remixes ]",
+                "genre": "Dance,Music,Hip-Hop / Rap , Dirty South , Rap , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2011 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States .",
+                "time": "5:09",
+                "released": "19-Apr-11"
+            },
+            "entity_2": {
+                "song_name": "Good Feeling ( Jaywalker Remix )",
+                "artist_name": "Flo Rida",
+                "album_name": "Good Feeling ( Remixes )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2009 MPL Tours Inc. under exclusive license to StarCon LLC d/b/a Hear MusicTM",
+                "time": "4:51",
+                "released": "November 15 , 2011"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 292,
+                "output_tokens": 1,
+                "cost": 0.0014750000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "VHS Outro ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "1:25",
+                "released": "30-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "Moving Day ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS [ Explicit ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "0:19",
+                "released": "June 30 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 236,
+                "output_tokens": 2,
+                "cost": 0.0012100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Bad Blood ( Karaoke Version )",
+                "artist_name": "Taylor Swift",
+                "album_name": "Taylor Swift Karaoke : 1989",
+                "genre": "Pop , Music",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2014 Big Machine Records , LLC",
+                "time": "3:29",
+                "released": "3-Mar-15"
+            },
+            "entity_2": {
+                "song_name": "Bad Blood",
+                "artist_name": "Taylor Swift",
+                "album_name": "1989",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Big Machine Records , LLC .",
+                "time": "3:31",
+                "released": "October 27 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 221,
+                "output_tokens": 2,
+                "cost": 0.0011350000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "One Mississippi ( Live from CMT `` Listen Up '' )",
+                "artist_name": "Brett Eldredge",
+                "album_name": "Bring You Back",
+                "genre": "Country , Music , Honky Tonk , Traditional Country , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "2013 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "4:10",
+                "released": "6-Aug-13"
+            },
+            "entity_2": {
+                "song_name": "One Mississippi",
+                "artist_name": "Brett Eldredge",
+                "album_name": "Bring You Back",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "2011 Toraay Records",
+                "time": "3:45",
+                "released": "August 6 , 2013"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 247,
+                "output_tokens": 1,
+                "cost": 0.0012500000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I Thought You Knew",
+                "artist_name": "Keith Urban",
+                "album_name": "Keith Urban",
+                "genre": "Country , Music , Honky Tonk , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "1999 Capitol Records Nashville",
+                "time": "3:51",
+                "released": "19-Oct-99"
+            },
+            "entity_2": {
+                "song_name": "I Thought You Knew",
+                "artist_name": "Keith Urban",
+                "album_name": "Keith Urban",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 1999 Capitol Records Nashville",
+                "time": "3:51",
+                "released": "October 19 , 1999"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 216,
+                "output_tokens": 1,
+                "cost": 0.001095
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Jump ( feat . Nelly Furtado )",
+                "artist_name": "Flo Rida",
+                "album_name": "R.O.O.T.S. ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2009 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "3:28",
+                "released": "30-Mar-09"
+            },
+            "entity_2": {
+                "song_name": "Yayo [ Feat . Brisco , Billy Blue , Ball Greezy , Rick Ross , Red Eyezz , Bred , Pitbull & Ace Hood ] ( Amended Bonus Version )",
+                "artist_name": "Flo Rida",
+                "album_name": "R.O.O.T.S. ( Route Of Overcoming The Struggle ) ( Amended Amazon Exclusive ) [ Clean ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Motown Records , a Division of UMG Recordings , Inc.",
+                "time": "7:53",
+                "released": "March 30 , 2009"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 318,
+                "output_tokens": 2,
+                "cost": 0.0016200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I Do n't Believe You ( Main Version )",
+                "artist_name": "P!NK",
+                "album_name": "Funhouse",
+                "genre": "Pop , Music , R&B / Soul , Dance , Pop/Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 LaFace Recording LLC",
+                "time": "4:36",
+                "released": "28-Oct-08"
+            },
+            "entity_2": {
+                "song_name": "I Do n't Believe You",
+                "artist_name": "P!nk",
+                "album_name": "Funhouse ( Explicit )",
+                "genre": "R&B , Pop",
+                "price": "$ 1.29",
+                "copyright": "( c ) 2006 Roadshow",
+                "time": "4:36",
+                "released": "October 28 , 2008"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 233,
+                "output_tokens": 1,
+                "cost": 0.00118
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Whateva ( feat . Monty )",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe )",
+                "genre": "Hip-Hop/Rap , Music , Rap",
+                "price": "Album Only",
+                "copyright": "2015 300 Entertainment/RGF Productions",
+                "time": "5:11",
+                "released": ""
+            },
+            "entity_2": {
+                "song_name": "For My Team ( feat . Monty ) [ Clean ]",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe ) [ Clean ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2000 Mute Records Ltd. , a BMG Company , under exclusive license to INgrooves",
+                "time": "3:28",
+                "released": "September 25 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.51,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 2,
+                "cost": 0.0013050000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "True Colors ( feat . Nicki Minaj )",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood",
+                "genre": "Hip-Hop/Rap , Music , Rap , East Coast Rap , Hardcore Rap , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "4:15",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "So High ( feat . Ghost Loft ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "4:09",
+                "released": "August 19 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 290,
+                "output_tokens": 2,
+                "cost": 0.0014800000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Tackle Box",
+                "artist_name": "Luke Bryan",
+                "album_name": "I 'll Stay Me",
+                "genre": "Country , Music , Contemporary Country , Pop",
+                "price": "$ 1.29",
+                "copyright": "2006 , 2007 Capitol Records Nashville . All rights reserved . Unauthorized reproduction is a violation of applicable laws . Manufactured by Capitol Records Nashville , 3322 West End Avenue , 11th Floor , Nashville , TN 37203",
+                "time": "4:02",
+                "released": "14-Aug-07"
+            },
+            "entity_2": {
+                "song_name": "Tackle Box",
+                "artist_name": "Luke Bryan",
+                "album_name": "I 'll Stay Me",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2007 Capitol Records Nashville . All rights reserved . Unauthorized reproduction is a violation of applicable laws . Manufactured by Capitol Records Nashville , 3322 West End Avenue , 11th Floor , Nash",
+                "time": "4:02",
+                "released": "August 14 , 2007"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 290,
+                "output_tokens": 1,
+                "cost": 0.0014650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Remember You ( feat . The Weeknd )",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "O.N.I.F.C. ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Hardcore Rap , East Coast Rap , Rap",
+                "price": "$ 1.99",
+                "copyright": "2012 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "5:20",
+                "released": "4-Dec-12"
+            },
+            "entity_2": {
+                "song_name": "Bluffin ( feat . Berner ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "O.N.I.F.C. [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2012 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "5:32",
+                "released": "December 4 , 2012"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 286,
+                "output_tokens": 2,
+                "cost": 0.0014600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Second Chance ( Live Acoustic from Kansas City )",
+                "artist_name": "Shinedown",
+                "album_name": "Somewhere In the Stratosphere ( Live )",
+                "genre": "Rock , Music , Metal , Alternative , Hard Rock",
+                "price": "$ 1.29",
+                "copyright": "2011 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States .",
+                "time": "5:06",
+                "released": "18-Apr-11"
+            },
+            "entity_2": {
+                "song_name": "Heroes ( Live Acoustic From Kansas City )",
+                "artist_name": "Shinedown",
+                "album_name": "Somewhere In The Stratosphere",
+                "genre": "Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2005 MCA Nashville",
+                "time": "8:09",
+                "released": "April 18 , 2011"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 1,
+                "cost": 0.0012900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Teardrops On My Guitar ( Pop Version )",
+                "artist_name": "Taylor Swift",
+                "album_name": "Taylor Swift ( Bonus Track Version )",
+                "genre": "Country , Music , Pop , Teen Pop , Honky Tonk , Contemporary Country",
+                "price": "$ 0.99",
+                "copyright": "2008 Big Machine Records , LLC All Rights Reserved Under License to UMGD",
+                "time": "2:59",
+                "released": "24-Oct-06"
+            },
+            "entity_2": {
+                "song_name": "Teardrops On My Guitar ( Radio Single Remix )",
+                "artist_name": "Taylor Swift",
+                "album_name": "Taylor Swift",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2008 Big Machine Records , LLC All Rights Reserved Under License to UMGD",
+                "time": "3:23",
+                "released": "March 18 , 2008"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 259,
+                "output_tokens": 1,
+                "cost": 0.0013100000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Remember You ( feat . The Weeknd )",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "O.N.I.F.C. ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Hardcore Rap , East Coast Rap , Rap",
+                "price": "$ 1.99",
+                "copyright": "2012 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "5:20",
+                "released": "4-Dec-12"
+            },
+            "entity_2": {
+                "song_name": "The Bluff ( feat . Cam ` Ron ) [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "O.N.I.F.C. [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2012 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "3:48",
+                "released": "December 4 , 2012"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.54,
+            "tokens": {
+                "input_tokens": 286,
+                "output_tokens": 1,
+                "cost": 0.001445
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Firefly ( Bravado Dubstep Remix )",
+                "artist_name": "Ed Sheeran",
+                "album_name": "Loose Change",
+                "genre": "Singer/Songwriter , Music , Contemporary Singer/Songwriter , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2010 All tracks ( p ) 2010 Paw Print Records under exclusive license to Warner Music UK Limited except for track 1 ( p ) 2011Paw Print Records under exclusive license to Warner Music UK Limited",
+                "time": "4:29",
+                "released": "9-Dec-11"
+            },
+            "entity_2": {
+                "song_name": "Firefly ( Bravado Dubstep Remix )",
+                "artist_name": "Ed Sheeran",
+                "album_name": "Loose Change",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2007 Geffen Records/Mosley Music Group LLC",
+                "time": "4:29",
+                "released": "December 9 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 279,
+                "output_tokens": 1,
+                "cost": 0.0014100000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Delirious ( feat . Tara McDonald )",
+                "artist_name": "David Guetta",
+                "album_name": "Pop Life ( Extended Version ) [ Bonus Version ]",
+                "genre": "Dance , Music , Rock , Pop , House , Electronic , Electronica , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2007 Gum Records",
+                "time": "4:31",
+                "released": "18-Sep-07"
+            },
+            "entity_2": {
+                "song_name": "One Love ( Feat . Estelle )",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Swedish House Mafia Holdings Ltd ( BVI ) under exclusive license to Virgin Records Ltd",
+                "time": "4:01",
+                "released": "August 21 , 2009"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 265,
+                "output_tokens": 2,
+                "cost": 0.001355
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Applause ( Goldhouse Remix )",
+                "artist_name": "Lady Gaga",
+                "album_name": "Applause ( Remixes )",
+                "genre": "Pop , Music , Electronic , Rock",
+                "price": "$ 1.29",
+                "copyright": "2013 Interscope Records",
+                "time": "4:34",
+                "released": "30-Sep-13"
+            },
+            "entity_2": {
+                "song_name": "Applause ( Empire Of The Sun Remix )",
+                "artist_name": "Lady Gaga",
+                "album_name": "Applause ( Remixes )",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Interscope Records",
+                "time": "4:08",
+                "released": "September 30 , 2013"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 233,
+                "output_tokens": 1,
+                "cost": 0.00118
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Epilogue ( feat . George the Poet )",
+                "artist_name": "Naughty Boy",
+                "album_name": "Hotel Cabana",
+                "genre": "Pop , Music , R&B / Soul , Contemporary R&B , Hip-Hop/Rap , Pop/Rock , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 Naughty Boy Recordings Ltd under exclusive licence to Virgin Records Ltd",
+                "time": "1:28",
+                "released": "6-May-14"
+            },
+            "entity_2": {
+                "song_name": "Lifted [ feat . Emeli Sand\u00cc \u00a9 ]",
+                "artist_name": "Naughty Boy",
+                "album_name": "Hotel Cabana [ Explicit ]",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Naughty Boy Recordings Ltd under exclusive licence to Virgin Records Ltd",
+                "time": "3:17",
+                "released": "May 6 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.92,
+            "tokens": {
+                "input_tokens": 264,
+                "output_tokens": 1,
+                "cost": 0.0013350000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "VHS Outro ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "1:25",
+                "released": "30-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "VHS Outro ( Interlude ) [ Clean ]",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS [ Clean ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "1:26",
+                "released": "June 30 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 240,
+                "output_tokens": 1,
+                "cost": 0.0012150000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "White Horse",
+                "artist_name": "Taylor Swift",
+                "album_name": "Fearless",
+                "genre": "Country , Music , Rock , Honky Tonk , Pop , Adult Contemporary , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2008 Big Machine Records , LLC",
+                "time": "3:54",
+                "released": "11-Nov-08"
+            },
+            "entity_2": {
+                "song_name": "White Horse",
+                "artist_name": "Taylor Swift",
+                "album_name": "Fearless",
+                "genre": "Country , Country Rock , Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2008 Big Machine Records , LLC",
+                "time": "3:54",
+                "released": "November 11 , 2008"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 231,
+                "output_tokens": 1,
+                "cost": 0.00117
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "G.U.Y.",
+                "artist_name": "Lady Gaga",
+                "album_name": "ARTPOP",
+                "genre": "Pop , Music , Dance , Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 Interscope Records",
+                "time": "3:52",
+                "released": "11-Nov-13"
+            },
+            "entity_2": {
+                "song_name": "G.U.Y. [ Clean ]",
+                "artist_name": "Lady Gaga",
+                "album_name": "Artpop [ Clean ]",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Interscope Records",
+                "time": "3:52",
+                "released": "November 11 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 222,
+                "output_tokens": 1,
+                "cost": 0.0011250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Take '`` There ( feat . Kiesza ) [ Missy Elliott Remix ] [ Bonus Track ]",
+                "artist_name": "Skrillex & Diplo",
+                "album_name": "Skrillex and Diplo Present Jack '``",
+                "genre": "Dance,Music,Hip-Hop / Rap , Jazz , Bop , Electronic , Rap , Rock",
+                "price": "$ 1.29",
+                "copyright": "2015 Atlantic Recording Corporation for the US and WEA International for the world outside the United States . A Warner Music Group Company",
+                "time": "3:30",
+                "released": "24-Feb-15"
+            },
+            "entity_2": {
+                "song_name": "Febreze ( feat . 2 Chainz ) [ Explicit ]",
+                "artist_name": "Skrillex , Diplo",
+                "album_name": "Skrillex and Diplo present Jack \u00cc\u00cf [ Explicit ]",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2012 Knight Skreams",
+                "time": "3:34",
+                "released": "February 24 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 300,
+                "output_tokens": 1,
+                "cost": 0.001515
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Gold ( feat . Eighty4 Fly )",
+                "artist_name": "Macklemore & Ryan Lewis",
+                "album_name": "The Heist ( Deluxe Edition )",
+                "genre": "Hip-Hop/Rap , Music , Rap , Alternative Rap , West Coast Rap",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2012 Macklemore , LLC .",
+                "time": "4:11",
+                "released": "1-Aug-12"
+            },
+            "entity_2": {
+                "song_name": "Neon Cathedral ( feat . Allen Stone )",
+                "artist_name": "Macklemore & Ryan Lewis",
+                "album_name": "The Heist [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Selena Garcia & Steven Gomez",
+                "time": "4:34",
+                "released": "October 9 , 2012"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 257,
+                "output_tokens": 1,
+                "cost": 0.0013000000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Wildest Dreams",
+                "artist_name": "Taylor Swift",
+                "album_name": "1989",
+                "genre": "Pop , Music , Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2014 Big Machine Records , LLC .",
+                "time": "3:40",
+                "released": "27-Oct-14"
+            },
+            "entity_2": {
+                "song_name": "Wildest Dreams",
+                "artist_name": "Taylor Swift",
+                "album_name": "1989",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Big Machine Records , LLC .",
+                "time": "3:40",
+                "released": "October 27 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 217,
+                "output_tokens": 1,
+                "cost": 0.0011
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I Ai n't Livin ' Long Like This",
+                "artist_name": "Chris Janson",
+                "album_name": "Take It to the Bank - EP",
+                "genre": "Country , Music",
+                "price": "$ 1.29",
+                "copyright": "2014 Sony Music Entertainment",
+                "time": "4:13",
+                "released": "24-Feb-14"
+            },
+            "entity_2": {
+                "song_name": "I Ai n't Livin ' Long Like This",
+                "artist_name": "Chris Janson",
+                "album_name": "Take It to the Bank ( EP )",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Cash Money Records Inc.",
+                "time": "4:13",
+                "released": "February 24 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 230,
+                "output_tokens": 1,
+                "cost": 0.0011650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Over My Dead Body",
+                "artist_name": "Drake",
+                "album_name": "Take Care ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2011 Cash Money Records Inc.",
+                "time": "4:32",
+                "released": "15-Nov-11"
+            },
+            "entity_2": {
+                "song_name": "Over My Dead Body [ Clean ]",
+                "artist_name": "Drake",
+                "album_name": "Take Care ( Deluxe Edition )",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Cash Money Records Inc.",
+                "time": "4:32",
+                "released": "March 20 , 2012"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.33,
+            "tokens": {
+                "input_tokens": 230,
+                "output_tokens": 2,
+                "cost": 0.0011800000000000003
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Goner",
+                "artist_name": "twenty one pilots",
+                "album_name": "Blurryface",
+                "genre": "Alternative , Music , Rock , Adult Alternative , Indie Rock,Hip-Hop / Rap , Rap , Underground Rap",
+                "price": "$ 1.29",
+                "copyright": "2015 Fueled By Ramen LLC for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "15-May-15"
+            },
+            "entity_2": {
+                "song_name": "Goner",
+                "artist_name": "twenty one pilots",
+                "album_name": "Blurryface",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "2015 Fueled By Ramen LLC for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "May 15 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 278,
+                "output_tokens": 1,
+                "cost": 0.0014050000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "The Motto ( feat . Lil Wayne ) [ Bonus Track ]",
+                "artist_name": "Drake",
+                "album_name": "Take Care ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2011 Cash Money Records Inc.",
+                "time": "3:01",
+                "released": "15-Nov-11"
+            },
+            "entity_2": {
+                "song_name": "Fancy ( Edited ) [ feat . T.I. , Swizz Beatz ]",
+                "artist_name": "Drake",
+                "album_name": "Thank Me Later ( Edited Version )",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2010 Young Money Entertainment/Cash Money Records/Universal Motown",
+                "time": "5:19",
+                "released": "June 16 , 2010"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 1,
+                "cost": 0.0012900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Second Chance ( Live Acoustic from Kansas City )",
+                "artist_name": "Shinedown",
+                "album_name": "Somewhere In the Stratosphere ( Live )",
+                "genre": "Rock , Music , Metal , Alternative , Hard Rock",
+                "price": "$ 1.29",
+                "copyright": "2011 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States .",
+                "time": "5:06",
+                "released": "18-Apr-11"
+            },
+            "entity_2": {
+                "song_name": "Diamond Eyes ( Boom-Lay Boom-Lay Boom ) [ Live From Washington State ]",
+                "artist_name": "Shinedown",
+                "album_name": "Somewhere In The Stratosphere",
+                "genre": "Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2005 MCA Nashville",
+                "time": "5:44",
+                "released": "April 18 , 2011"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.28,
+            "tokens": {
+                "input_tokens": 264,
+                "output_tokens": 1,
+                "cost": 0.0013350000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Halcyon",
+                "artist_name": "Ellie Goulding",
+                "album_name": "Halcyon Days ( Deluxe Edition )",
+                "genre": "Pop , Music , Dance , Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 Polydor Ltd. ( UK )",
+                "time": "3:24",
+                "released": "27-Aug-13"
+            },
+            "entity_2": {
+                "song_name": "Halcyon",
+                "artist_name": "Ellie Goulding",
+                "album_name": "Halcyon",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Polydor Ltd. ( UK )",
+                "time": "3:24",
+                "released": "August 27 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.27,
+            "tokens": {
+                "input_tokens": 234,
+                "output_tokens": 1,
+                "cost": 0.001185
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I 've Got All This Ringing In My Ears and None On My Fingers",
+                "artist_name": "Fall Out Boy",
+                "album_name": "Infinity On High",
+                "genre": "Alternative , Music , Rock , Adult Alternative , Punk",
+                "price": "$ 0.99",
+                "copyright": "2007 The Island Def Jam Music Group",
+                "time": "4:06",
+                "released": "6-Feb-07"
+            },
+            "entity_2": {
+                "song_name": "I 've Got All This Ringing In My Ears And None On My Fingers",
+                "artist_name": "Fall Out Boy",
+                "album_name": "Infinity On High",
+                "genre": "Rock",
+                "price": "$ 0.99",
+                "copyright": "( C ) 2007 The Island Def Jam Music Group",
+                "time": "4:06",
+                "released": "February 6 , 2007"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 249,
+                "output_tokens": 1,
+                "cost": 0.00126
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "You Gon na Fly",
+                "artist_name": "Keith Urban",
+                "album_name": "Get Closer ( Deluxe Version )",
+                "genre": "Country , Music , Honky Tonk , Pop , Pop/Rock , Contemporary Country , Rock",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2010 Hit Red Records under exclusive license to Capitol Records Nashville . All rights reserved . Unauthorized reproduction is a violation of applicable laws . Manufactured by Capitol Records Nashville , 3322 West End Avenue , 11th Floor , Nashville , TN 37",
+                "time": "3:36",
+                "released": "22-Feb-11"
+            },
+            "entity_2": {
+                "song_name": "You Gon na Fly",
+                "artist_name": "Keith Urban",
+                "album_name": "Get Closer ( Deluxe Version )",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2011 Hit Red Records under exclusive license to Capitol Records Nashville",
+                "time": "3:36",
+                "released": "February 22 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 288,
+                "output_tokens": 1,
+                "cost": 0.0014550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "It Girl",
+                "artist_name": "Jason Derulo",
+                "album_name": "Future History ( Deluxe Version )",
+                "genre": "Pop , Music , Rock , R&B / Soul , Contemporary R&B , Dance",
+                "price": "$ 1.99",
+                "copyright": "2011 Warner Bros. . Records Inc.",
+                "time": "3:13",
+                "released": "16-Sep-11"
+            },
+            "entity_2": {
+                "song_name": "It Girl",
+                "artist_name": "Jason Derulo",
+                "album_name": "Future History ( Deluxe Version )",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Hit Red Records under exclusive license to Capitol Records Nashville",
+                "time": "3:12",
+                "released": "September 16 , 2011"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 236,
+                "output_tokens": 1,
+                "cost": 0.001195
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Speakers",
+                "artist_name": "Sam Hunt",
+                "album_name": "Montevallo",
+                "genre": "Country , Music , Pop , Pop/Rock , Honky Tonk , Contemporary Country , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 MCA Nashville , a Division of UMG Recordings , Inc.",
+                "time": "3:46",
+                "released": "27-Oct-14"
+            },
+            "entity_2": {
+                "song_name": "Speakers",
+                "artist_name": "Sam Hunt",
+                "album_name": "Montevallo",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 MCA Nashville , a Division of UMG Recordings , Inc.",
+                "time": "3:48",
+                "released": "October 27 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.5,
+            "tokens": {
+                "input_tokens": 238,
+                "output_tokens": 1,
+                "cost": 0.0012050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "That Lucky Old Sun ( Just Rolls Around Heaven All Day ) [ With Willie Nelson ]",
+                "artist_name": "Kenny Chesney & Willie Nelson",
+                "album_name": "Lucky Old Sun",
+                "genre": "Country , Music , Contemporary Country , Honky Tonk",
+                "price": "$ 0.99",
+                "copyright": "2008 Blue Chair Records , LLC",
+                "time": "4:16",
+                "released": "2008"
+            },
+            "entity_2": {
+                "song_name": "That Lucky Old Sun ( Just Rolls Around Heaven All Day ( with Willie Nelson ) )",
+                "artist_name": "Kenny Chesney",
+                "album_name": "Lucky Old Sun [ + video ]",
+                "genre": "Country",
+                "price": "$ 0.99",
+                "copyright": "( P ) 2008 Blue Chair Records , LLC and BMG Music",
+                "time": "4:16",
+                "released": "April 24 , 2012"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.85,
+            "tokens": {
+                "input_tokens": 259,
+                "output_tokens": 1,
+                "cost": 0.0013100000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We Dem Boyz",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood ( Deluxe Version )",
+                "genre": "Hip-Hop/Rap , Music , Rap , Hardcore Rap , East Coast Rap , Rock",
+                "price": "$ 1.99",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:56",
+                "released": "19-Aug-14"
+            },
+            "entity_2": {
+                "song_name": "We Dem Boyz [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Blacc Hollywood [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2014 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States . A Warner Music Group Company",
+                "time": "3:45",
+                "released": "August 19 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.49,
+            "tokens": {
+                "input_tokens": 284,
+                "output_tokens": 1,
+                "cost": 0.001435
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Lick It ( Norman Doray Remix )",
+                "artist_name": "Kaskade & Skrillex",
+                "album_name": "Lick It ( Remixes ) - EP",
+                "genre": "Dance , Music , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2012 Ultra Records , Inc.",
+                "time": "6:14",
+                "released": "17-Apr-12"
+            },
+            "entity_2": {
+                "song_name": "Make It Bun Dem ( Flinch Remix )",
+                "artist_name": "Skrillex & Damian Jr Gong '' Marley ''",
+                "album_name": "Make It Bun Dem After Hours EP",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 RGK",
+                "time": "3:55",
+                "released": "August 28 , 2012"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 243,
+                "output_tokens": 2,
+                "cost": 0.0012450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Nothing Would Be Better",
+                "artist_name": "Nick Jonas",
+                "album_name": "Nick Jonas",
+                "genre": "Pop , Music , Pop/Rock , Rock",
+                "price": "$ 1.29",
+                "copyright": "2014 Island Records , a division of UMG Recordings , Inc. / Safehouse Records , LLC",
+                "time": "4:34",
+                "released": "10-Nov-14"
+            },
+            "entity_2": {
+                "song_name": "Nothing Would Be Better",
+                "artist_name": "Nick Jonas",
+                "album_name": "Nick Jonas ( Deluxe ) [ Explicit ]",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Island Records/Safehouse Records LLC , a division of UMG Recordings , Inc.",
+                "time": "4:34",
+                "released": "November 10 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 1.09,
+            "tokens": {
+                "input_tokens": 248,
+                "output_tokens": 1,
+                "cost": 0.001255
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Hey Mama ( feat . Nicki Minaj , Bebe Rexha & Afrojack ) [ Extended ]",
+                "artist_name": "David Guetta",
+                "album_name": "Hey Mama ( feat . Nicki Minaj , Bebe Rexha & Afrojack ) [ Remixes ] - EP",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2015 What A Music Ltd. under exclusive license to Parlophone/Warner Music France , under exclusive license to Atlantic Recording Corporation for the United States",
+                "time": "4:42",
+                "released": "12-May-15"
+            },
+            "entity_2": {
+                "song_name": "Hey Mama ( Zia Moz Remix )",
+                "artist_name": "Zia Moz feat . David Guetta , Bebe Rexha , Nicki Minaj and Afrojack",
+                "album_name": "Hey Mama",
+                "genre": "Dance & Electronic",
+                "price": "$ 0.99",
+                "copyright": "2015 Zia Moz , David Guetta , Onika Maraj , Giorgio Tuinfort , Nick van de Wall , Ester Dean , Bebe Rexha , Sean Douglas",
+                "time": "3:12",
+                "released": "June 1 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.47,
+            "tokens": {
+                "input_tokens": 323,
+                "output_tokens": 2,
+                "cost": 0.0016450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "We 're All the Same",
+                "artist_name": "Calvin Harris",
+                "album_name": "I Created Disco",
+                "genre": "Dance , Music , R&B / Soul , Disco , Electronic , Rock",
+                "price": "$ 0.99",
+                "copyright": "2007 SONY BMG MUSIC ENTERTAINMENT ( UK ) Limited",
+                "time": "3:56",
+                "released": "18-Jun-07"
+            },
+            "entity_2": {
+                "song_name": "We 're All The Same",
+                "artist_name": "Calvin Harris",
+                "album_name": "I Created Disco",
+                "genre": "Dance & Electronic , Pop , House",
+                "price": "$ 0.99",
+                "copyright": "2002 Defected Records Ltd",
+                "time": "3:56",
+                "released": "February 22 , 2012"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 238,
+                "output_tokens": 1,
+                "cost": 0.0012050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "X2CU",
+                "artist_name": "Jason Derulo",
+                "album_name": "Everything Is 4",
+                "genre": "Pop , Music , Rock , R&B / Soul , Contemporary R&B , Dance",
+                "price": "$ 1.29",
+                "copyright": "2015 Warner Bros. . Records Inc.",
+                "time": "5:13",
+                "released": "1-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "X2CU",
+                "artist_name": "Jason Derulo",
+                "album_name": "Everything Is 4 [ Clean ]",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "2011 Because Music",
+                "time": "5:14",
+                "released": "June 1 , 2015"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 225,
+                "output_tokens": 1,
+                "cost": 0.0011400000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Dangerous ( feat . Sam Martin ) [ Robin Schulz Remix ] [ Radio Edit ]",
+                "artist_name": "David Guetta",
+                "album_name": "Listen ( Deluxe Version )",
+                "genre": "Dance , Music , Rock , House , Electronic , French Pop",
+                "price": "$ 1.29",
+                "copyright": "2014 What A Music Ltd. under exclusive license to Parlophone/Warner Music France , under exclusive license to Atlantic Recording Corporation for the United States . All rights reserved .",
+                "time": "3:20",
+                "released": "24-Nov-14"
+            },
+            "entity_2": {
+                "song_name": "I 'll Keep Loving you ( feat . Birdy & Jaymes Young )",
+                "artist_name": "David Guetta",
+                "album_name": "Listen",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 If Moving Your Mine",
+                "time": "3:08",
+                "released": "November 24 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.29,
+            "tokens": {
+                "input_tokens": 275,
+                "output_tokens": 1,
+                "cost": 0.0013900000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Masterpiece ( feat . Jordan Rakei )",
+                "artist_name": "Disclosure",
+                "album_name": "Caracal",
+                "genre": "Electronic , Music , Dance , Garage , House , Rock",
+                "price": "Album Only",
+                "copyright": "2015 Island Records , a division of Universal Music Operations Limited",
+                "time": "4:01",
+                "released": ""
+            },
+            "entity_2": {
+                "song_name": "Willing & Able [ feat . Kwabs ]",
+                "artist_name": "Disclosure",
+                "album_name": "Caracal ( Deluxe )",
+                "genre": "Electronica , Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 Island Records , a division of Universal Music Operations Limited",
+                "time": "4:52",
+                "released": "September 25 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.96,
+            "tokens": {
+                "input_tokens": 239,
+                "output_tokens": 2,
+                "cost": 0.0012250000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Afire Love",
+                "artist_name": "Ed Sheeran",
+                "album_name": "x",
+                "genre": "Singer/Songwriter , Music , Pop , Rock , Contemporary Singer/Songwriter , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2014 Asylum Records UK , a Warner Music UK Company",
+                "time": "5:14",
+                "released": "20-Jun-14"
+            },
+            "entity_2": {
+                "song_name": "Afire Love",
+                "artist_name": "Ed Sheeran",
+                "album_name": "x",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 mau5trap Recordings Ltd",
+                "time": "5:14",
+                "released": "June 20 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 230,
+                "output_tokens": 1,
+                "cost": 0.0011650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Turn Around ( 5,4,3,2,1 ) [ DJ Bam Bam Radio Remix ]",
+                "artist_name": "Flo Rida",
+                "album_name": "Turn Around ( 5,4,3,2,1 ) - Deluxe Single",
+                "genre": "Hip-Hop/Rap , Music , Electronic , Rap , Dirty South , Dance",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2010 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States .",
+                "time": "3:35",
+                "released": "16-Nov-10"
+            },
+            "entity_2": {
+                "song_name": "Turn Around ( 5,4,3,2,1 )",
+                "artist_name": "Flo Rida",
+                "album_name": "Only One Flo ( Part 1 ) [ Deluxe ] [ + Video ] [ + Digital Booklet ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "2010 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "3:20",
+                "released": "November 26 , 2010"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 323,
+                "output_tokens": 2,
+                "cost": 0.0016450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Voices ( feat . Sasha Keable )",
+                "artist_name": "Disclosure",
+                "album_name": "Settle ( Deluxe Version )",
+                "genre": "Electronic , Music",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2014 Universal Island Records , a division of Universal Music Operations Limited",
+                "time": "4:09",
+                "released": "15-Apr-14"
+            },
+            "entity_2": {
+                "song_name": "Help Me Lose My Mind [ feat . London Grammar ]",
+                "artist_name": "Disclosure",
+                "album_name": "Settle",
+                "genre": "Electronica , Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Universal Island Records , a division of Universal Music Operations Limited",
+                "time": "4:05",
+                "released": "June 11 , 2013"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.5,
+            "tokens": {
+                "input_tokens": 246,
+                "output_tokens": 1,
+                "cost": 0.0012450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Why You Up In Here ( feat . Ludacris , Git Fresh & Gucci Mane )",
+                "artist_name": "Flo Rida",
+                "album_name": "Only One Flo , Pt. 1",
+                "genre": "Hip-Hop/Rap , Music , Rap , Dirty South",
+                "price": "$ 1.29",
+                "copyright": "2010 Atlantic Recording Corporation for the United States and WEA International Inc. for the world outside of the United States",
+                "time": "3:36",
+                "released": "24-Nov-10"
+            },
+            "entity_2": {
+                "song_name": "Street Money ( feat . Rick Ross ) [ Explicit ]",
+                "artist_name": "Flo Rida",
+                "album_name": "Welcome to Flo Rida [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 0.99",
+                "copyright": "2015 CMG Records",
+                "time": "3:57",
+                "released": "April 6 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 267,
+                "output_tokens": 2,
+                "cost": 0.0013650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "VHS Outro ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "1:25",
+                "released": "30-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "Y2K Time Capsule ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS [ Explicit ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "0:32",
+                "released": "June 30 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 239,
+                "output_tokens": 2,
+                "cost": 0.0012250000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Slow Down ( Smash Mode Remix )",
+                "artist_name": "Selena Gomez",
+                "album_name": "Slow Down ( Remixes )",
+                "genre": "Dance , Music , Reggae , Rock , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2013 Hollywood Records , Inc.",
+                "time": "5:21",
+                "released": "20-Aug-13"
+            },
+            "entity_2": {
+                "song_name": "Slow Down ( Smash Mode Remix )",
+                "artist_name": "Selena Gomez",
+                "album_name": "Slow Down Remixes",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2013 Hollywood Records , Inc.",
+                "time": "5:21",
+                "released": "August 20 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 231,
+                "output_tokens": 1,
+                "cost": 0.00117
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Truce",
+                "artist_name": "twenty one pilots",
+                "album_name": "Vessel",
+                "genre": "Alternative , Music , Rock , Indie Rock,Hip-Hop / Rap , Rap , Underground Rap",
+                "price": "$ 1.29",
+                "copyright": "2012 Fueled By Ramen LLC for the United States and WEA International Inc. for the world outside of the United States .",
+                "time": "2:22",
+                "released": "4-Jan-13"
+            },
+            "entity_2": {
+                "song_name": "Truce",
+                "artist_name": "twenty one pilots",
+                "album_name": "Vessel",
+                "genre": "Alternative Rock , Indie & Lo-Fi",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2000 Columbia Pictures Industries , Inc.",
+                "time": "2:22",
+                "released": "January 4 , 2013"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 251,
+                "output_tokens": 1,
+                "cost": 0.00127
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Toyfriend ( feat . Wynter Gordon ) [ Continuous Mix Version ]",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2010 Gum Prod licence exclusive Parlophone Music France",
+                "time": "2:51",
+                "released": "21-Aug-09"
+            },
+            "entity_2": {
+                "song_name": "Gettin ' Over ( Feat . Chris Willis ; Continuous Mix Version )",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Swedish House Mafia Holdings Ltd ( BVI ) under exclusive license to Virgin Records Ltd",
+                "time": "3:31",
+                "released": "August 21 , 2009"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 257,
+                "output_tokens": 1,
+                "cost": 0.0013000000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Because of You",
+                "artist_name": "Kelly Clarkson & Reba McEntire",
+                "album_name": "Reba Duets",
+                "genre": "Country , Music , Honky Tonk , Contemporary Country",
+                "price": "$ 1.99",
+                "copyright": "\u2030 \u00e3\u00d1 2007 MCA Nashville , a Division of UMG Recordings , Inc.",
+                "time": "3:42",
+                "released": "18-Sep-07"
+            },
+            "entity_2": {
+                "song_name": "The Fear Of Being Alone ( Album Version )",
+                "artist_name": "Reba McEntire",
+                "album_name": "Reba # 1 's",
+                "genre": "Country , Contemporary Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2005 MCA Nashville , a Division of UMG Recordings , Inc.",
+                "time": "3:02",
+                "released": "November 22 , 2005"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 259,
+                "output_tokens": 2,
+                "cost": 0.0013250000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Yayo",
+                "artist_name": "Lana Del Rey",
+                "album_name": "Born To Die - The Paradise Edition",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2012 Lana Del Rey under exclusive licence to Polydor Ltd. ( UK ) . Under exclusive licence to Interscope Records in the USA",
+                "time": "5:21",
+                "released": "13-Nov-12"
+            },
+            "entity_2": {
+                "song_name": "Yayo",
+                "artist_name": "Lana Del Rey",
+                "album_name": "Born To Die - The Paradise Edition [ Explicit ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Lana Del Rey under exclusive licence to Polydor Ltd. ( UK ) . Under exclusive licence to Interscope Records in the USA",
+                "time": "3:57",
+                "released": "November 13 , 2012"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 278,
+                "output_tokens": 1,
+                "cost": 0.0014050000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I Have Seen the Rain ( Featuring James T. Moore )",
+                "artist_name": "P!nk featuring James T. Moore",
+                "album_name": "I 'm Not Dead",
+                "genre": "Pop , Music , Electronic , R&B / Soul , Pop/Rock , Dance",
+                "price": "$ 0.99",
+                "copyright": "2006 RCA/JIVE Label Group , a unit of Sony Music Entertainment",
+                "time": "3:29",
+                "released": "4-Mar-06"
+            },
+            "entity_2": {
+                "song_name": "I Have Seen The Rain ( Featuring James T. Moore ) ( Main Version )",
+                "artist_name": "P!nk",
+                "album_name": "I 'm Not Dead [ Explicit ]",
+                "genre": "Dance & Electronic , Pop , R&B",
+                "price": "$ 0.99",
+                "copyright": "( C ) 2009 Foo & Blu , LLC under exclusive License to Interscope Records",
+                "time": "3:29",
+                "released": "April 4 , 2006"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 281,
+                "output_tokens": 1,
+                "cost": 0.0014200000000000003
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Little White Lies",
+                "artist_name": "One Direction",
+                "album_name": "Midnight Memories ( Deluxe Edition )",
+                "genre": "Pop , Music , Rock , Teen Pop , Pop/Rock , Dance",
+                "price": "$ 1.29",
+                "copyright": "\u2030 \u00e3\u00d1 2013 Simco Limited under exclusive license to Sony Music Entertainment UK Limited",
+                "time": "3:17",
+                "released": "25-Nov-13"
+            },
+            "entity_2": {
+                "song_name": "Little Black Dress",
+                "artist_name": "One Direction",
+                "album_name": "Midnight Memories ( Deluxe )",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 Disney Enterprises , Inc.",
+                "time": "2:37",
+                "released": "November 25 , 2013"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 239,
+                "output_tokens": 1,
+                "cost": 0.0012100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Afire Love",
+                "artist_name": "Ed Sheeran",
+                "album_name": "x",
+                "genre": "Singer/Songwriter , Music , Pop , Rock , Contemporary Singer/Songwriter , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2014 Asylum Records UK , a Warner Music UK Company",
+                "time": "5:14",
+                "released": "20-Jun-14"
+            },
+            "entity_2": {
+                "song_name": "Afire Love",
+                "artist_name": "Ed Sheeran",
+                "album_name": "x",
+                "genre": "Pop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2014 mau5trap Recordings Ltd",
+                "time": "5:14",
+                "released": "June 20 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 230,
+                "output_tokens": 1,
+                "cost": 0.0011650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Extra Extra Credit",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Flight School",
+                "genre": "Hip-Hop/Rap , Music",
+                "price": "$ 0.99",
+                "copyright": "2009 Rostrum Records",
+                "time": "4:03",
+                "released": "17-Apr-09"
+            },
+            "entity_2": {
+                "song_name": "Extra Extra Credit [ Explicit ]",
+                "artist_name": "Wiz Khalifa",
+                "album_name": "Flight School [ Explicit ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 0.99",
+                "copyright": "2013 Mad Decent",
+                "time": "4:03",
+                "released": "April 17 , 2009"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 217,
+                "output_tokens": 1,
+                "cost": 0.0011
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Toyfriend ( feat . Wynter Gordon ) [ Continuous Mix Version ]",
+                "artist_name": "David Guetta",
+                "album_name": "One Love ( Deluxe Version )",
+                "genre": "Dance , Music",
+                "price": "$ 1.29",
+                "copyright": "2010 Gum Prod licence exclusive Parlophone Music France",
+                "time": "2:51",
+                "released": "21-Aug-09"
+            },
+            "entity_2": {
+                "song_name": "Dangerous ( feat . Sam Martin )",
+                "artist_name": "David Guetta",
+                "album_name": "Listen ( Deluxe )",
+                "genre": "Dance & Electronic",
+                "price": "$ 1.29",
+                "copyright": "2015 If Moving Your Mine",
+                "time": "3:23",
+                "released": "November 24 , 2014"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 233,
+                "output_tokens": 1,
+                "cost": 0.00118
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Because of Your Love",
+                "artist_name": "Kenny Chesney",
+                "album_name": "Greatest Hits",
+                "genre": "Country , Music , Contemporary Country , Urban Cowboy",
+                "price": "$ 0.99",
+                "copyright": "2000 BMG Entertainment",
+                "time": "4:16",
+                "released": "26-Sep-00"
+            },
+            "entity_2": {
+                "song_name": "Hurry Up Love",
+                "artist_name": "Kenny Rogers",
+                "album_name": "49 All Time Greatest Hits",
+                "genre": "Country , Traditional Country , Cowboy",
+                "price": "$ 0.89",
+                "copyright": "( c ) 2008 Goldenlane Records",
+                "time": "2:29",
+                "released": "August 1 , 2008"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 225,
+                "output_tokens": 1,
+                "cost": 0.0011400000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "VHS Outro ( Interlude )",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS",
+                "genre": "Alternative , Music , Rock , Adult Alternative",
+                "price": "$ 1.29",
+                "copyright": "2015 KIDinaKORNER/Interscope Records",
+                "time": "1:25",
+                "released": "30-Jun-15"
+            },
+            "entity_2": {
+                "song_name": "Smoke ( Interlude ) [ Explicit ]",
+                "artist_name": "X Ambassadors",
+                "album_name": "VHS [ Explicit ]",
+                "genre": "Alternative Rock",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2015 KIDinaKORNER/Interscope Records",
+                "time": "0:24",
+                "released": "June 30 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 238,
+                "output_tokens": 1,
+                "cost": 0.0012050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "I Ai n't Livin ' Long Like This",
+                "artist_name": "Chris Janson",
+                "album_name": "Take It to the Bank - EP",
+                "genre": "Country , Music",
+                "price": "$ 1.29",
+                "copyright": "2014 Sony Music Entertainment",
+                "time": "4:13",
+                "released": "24-Feb-14"
+            },
+            "entity_2": {
+                "song_name": "I Ai n't Livin ' Long Like This",
+                "artist_name": "Chris Janson",
+                "album_name": "Take It to the Bank ( EP )",
+                "genre": "Country",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2012 Cash Money Records Inc.",
+                "time": "4:13",
+                "released": "February 24 , 2014"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 230,
+                "output_tokens": 1,
+                "cost": 0.0011650000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Kill Everybody ( Bare Noize Remix )",
+                "artist_name": "Skrillex",
+                "album_name": "Scary Monsters and Nice Sprites",
+                "genre": "Dance , Music , House , Electronic",
+                "price": "$ 1.29",
+                "copyright": "2010 Big Beat Records , Inc. for the United States and WEA International for the world outside the United States .",
+                "time": "4:41",
+                "released": "21-Dec-10"
+            },
+            "entity_2": {
+                "song_name": "Kill Everybody",
+                "artist_name": "Skrillex",
+                "album_name": "Scary Monsters And Nice Sprites EP [ Explicit ]",
+                "genre": "Electronica , Dance & Electronic , Dubstep",
+                "price": "$ 1.29",
+                "copyright": "( c ) 2013 Digitop Ltd",
+                "time": "4:58",
+                "released": "December 21 , 2010"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.46,
+            "tokens": {
+                "input_tokens": 257,
+                "output_tokens": 1,
+                "cost": 0.0013000000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "song_name": "Whateva ( feat . Monty )",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe )",
+                "genre": "Hip-Hop/Rap , Music , Rap",
+                "price": "Album Only",
+                "copyright": "2015 300 Entertainment/RGF Productions",
+                "time": "5:11",
+                "released": ""
+            },
+            "entity_2": {
+                "song_name": "For My Team ( feat . Monty ) [ Clean ]",
+                "artist_name": "Fetty Wap",
+                "album_name": "Fetty Wap ( Deluxe ) [ Clean ]",
+                "genre": "Rap & Hip-Hop",
+                "price": "$ 1.29",
+                "copyright": "( C ) 2000 Mute Records Ltd. , a BMG Company , under exclusive license to INgrooves",
+                "time": "3:28",
+                "released": "September 25 , 2015"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 255,
+                "output_tokens": 1,
+                "cost": 0.0012900000000000001
+            }
+        }
+    ],
+    "configs": {
+        "libem": {
+            "parameter": {
+                "model": "gpt-4o",
+                "temperature": "0",
+                "guess": "False",
+                "always": "None"
+            },
+            "prompt": {
+                "role": "You are Libem, an entity matcher that determine if two entity descriptions refer to the same entity."
+            },
+            "browse": {
+                "parameter": {
+                    "engine": "duckduckgo"
+                },
+                "prompt": {
+                    "description": "Browse the web to find additional information for a given entity.",
+                    "rule": "Rules to follow:\n- Use only when you think it would help with the matching task."
+                }
+            },
+            "match": {
+                "parameter": {
+                    "model": "gpt-4o",
+                    "temperature": "0",
+                    "tools": "[]",
+                    "cot": "False",
+                    "confidence": "False"
+                },
+                "prompt": {
+                    "role": "You are an entity matcher that determine whethertwo entity descriptions refer to the same real-world entity.",
+                    "rule": "",
+                    "experience": "",
+                    "output": "At the end, give your answer in the form of a single 'yes' or 'no'.",
+                    "query": "Entity 1: {left}.\nEntity 2: {right}."
+                }
+            },
+            "tune": {
+                "learn": {
+                    "parameter": {
+                        "model": "gpt-4-turbo",
+                        "temperature": "0"
+                    },
+                    "prompt": {
+                        "recap_success": "You achieve successes on entity matching in the following examples: {successes}",
+                        "gen_rules": "generate rules to follow from the mistakes,in the form of a rule list line by line,with each rule in a new line with no bullet point.",
+                        "recap_mistake": "You made mistakes on entity matching in the following examples: {mistakes}",
+                        "gen_experiences": "summarize the type(s) of error(s) you made,if you notice multiple errors, put them in a list,with each error in a new line with no bullet point."
+                    }
+                }
+            }
+        }
+    }
+}

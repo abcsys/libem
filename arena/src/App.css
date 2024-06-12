@@ -1,0 +1,173 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #007BFF;
+    margin: 0;
+    font-size: larger;
+    overflow: auto;
+}
+
+h1 {
+    color: #d9d9d9;
+}
+
+.pad {
+    padding: 0.5rem;
+}
+
+.button {
+    margin: 1rem 1em;
+    padding: 0.5em 0;
+    text-align: center;
+    font-size: x-large;
+    width: 200px;
+    max-width: 60vw;
+    background-color: #ffc400;
+    color: #000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-duration: 250ms;
+}
+
+.select {
+    cursor: pointer;
+}
+
+.green {
+    background-color: #12b500;
+}
+
+.red {
+    background-color: #c93434;
+}
+
+.inactive {
+    background-color: #ffc400a0;
+    color: #333;
+    cursor: default;
+}
+
+.textbox {
+    width: 40rem;
+    max-width: 70vw;
+    color: #d9d9d9;
+    margin: 1rem;
+    text-align: center;
+    font-size: larger;
+}
+
+.vstack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.vstack-wide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    height: 100%;
+}
+.hstack {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+}
+.vstack-left {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 5px;
+}
+
+.fade-in-top {
+    opacity: 1;
+	animation-name: fadeInTop;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 750ms;
+}
+.fade-in-left {
+	opacity: 1;
+	animation-name: fadeInLeft;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 750ms;
+}
+.fade-in-right {
+	opacity: 1;
+	animation-name: fadeInRight;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 750ms;
+}
+.fade-in-bottom {
+    opacity: 1;
+	animation-name: fadeInBottom;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 1s;
+}
+
+@keyframes fadeInTop {
+	0% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	40% {
+		opacity: 1;
+        transform: translateY(0);
+	}
+}
+@keyframes fadeInLeft {
+	0% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+    20% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	60% {
+		opacity: 1;
+        transform: translateY(0);
+	}
+}
+@keyframes fadeInRight {
+    0% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	40% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	80% {
+		opacity: 1;
+        transform: translateY(0);
+	}
+}@keyframes fadeInBottom {
+    0% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	60% {
+		opacity: 0;
+        transform: translateY(-5px);
+	}
+	100% {
+		opacity: 1;
+        transform: translateY(0);
+	}
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .button:hover {
+        transition: 250ms;
+        transform: scale(1.02);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+}

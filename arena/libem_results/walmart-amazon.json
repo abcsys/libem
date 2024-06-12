@@ -1,0 +1,2679 @@
+{
+    "command": [
+        "--name",
+        "walmart-amazon",
+        "--num-pairs",
+        "0"
+    ],
+    "stats": {
+        "precision": 100.0,
+        "recall": 86.0,
+        "f1": 92.47,
+        "latency": 47.01,
+        "tokens": {
+            "input_tokens": 16842,
+            "output_tokens": 115,
+            "cost": 0.08593500000000001
+        },
+        "confusion_matrix": {
+            "tp": 43,
+            "tn": 50,
+            "fp": 0,
+            "fn": 7
+        }
+    },
+    "results": [
+        {
+            "entity_1": {
+                "title": "sabrent sbt-cps2 usb to dual ps 2 converter cable",
+                "category": "electronics - general",
+                "brand": "sabrent",
+                "modelno": "sbt-cps2",
+                "price": "4.88"
+            },
+            "entity_2": {
+                "title": "sabrent sbt-cps2 usb to dual ps 2 converter cable adapter",
+                "category": "computers accessories",
+                "brand": "sabrent",
+                "modelno": "sbt-cps2",
+                "price": "4.69"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 175,
+                "output_tokens": 1,
+                "cost": 0.0008900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "epson t020201 color ink cartridge",
+                "category": "printers",
+                "brand": "epson",
+                "modelno": "t020201",
+                "price": "27.0"
+            },
+            "entity_2": {
+                "title": "epson t044320 magenta ink cartridge",
+                "category": "inkjet printer ink",
+                "brand": "epson",
+                "modelno": "t0443",
+                "price": "11.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 153,
+                "output_tokens": 2,
+                "cost": 0.000795
+            }
+        },
+        {
+            "entity_1": {
+                "title": "energizer lithium aaa battery",
+                "category": "electronics - general",
+                "brand": "energizer",
+                "modelno": "ea92bp-8",
+                "price": "21.0"
+            },
+            "entity_2": {
+                "title": "energizer cr1620 lithium battery card of 5 ormd",
+                "category": "coin button cell",
+                "brand": "energizer",
+                "modelno": "cr1620",
+                "price": "4.45"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 156,
+                "output_tokens": 2,
+                "cost": 0.0008100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "lexmark 12a8425 black high-yield toner print cartridge",
+                "category": "printers",
+                "brand": "lexmark",
+                "modelno": "12a8425",
+                "price": "302.4"
+            },
+            "entity_2": {
+                "title": "ld compatible high yield black laser toner cartridge for lexmark 12a5845",
+                "category": "laser printer toner",
+                "brand": "4inkjets",
+                "modelno": "",
+                "price": "74.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 163,
+                "output_tokens": 1,
+                "cost": 0.0008300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "buffalo technology linkstation duo 1 tb 2 x 500 gb network attached storage ls-wx1 .0 tl r1",
+                "category": "networking",
+                "brand": "buffalo technology",
+                "modelno": "lswx10tlr1",
+                "price": "192.63"
+            },
+            "entity_2": {
+                "title": "buffalo technology linkstation live 1.0 tb shared network attached storage ls-ch1 .0 tl black",
+                "category": "network attached storage",
+                "brand": "buffalo technology",
+                "modelno": "ls-ch1 .0 tl",
+                "price": "99.97"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.53,
+            "tokens": {
+                "input_tokens": 192,
+                "output_tokens": 1,
+                "cost": 0.0009750000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "michigan wolverines iphone 3g silicone cover",
+                "category": "electronics - general",
+                "brand": "tribeca",
+                "modelno": "fva2158",
+                "price": "19.99"
+            },
+            "entity_2": {
+                "title": "chicago blackhawks iphone 3g silicone cover",
+                "category": "computers accessories",
+                "brand": "tribeca",
+                "modelno": "",
+                "price": "16.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 155,
+                "output_tokens": 1,
+                "cost": 0.0007900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "belkin 3 cat-5e snagless patch cable blue",
+                "category": "electronics - general",
+                "brand": "belkin",
+                "modelno": "a3l791-03-blu-s",
+                "price": "4.35"
+            },
+            "entity_2": {
+                "title": "belkin a3l791-s 3-foot rj45 cat 5e snagless molded patch cable blue",
+                "category": "ethernet cables",
+                "brand": "belkin",
+                "modelno": "a3l791-03-blu-s",
+                "price": "2.79"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 1.08,
+            "tokens": {
+                "input_tokens": 184,
+                "output_tokens": 1,
+                "cost": 0.0009350000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "motion systems ipad01 charlie ipad sleeve black",
+                "category": "mp3 accessories",
+                "brand": "motion systems",
+                "modelno": "ipad01-blk",
+                "price": "16.99"
+            },
+            "entity_2": {
+                "title": "charlie black nylon sleeve for ipad",
+                "category": "cases sleeves",
+                "brand": "motion systems",
+                "modelno": "ipad01-blk",
+                "price": "9.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 153,
+                "output_tokens": 1,
+                "cost": 0.0007800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ihome app-friendly rechargeable speaker system for ipad iphone ipod",
+                "category": "electronics - general",
+                "brand": "ihome",
+                "modelno": "id9s",
+                "price": "99.99"
+            },
+            "entity_2": {
+                "title": "logitech s715i rechargeable speaker for ipod and iphone",
+                "category": "speaker systems",
+                "brand": "logitech",
+                "modelno": "984-000134",
+                "price": "113.12"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 2,
+                "cost": 0.00083
+            }
+        },
+        {
+            "entity_1": {
+                "title": "toshiba dvr670 dvd vhs recorder with built-in tuner",
+                "category": "dvd players",
+                "brand": "toshiba",
+                "modelno": "dvr670",
+                "price": "214.0"
+            },
+            "entity_2": {
+                "title": "toshiba dvr670 dvr670ku dvd vhs recorder with built in tuner black",
+                "category": "disc players recorders",
+                "brand": "toshiba",
+                "modelno": "dvr670",
+                "price": "212.94"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "birdhouse tony hawk 2gb ptero skatedrive usb flash drive",
+                "category": "usb drives",
+                "brand": "ep memory",
+                "modelno": "bh-skthpt/2g",
+                "price": "9.84"
+            },
+            "entity_2": {
+                "title": "birdhouse tony hawk 16gb crossbones blue skatedrive usb flash drive",
+                "category": "usb flash drives",
+                "brand": "action",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.99,
+            "tokens": {
+                "input_tokens": 165,
+                "output_tokens": 1,
+                "cost": 0.0008400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "comprehensive high density15-pin vga male metal connector with hood set of 25",
+                "category": "tv accessories",
+                "brand": "comprehensive",
+                "modelno": "hd15p",
+                "price": "69.0"
+            },
+            "entity_2": {
+                "title": "comprehensive rj11p rj11 male connector - 6 position 4 conductor set of 25",
+                "category": "",
+                "brand": "comprehensive",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 162,
+                "output_tokens": 1,
+                "cost": 0.0008250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "seagate freeagent goflex 500gb usb 2.0 ultra-portable hard drive black",
+                "category": "hard drives",
+                "brand": "seagate",
+                "modelno": "9zf2a2-570",
+                "price": "71.07"
+            },
+            "entity_2": {
+                "title": "seagate freeagent go 320 gb usb 2.0 portable external hard drive st903203fga2e1-rk silver",
+                "category": "external hard drives",
+                "brand": "seagate",
+                "modelno": "st903203fga2e1-rk",
+                "price": "75.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.51,
+            "tokens": {
+                "input_tokens": 194,
+                "output_tokens": 2,
+                "cost": 0.001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "griffin technology powerjolt plus mobile",
+                "category": "electronics - general",
+                "brand": "griffin technology",
+                "modelno": "gc23073",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "griffin gc23073 powerjolt plus mobile",
+                "category": "car chargers",
+                "brand": "griffin technology",
+                "modelno": "gc23073",
+                "price": "11.25"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 155,
+                "output_tokens": 1,
+                "cost": 0.0007900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "cooler master atx centurion 534 tower black",
+                "category": "electronics - general",
+                "brand": "coolermaster",
+                "modelno": "centurion534bk",
+                "price": "56.25"
+            },
+            "entity_2": {
+                "title": "cooler master centurion 5 atx mid tower case silver - cac-t05-uw",
+                "category": "computer cases",
+                "brand": "cooler master",
+                "modelno": "cac-t05-uw",
+                "price": "54.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 170,
+                "output_tokens": 1,
+                "cost": 0.0008650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "seiko slp-mrl multipurpose label",
+                "category": "stationery & office machinery",
+                "brand": "seiko",
+                "modelno": "slp-mrl",
+                "price": "14.88"
+            },
+            "entity_2": {
+                "title": "smart label printer multipurpose labels",
+                "category": "audio video accessories",
+                "brand": "seiko",
+                "modelno": "",
+                "price": "13.82"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 150,
+                "output_tokens": 2,
+                "cost": 0.00078
+            }
+        },
+        {
+            "entity_1": {
+                "title": "griffin ipod touch 4g formfit case pink clear",
+                "category": "mp3 accessories",
+                "brand": "arkon",
+                "modelno": "gb01959",
+                "price": "17.13"
+            },
+            "entity_2": {
+                "title": "griffin elan form case for ipod touch 4g black",
+                "category": "cases",
+                "brand": "griffin technology",
+                "modelno": "gb01943",
+                "price": "5.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 161,
+                "output_tokens": 1,
+                "cost": 0.0008200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-plex self trimming rear projection screen - 60 x 60 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27575",
+                "price": "2680.99"
+            },
+            "entity_2": {
+                "title": "da-lite 27660 da-glas deluxe rear projection screen - 72 x 96 video format",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 165,
+                "output_tokens": 1,
+                "cost": 0.0008400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "pendaflex cutless watershed file folders 1 3 cut top tab letter manila 100 per box",
+                "category": "stationery & office machinery",
+                "brand": "",
+                "modelno": "48434",
+                "price": "22.69"
+            },
+            "entity_2": {
+                "title": "new-pendaflex ready-tab 42336 - ready-tab file folders 1 3 cut top tab letter manila 50 box - ess42336",
+                "category": "laminating supplies",
+                "brand": "pendaflex",
+                "modelno": "",
+                "price": "28.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 185,
+                "output_tokens": 2,
+                "cost": 0.000955
+            }
+        },
+        {
+            "entity_1": {
+                "title": "zalman n series ssd0064n1 mlc 64gb internal sata ii solid state drive",
+                "category": "hard drives",
+                "brand": "zalman usa inc",
+                "modelno": "ssd0064n1",
+                "price": "144.0"
+            },
+            "entity_2": {
+                "title": "zalman ssd-n series ssd0064n1 - solid state drive - 64 gb - 2.5 - sata-300",
+                "category": "audio video accessories",
+                "brand": "zalman",
+                "modelno": "ssd0064n1",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.31,
+            "tokens": {
+                "input_tokens": 187,
+                "output_tokens": 1,
+                "cost": 0.0009500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "panasonic kxfa132 film cartridge and film roll",
+                "category": "camera and camcorder accessories",
+                "brand": "panasonic",
+                "modelno": "kxfa132",
+                "price": "49.84"
+            },
+            "entity_2": {
+                "title": "panasonic kxfa135 - kxfa135 film cartridge film roll",
+                "category": "",
+                "brand": "panasonic",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.49,
+            "tokens": {
+                "input_tokens": 149,
+                "output_tokens": 2,
+                "cost": 0.0007750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "roocase executive portfolio leather case stylus for asus eee pad transformer tf101 10.1-inch",
+                "category": "electronics - general",
+                "brand": "roocase",
+                "modelno": "222057",
+                "price": "55.99"
+            },
+            "entity_2": {
+                "title": "roocase executive portfolio magenta leather case cover with landscape portrait view for asus eee pad transformer 10.1-inch tf101 android tablet wi-fi",
+                "category": "cases sleeves",
+                "brand": "roocase",
+                "modelno": "",
+                "price": "43.64"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 187,
+                "output_tokens": 1,
+                "cost": 0.0009500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "imation 26607 rdx cartridge hard drive",
+                "category": "hard drives",
+                "brand": "imation",
+                "modelno": "26607",
+                "price": "117.84"
+            },
+            "entity_2": {
+                "title": "160gb cartridge for rdx govt series taa",
+                "category": "",
+                "brand": "imation",
+                "modelno": "26718",
+                "price": "156.83"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 145,
+                "output_tokens": 2,
+                "cost": 0.000755
+            }
+        },
+        {
+            "entity_1": {
+                "title": "prince of persia pc",
+                "category": "software",
+                "brand": "encore",
+                "modelno": "21191",
+                "price": "10.88"
+            },
+            "entity_2": {
+                "title": "prince of persia jc cs",
+                "category": "audio video accessories",
+                "brand": "encore",
+                "modelno": "21191",
+                "price": "12.54"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 145,
+                "output_tokens": 1,
+                "cost": 0.0007400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sony mdrex35lp vb colorful headphone with case - violet blue",
+                "category": "mp3 accessories",
+                "brand": "sony",
+                "modelno": "mdrex35lp/vb",
+                "price": "13.54"
+            },
+            "entity_2": {
+                "title": "sony mdr-ex35lp vb ex style headphones with deep bass sound violet blue",
+                "category": "headphones",
+                "brand": "sony",
+                "modelno": "mdr-ex35lp / vb",
+                "price": "12.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 169,
+                "output_tokens": 1,
+                "cost": 0.0008600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sharpie retractable fine point permanent markers",
+                "category": "stationery & office machinery",
+                "brand": "sharpie",
+                "modelno": "32760",
+                "price": "5.99"
+            },
+            "entity_2": {
+                "title": "new-sharpie 37001 - permanent markers ultra fine point black dozen - san37001",
+                "category": "shredders",
+                "brand": "sharpie",
+                "modelno": "",
+                "price": "27.07"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 1,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ampad envirotec hanging file folders 1 5 tab 11pt stock ltr standard green 25pk",
+                "category": "stationery & office machinery",
+                "brand": "",
+                "modelno": "",
+                "price": "12.54"
+            },
+            "entity_2": {
+                "title": "ampad 52115r - envirotec hanging file folder 1 5 tab 11 point letter standard green 25 box",
+                "category": "printers",
+                "brand": "ampad",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 173,
+                "output_tokens": 1,
+                "cost": 0.0008800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "imation 26654 swivel 8gb usb2 .0 flash drive",
+                "category": "usb drives",
+                "brand": "imation",
+                "modelno": "26654",
+                "price": "25.84"
+            },
+            "entity_2": {
+                "title": "imation 8gb swivel flash drive",
+                "category": "usb flash drives",
+                "brand": "imation",
+                "modelno": "26654",
+                "price": "17.58"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 152,
+                "output_tokens": 1,
+                "cost": 0.0007750000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "fellowes goriser laptop elevator",
+                "category": "electronics - general",
+                "brand": "fellowes",
+                "modelno": "8030401",
+                "price": "21.88"
+            },
+            "entity_2": {
+                "title": "fellowes 8030401 laptop goriser",
+                "category": "laptop netbook computer accessories",
+                "brand": "fellowes",
+                "modelno": "8030401",
+                "price": "14.95"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 158,
+                "output_tokens": 1,
+                "cost": 0.000805
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ifrogz ipod touch 4 luxe original case blue black",
+                "category": "mp3 accessories",
+                "brand": "ifrogz",
+                "modelno": "it4lo-blu/blk",
+                "price": "29.99"
+            },
+            "entity_2": {
+                "title": "ifrogz luxe lean case for ipod touch 4g marine",
+                "category": "cases",
+                "brand": "ifrogz",
+                "modelno": "it4ll-mrn",
+                "price": "12.5"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 169,
+                "output_tokens": 1,
+                "cost": 0.0008600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "mayline brighton series suspended box file pedestal cherry",
+                "category": "storage",
+                "brand": "mayline",
+                "modelno": "btbf20lcr",
+                "price": "229.0"
+            },
+            "entity_2": {
+                "title": "new-mayline btbf20lcr - brighton series suspended box file pedestal 15w x 19d x 20h cherry - mlnbtbf20lcr",
+                "category": "laminating supplies",
+                "brand": "mayline",
+                "modelno": "",
+                "price": "289.0"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 178,
+                "output_tokens": 1,
+                "cost": 0.0009050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "lyoto machida mouse pad",
+                "category": "mice",
+                "brand": "wincraft",
+                "modelno": "86210010",
+                "price": "16.99"
+            },
+            "entity_2": {
+                "title": "ufc mixed martial arts lyoto machida mouse pad",
+                "category": "mouse pads",
+                "brand": "wincraft",
+                "modelno": "86210010",
+                "price": "9.06"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 153,
+                "output_tokens": 1,
+                "cost": 0.0007800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "microsoft comfort optical mouse 3000 silver blue",
+                "category": "mice",
+                "brand": "microsoft",
+                "modelno": "d1t00011",
+                "price": "19.95"
+            },
+            "entity_2": {
+                "title": "microsoft wireless notebook optical mouse 3000 - winter blue",
+                "category": "mice",
+                "brand": "microsoft",
+                "modelno": "bx3-00001",
+                "price": "13.79"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.51,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 1,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "casio exilim ex-zs5 14.1 mp digital camera silver w 5x optical zoom 2.7 lcd display",
+                "category": "digital cameras",
+                "brand": "casio",
+                "modelno": "",
+                "price": "100.0"
+            },
+            "entity_2": {
+                "title": "casio exilim ex-zs5 14 mp stylish and slim digital camera with 5x wide-angle zoom silver",
+                "category": "point shoot digital cameras",
+                "brand": "casio",
+                "modelno": "ex-zs5 red",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 182,
+                "output_tokens": 1,
+                "cost": 0.0009250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ocz technology vertex 2 60gb 2.5 sata ii solid state drive",
+                "category": "hard drives",
+                "brand": "ocz technologies",
+                "modelno": "oczssd22vtxe60g",
+                "price": "119.98"
+            },
+            "entity_2": {
+                "title": "ocz technology 120 gb vertex series sata ii 3.0 gb-s 2.5-inch solid state drive oczssd2-1vtx120g",
+                "category": "computer components",
+                "brand": "ocz",
+                "modelno": "oczssd2-1vtx120g",
+                "price": "174.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 193,
+                "output_tokens": 2,
+                "cost": 0.000995
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hon 500 series two-drawer lateral file black",
+                "category": "stationery & office machinery",
+                "brand": "hon",
+                "modelno": "572lp",
+                "price": "359.94"
+            },
+            "entity_2": {
+                "title": "new-hon 692lp - 600 series two-drawer lateral file 42w x19-1 4d black - hon692lp",
+                "category": "laminating supplies",
+                "brand": "hon",
+                "modelno": "",
+                "price": "772.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.61,
+            "tokens": {
+                "input_tokens": 171,
+                "output_tokens": 1,
+                "cost": 0.0008700000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "vantec nexstar 2.5 sata to usb 2.0 hard drive dock",
+                "category": "electronics - general",
+                "brand": "vantec",
+                "modelno": "nst-d100s2",
+                "price": "24.2"
+            },
+            "entity_2": {
+                "title": "vantec nexstar superspeed 2.5-inch sata to usb 3.0 external hard drive enclosure nst-280s3-bk black",
+                "category": "computers accessories",
+                "brand": "vantec",
+                "modelno": "nst-280s3-bk",
+                "price": "26.62"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 191,
+                "output_tokens": 1,
+                "cost": 0.0009700000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hp ce505xd black laserjet print cartridges 2pk",
+                "category": "printers",
+                "brand": "hp",
+                "modelno": "hp ce505xd",
+                "price": "258.84"
+            },
+            "entity_2": {
+                "title": "hp laserjet 42a black print cartridge in retail packaging",
+                "category": "laser printer toner",
+                "brand": "hp",
+                "modelno": "q5942a",
+                "price": "125.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 159,
+                "output_tokens": 1,
+                "cost": 0.0008100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "inland pro 6-sheet paper shredder",
+                "category": "stationery & office machinery",
+                "brand": "inland",
+                "modelno": "05301",
+                "price": "28.54"
+            },
+            "entity_2": {
+                "title": "inland pro 6-sheet paper shredder 05301",
+                "category": "shredders",
+                "brand": "inland",
+                "modelno": "05301",
+                "price": "28.54"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.28,
+            "tokens": {
+                "input_tokens": 157,
+                "output_tokens": 1,
+                "cost": 0.0008000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "kensington k72334us slimblade mouse with nano receiver - laser",
+                "category": "mice",
+                "brand": "kensington",
+                "modelno": "k72334us",
+                "price": "32.88"
+            },
+            "entity_2": {
+                "title": "new-si640 laser mouse w nano recvr - k72334us",
+                "category": "connectors adapters",
+                "brand": "kensington",
+                "modelno": "",
+                "price": "46.33"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 1,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ilive iphone alarm clock speaker",
+                "category": "electronics - general",
+                "brand": "ilive",
+                "modelno": "isp191b",
+                "price": "42.88"
+            },
+            "entity_2": {
+                "title": "ilive isp191b app-enhanced speaker with rotating dock for iphone ipod",
+                "category": "speaker systems",
+                "brand": "ilive",
+                "modelno": "isp191b",
+                "price": "31.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 157,
+                "output_tokens": 1,
+                "cost": 0.0008000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-plex deluxe rear projection screen - 58 x 104 hdtv format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27571",
+                "price": "4629.99"
+            },
+            "entity_2": {
+                "title": "da-lite da-plex unframed rear projection screen - 108 x 144 video format",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "27514",
+                "price": "8094.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 173,
+                "output_tokens": 1,
+                "cost": 0.0008800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "kingwin mobile rack storage bay adapter",
+                "category": "networking",
+                "brand": "kingwin",
+                "modelno": "kf-251-bk",
+                "price": "27.88"
+            },
+            "entity_2": {
+                "title": "kingwin kf-101-ipf-b - storage bay adapter - black",
+                "category": "usb flash drives",
+                "brand": "kingwin",
+                "modelno": "kf-101-ipf-b",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 158,
+                "output_tokens": 1,
+                "cost": 0.000805
+            }
+        },
+        {
+            "entity_1": {
+                "title": "gear head 2.4 ghz wireless mini touchpad usb keyboard black",
+                "category": "electronics - general",
+                "brand": "gear head",
+                "modelno": "kb3800tpw",
+                "price": "37.82"
+            },
+            "entity_2": {
+                "title": "wireless touch mini touchpad keyboard with smart touch",
+                "category": "keyboards",
+                "brand": "gear head",
+                "modelno": "kb3800tpw",
+                "price": "31.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 164,
+                "output_tokens": 1,
+                "cost": 0.0008350000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-plex deluxe rear projection screen - 50 1 2 x 67 1 4 video format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27562",
+                "price": "2544.99"
+            },
+            "entity_2": {
+                "title": "da-lite fast-fold deluxe screen system - projection screen - 4 3 - da-mat",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": "529.25"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 175,
+                "output_tokens": 1,
+                "cost": 0.0008900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "verbatim store n go superspeed usb 3.0 portable hard drive 500gb",
+                "category": "hard drives",
+                "brand": "verbatim",
+                "modelno": "97397",
+                "price": "69.98"
+            },
+            "entity_2": {
+                "title": "verbatim 97397 store n go super speed usb 3.0 portable hard drive 500gb",
+                "category": "printers",
+                "brand": "verbatim",
+                "modelno": "",
+                "price": "116.2"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 168,
+                "output_tokens": 1,
+                "cost": 0.0008550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "verbatim 95003 3x dvd-ram double-sided media",
+                "category": "mp3 accessories",
+                "brand": "verbatim",
+                "modelno": "95003",
+                "price": "13.88"
+            },
+            "entity_2": {
+                "title": "verbatim 2.8 gb 2x double-sided mini dvd-ram bundle 3 discs",
+                "category": "blank media",
+                "brand": "verbatim",
+                "modelno": "95429",
+                "price": "19.8"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.27,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite matte white model c with csr manual screen - 72 x 72 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "33403",
+                "price": "563.99"
+            },
+            "entity_2": {
+                "title": "da-lite floor model c - projection screen - matte white",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "floor model c",
+                "price": "488.65"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 3.81,
+            "tokens": {
+                "input_tokens": 163,
+                "output_tokens": 1,
+                "cost": 0.0008300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite matte white designer model b with fabric case in frost gray - 84 x 84 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "73139",
+                "price": "222.99"
+            },
+            "entity_2": {
+                "title": "video spectra 1.5 designer model b with fabric case in frost gray - av format size 50 x 50",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 171,
+                "output_tokens": 1,
+                "cost": 0.0008700000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-glas deluxe rear projection screen - 84 x 84 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27650",
+                "price": "4958.99"
+            },
+            "entity_2": {
+                "title": "da-lite da-plex thru-the-wall rear projection screen - 78 x 139 hdtv format",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "23077",
+                "price": "9258.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 173,
+                "output_tokens": 1,
+                "cost": 0.0008800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "panasonic slimz over-ear headphone green rp-hx40-g",
+                "category": "electronics - general",
+                "brand": "panasonic",
+                "modelno": "rp-hx40-g",
+                "price": "34.88"
+            },
+            "entity_2": {
+                "title": "panasonic rp-hje350-p slimz in-ear earbud headphones pink",
+                "category": "headphones",
+                "brand": "panasonic",
+                "modelno": "rp-hje350-p",
+                "price": "17.19"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "garmin etrex summit hc handheld gps receiver 010-00633-00",
+                "category": "handheld gps",
+                "brand": "garmin",
+                "modelno": "010-00633-00",
+                "price": "166.88"
+            },
+            "entity_2": {
+                "title": "garmin etrex summit hc handheld gps receiver",
+                "category": "handheld gps",
+                "brand": "garmin",
+                "modelno": "010-00633-00",
+                "price": "166.88"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "connectland 1.20-meter stainless steel notebook security lock with key",
+                "category": "electronics - general",
+                "brand": "syba multimedia",
+                "modelno": "cl-nbk65016",
+                "price": "11.88"
+            },
+            "entity_2": {
+                "title": "connectland 1.20-meter stainless steel notebook security lock with key",
+                "category": "cleaning repair",
+                "brand": "syba",
+                "modelno": "cl-nbk65016",
+                "price": "6.5"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 169,
+                "output_tokens": 1,
+                "cost": 0.0008600000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "seal shield ssk107 medical grade keyboard - dishwasher safe black usb",
+                "category": "computers",
+                "brand": "seal shield",
+                "modelno": "ssk107",
+                "price": "30.84"
+            },
+            "entity_2": {
+                "title": "seal shield ssk107 medical grade keyboard",
+                "category": "computers accessories",
+                "brand": "seal shield",
+                "modelno": "ssk107",
+                "price": "30.88"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 154,
+                "output_tokens": 1,
+                "cost": 0.0007850000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "siig wireless multimedia keyboard mouse",
+                "category": "electronics - general",
+                "brand": "siig",
+                "modelno": "jk-wr0212-s1",
+                "price": "29.82"
+            },
+            "entity_2": {
+                "title": "siig jk-wr0412-s1 81 key wireless mini multimedia keyboard",
+                "category": "keyboards",
+                "brand": "siig",
+                "modelno": "jk-wr0412-s1",
+                "price": "43.24"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 165,
+                "output_tokens": 1,
+                "cost": 0.0008400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "plantronics gamecom 367 closed-ear gaming headset",
+                "category": "electronics - general",
+                "brand": "plantronics",
+                "modelno": "gamecom 367",
+                "price": "24.84"
+            },
+            "entity_2": {
+                "title": "plantronics gamecom 367 closed-ear gaming headset",
+                "category": "accessories supplies",
+                "brand": "plantronics",
+                "modelno": "gamecom367",
+                "price": "24.84"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 161,
+                "output_tokens": 1,
+                "cost": 0.0008200000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "rolodex wood tone desk pad mahogany 24 x 19",
+                "category": "stationery & office machinery",
+                "brand": "rolodex",
+                "modelno": "23390",
+                "price": "37.94"
+            },
+            "entity_2": {
+                "title": "rolodex 23390 - wood tone desk pad mahogany 24 x 19",
+                "category": "blank media",
+                "brand": "rolodex",
+                "modelno": "",
+                "price": "34.65"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 166,
+                "output_tokens": 1,
+                "cost": 0.0008450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "lexmark 1382920 toner 3000 page-yield black",
+                "category": "stationery & office machinery",
+                "brand": "lexmark",
+                "modelno": "1382920",
+                "price": "270.9"
+            },
+            "entity_2": {
+                "title": "new-1382920 toner 3000 page yield black case pack 1 - 516495",
+                "category": "computer accessories",
+                "brand": "lexmark",
+                "modelno": "",
+                "price": "574.19"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "verbatim 94892 datalifeplus 52x cd-r media",
+                "category": "mp3 accessories",
+                "brand": "verbatim",
+                "modelno": "94892",
+                "price": "19.88"
+            },
+            "entity_2": {
+                "title": "verbatim 94892 700 mb 52x datalifeplus silver inkjet printable recordable disc cd-r 50-disc spindle",
+                "category": "cd-r discs",
+                "brand": "verbatim",
+                "modelno": "94892",
+                "price": "14.15"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 177,
+                "output_tokens": 1,
+                "cost": 0.0009000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "case logic medium slr camera bag",
+                "category": "photography - general",
+                "brand": "case logic",
+                "modelno": "133827",
+                "price": "47.99"
+            },
+            "entity_2": {
+                "title": "case logic slrc-202 medium slr camera bag black",
+                "category": "cases bags",
+                "brand": "case logic",
+                "modelno": "slrc-202black",
+                "price": "37.95"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 156,
+                "output_tokens": 1,
+                "cost": 0.0007950000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "manhattan 150705 superspeed usb to sata adapter",
+                "category": "electronics - general",
+                "brand": "",
+                "modelno": "150705",
+                "price": "47.84"
+            },
+            "entity_2": {
+                "title": "manhattan 150705 superspeed usb to sata adapter",
+                "category": "cables interconnects",
+                "brand": "manhattan",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 148,
+                "output_tokens": 1,
+                "cost": 0.0007550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "xfx radeon hd6850 pcie 1gb ddr5 graphics card",
+                "category": "electronics - general",
+                "brand": "xfx",
+                "modelno": "hd685xzndc",
+                "price": "195.0"
+            },
+            "entity_2": {
+                "title": "xfx radeon hd 5770 1 gb ddr5 pcie graphics card hd577aznfc",
+                "category": "computers accessories",
+                "brand": "xfx",
+                "modelno": "hd577aznfc",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.27,
+            "tokens": {
+                "input_tokens": 176,
+                "output_tokens": 1,
+                "cost": 0.0008950000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sabrent usb 2.0 firewire pcmcia cardbus",
+                "category": "networking",
+                "brand": "sabrent",
+                "modelno": "sbt-pca4",
+                "price": "14.88"
+            },
+            "entity_2": {
+                "title": "sabrent sbt-pca4 4-port usb 2.0 firewire 1394 32-bit pcmcia cardbus combo adapter",
+                "category": "cables interconnects",
+                "brand": "sabrent",
+                "modelno": "sbt-pca4",
+                "price": "18.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 187,
+                "output_tokens": 1,
+                "cost": 0.0009500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "netgear powerline av 500 adapter",
+                "category": "networking",
+                "brand": "netgear",
+                "modelno": "xav5001100nas",
+                "price": "79.82"
+            },
+            "entity_2": {
+                "title": "netgear xavb101 powerline av ethernet adapter kit",
+                "category": "powerline network adapters",
+                "brand": "netgear",
+                "modelno": "xavb101-100nas",
+                "price": "59.88"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 162,
+                "output_tokens": 1,
+                "cost": 0.0008250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite video spectra 1.5 model c manual screen - 78 x 139 hdtv format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "82973",
+                "price": "787.99"
+            },
+            "entity_2": {
+                "title": "da-lite model b with csr video spectra 1.5 - projection screen - 106 in",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "video spectra 1.5",
+                "price": "279.5"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.45,
+            "tokens": {
+                "input_tokens": 178,
+                "output_tokens": 1,
+                "cost": 0.0009050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "xfx ati radeon 5670 hd pci-express 1gb ddr3 graphics card",
+                "category": "electronics - general",
+                "brand": "xfx",
+                "modelno": "hd567xznl3",
+                "price": "91.88"
+            },
+            "entity_2": {
+                "title": "xfx ati radeon hd6670 1 gb ddr5 vga dvi hdmi pci-express video card hd667xzaf3",
+                "category": "graphics cards",
+                "brand": "xfx",
+                "modelno": "hd667xzaf3",
+                "price": "99.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 190,
+                "output_tokens": 1,
+                "cost": 0.0009650000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite high power model b manual screen with csr - 84 x 84 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "85303",
+                "price": "372.99"
+            },
+            "entity_2": {
+                "title": "da-lite model b with csr high power - projection screen - 92 in",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "high power",
+                "price": "344.5"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 166,
+                "output_tokens": 1,
+                "cost": 0.0008450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-glas deluxe rear projection screen - 84 x 84 av format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27650",
+                "price": "4958.99"
+            },
+            "entity_2": {
+                "title": "da-lite 27597 da-glas unframed rear projection screen - 96 x 96 av format",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 166,
+                "output_tokens": 1,
+                "cost": 0.0008450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "tops daily attendance card 8-1 2 x 11 50 forms",
+                "category": "stationery & office machinery",
+                "brand": "",
+                "modelno": "3284",
+                "price": "8.86"
+            },
+            "entity_2": {
+                "title": "new-tops 3284 - daily attendance card 8-1 2 x 11 50 forms - top3284",
+                "category": "laminating supplies",
+                "brand": "tops",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 1,
+                "cost": 0.0008500000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "allsop clingo universal hands free mount",
+                "category": "electronics - general",
+                "brand": "allsop",
+                "modelno": "30272",
+                "price": "34.99"
+            },
+            "entity_2": {
+                "title": "clingo universal hands-free car mount for iphone 4 3g 3gs and all cell phones and mobile devices",
+                "category": "mounts",
+                "brand": "allsop",
+                "modelno": "30272",
+                "price": "20.07"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.57,
+            "tokens": {
+                "input_tokens": 165,
+                "output_tokens": 1,
+                "cost": 0.0008400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "aleratec inc cd dvd shredder",
+                "category": "stationery & office machinery",
+                "brand": "aleratec",
+                "modelno": "",
+                "price": "61.88"
+            },
+            "entity_2": {
+                "title": "aleratec dvd cd shredder xc 240145 black",
+                "category": "shredders",
+                "brand": "aleratec",
+                "modelno": "240145",
+                "price": "68.78"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.59,
+            "tokens": {
+                "input_tokens": 155,
+                "output_tokens": 1,
+                "cost": 0.0007900000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "samsung ht-d5300 3d wi-fi ready home theater system",
+                "category": "home theater",
+                "brand": "samsung",
+                "modelno": "ht-d5300",
+                "price": "298.0"
+            },
+            "entity_2": {
+                "title": "samsung electronics ht-d5300 home theater system",
+                "category": "dvd home theater",
+                "brand": "samsung",
+                "modelno": "htd5300",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 158,
+                "output_tokens": 1,
+                "cost": 0.000805
+            }
+        },
+        {
+            "entity_1": {
+                "title": "roocase executive portfolio leather case w 2 screen protector for blackberry playbook",
+                "category": "electronics - general",
+                "brand": "roocase",
+                "modelno": "220761",
+                "price": "35.99"
+            },
+            "entity_2": {
+                "title": "blurex slim leather portfolio case with 2 tier stand for blackberry playbook",
+                "category": "cases sleeves",
+                "brand": "blurex",
+                "modelno": "pbsl510",
+                "price": "19.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.36,
+            "tokens": {
+                "input_tokens": 168,
+                "output_tokens": 1,
+                "cost": 0.0008550000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sabrent 5-port usb 2.0 pci card adapter",
+                "category": "electronics - general",
+                "brand": "sabrent",
+                "modelno": "sbt-ali5y",
+                "price": "9.88"
+            },
+            "entity_2": {
+                "title": "sabrent sbt-ali5y 5 port hi-speed usb 2.0 pci hi speed card adapter",
+                "category": "computers accessories",
+                "brand": "sabrent",
+                "modelno": "sbt-ali5y",
+                "price": "9.39"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 182,
+                "output_tokens": 1,
+                "cost": 0.0009250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "htc sensation 4g",
+                "category": "prepaid wireless phones",
+                "brand": "generic",
+                "modelno": "610214626400",
+                "price": "0.0"
+            },
+            "entity_2": {
+                "title": "htc sensation 4g android phone t-mobile",
+                "category": "phones with plans",
+                "brand": "htc",
+                "modelno": "sensation",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 148,
+                "output_tokens": 2,
+                "cost": 0.0007700000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "epson t020201 color ink cartridge",
+                "category": "printers",
+                "brand": "epson",
+                "modelno": "t020201",
+                "price": "27.0"
+            },
+            "entity_2": {
+                "title": "epson t001011 color inkjet cartridge",
+                "category": "inkjet printer ink",
+                "brand": "epson",
+                "modelno": "t001011",
+                "price": "26.95"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 153,
+                "output_tokens": 2,
+                "cost": 0.000795
+            }
+        },
+        {
+            "entity_1": {
+                "title": "coby 8gb video mp3 player black",
+                "category": "mp3",
+                "brand": "coby",
+                "modelno": "mp727-8gblk",
+                "price": "59.88"
+            },
+            "entity_2": {
+                "title": "sansa fuze 8 gb mp3 player black",
+                "category": "mp3 players",
+                "brand": "sandisk",
+                "modelno": "sdmx20r-008gk-a57",
+                "price": "63.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.91,
+            "tokens": {
+                "input_tokens": 166,
+                "output_tokens": 1,
+                "cost": 0.0008450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sony bdp-s360 1080p blu-ray disc player - refurbished",
+                "category": "dvd players",
+                "brand": "sony",
+                "modelno": "rbbdp-s360",
+                "price": "79.0"
+            },
+            "entity_2": {
+                "title": "sony bdp-s380 blu-ray disc player black",
+                "category": "blu-ray disc players",
+                "brand": "sony",
+                "modelno": "bdps380",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.4,
+            "tokens": {
+                "input_tokens": 157,
+                "output_tokens": 2,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "lorex lw1002 live wireless security cameras",
+                "category": "garden - general",
+                "brand": "lorex",
+                "modelno": "lw1002",
+                "price": "119.0"
+            },
+            "entity_2": {
+                "title": "new lorex lw1002w 2 wireless camera system obs systems home security",
+                "category": "printer ink toner",
+                "brand": "lorex",
+                "modelno": "",
+                "price": "141.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 1,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "guardian ecoguard indoor rubber wiper mats 36 x 60 charcoal",
+                "category": "rugs",
+                "brand": "guardian",
+                "modelno": "eg030504",
+                "price": "55.97"
+            },
+            "entity_2": {
+                "title": "guardian eg030504 - ecoguard indoor wiper mats rubber 36 x 60 charcoal",
+                "category": "storage presentation materials",
+                "brand": "guardian",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.35,
+            "tokens": {
+                "input_tokens": 159,
+                "output_tokens": 1,
+                "cost": 0.0008100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hp laserjet 53x black print cartridge",
+                "category": "printers",
+                "brand": "hp",
+                "modelno": "q7553x",
+                "price": "164.84"
+            },
+            "entity_2": {
+                "title": "hp color laserjet q6001a q6002a q6003a tri-pack print cartridges ce257a",
+                "category": "printer ink toner",
+                "brand": "hp",
+                "modelno": "ce257a",
+                "price": "212.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 166,
+                "output_tokens": 1,
+                "cost": 0.0008450000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "corsair hx3x12g1333c9 12 gb xms3 6 x 2 gb pc3-10600 1333mhz 240-pin ddr3 core i7 triple channel memory kit desktop memory module",
+                "category": "memory",
+                "brand": "corsair",
+                "modelno": "hx3x12g1333c9",
+                "price": "163.82"
+            },
+            "entity_2": {
+                "title": "corsair hx3x12g1333c9 12 gb xms3 6 x 2 gb pc3-10600 1333mhz 240-pin ddr3 core i7 triple channel memory kit",
+                "category": "memory",
+                "brand": "corsair",
+                "modelno": "hx3x12g1333c9",
+                "price": "119.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 239,
+                "output_tokens": 1,
+                "cost": 0.0012100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "canon mp41dhii printing calculator",
+                "category": "stationery & office machinery",
+                "brand": "canon",
+                "modelno": "mp41dhii",
+                "price": "70.88"
+            },
+            "entity_2": {
+                "title": "canon pidhv printing calculator 9493a001ac",
+                "category": "printing",
+                "brand": "canon",
+                "modelno": "9493a001ac",
+                "price": "17.54"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 156,
+                "output_tokens": 2,
+                "cost": 0.0008100000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "v7 25 cat6 snagless molded network patch cable green",
+                "category": "electronics - general",
+                "brand": "v7",
+                "modelno": "v7n2c6-25f-grns",
+                "price": "9.76"
+            },
+            "entity_2": {
+                "title": "v7 cat5e snagless molded network patch cable rj45 male to male blue 3-feet v7n3c5e-03f-blus",
+                "category": "ethernet cables",
+                "brand": "v7",
+                "modelno": "v7n3c5e-03f-blus",
+                "price": "1.43"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.34,
+            "tokens": {
+                "input_tokens": 200,
+                "output_tokens": 1,
+                "cost": 0.001015
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sharpie retractable permanent markers fine point set of 12 black",
+                "category": "stationery & office machinery",
+                "brand": "sharpie",
+                "modelno": "32701",
+                "price": "13.64"
+            },
+            "entity_2": {
+                "title": "san36703 - permanent marker retractable fine point blue",
+                "category": "printer ink toner",
+                "brand": "sanford",
+                "modelno": "",
+                "price": "2.39"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 157,
+                "output_tokens": 1,
+                "cost": 0.0008000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "quartet total erase 3-month modular planning system aluminum frame 36",
+                "category": "stationery & office machinery",
+                "brand": "quartet",
+                "modelno": "cmp32",
+                "price": "129.94"
+            },
+            "entity_2": {
+                "title": "new-quartet cmp32 - total erase 3-month modular planning system 36 x 24 aluminum frame - qrtcmp32",
+                "category": "laminating supplies",
+                "brand": "quartet",
+                "modelno": "",
+                "price": "170.0"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.41,
+            "tokens": {
+                "input_tokens": 174,
+                "output_tokens": 1,
+                "cost": 0.0008850000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "panasonic kx-tg4022n dect 6.0 plus expandable cordless answering system w 2 handsets",
+                "category": "electronics - general",
+                "brand": "panasonic",
+                "modelno": "kx-tg4022n",
+                "price": "44.98"
+            },
+            "entity_2": {
+                "title": "panasonic kx-tg6572r dect 6.0 cordless phone with answering system wine red 2 handsets",
+                "category": "telephone accessories",
+                "brand": "panasonic",
+                "modelno": "kx-tg6572r",
+                "price": "60.0"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 192,
+                "output_tokens": 1,
+                "cost": 0.0009750000000000002
+            }
+        },
+        {
+            "entity_1": {
+                "title": "case logic 48 capacity heavy duty cd wallet",
+                "category": "electronics - general",
+                "brand": "case logic",
+                "modelno": "56352",
+                "price": "15.99"
+            },
+            "entity_2": {
+                "title": "case logic cde-72 72 capacity heavy duty cd wallet blue",
+                "category": "disc storage wallets",
+                "brand": "case logic",
+                "modelno": "cde-72blue",
+                "price": "14.71"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.52,
+            "tokens": {
+                "input_tokens": 160,
+                "output_tokens": 1,
+                "cost": 0.0008150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite da-plex deluxe rear projection screen - 78 x 139 hdtv format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "27573",
+                "price": "7452.99"
+            },
+            "entity_2": {
+                "title": "da-lite 27597 da-glas unframed rear projection screen - 96 x 96 av format",
+                "category": "projection screens",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 168,
+                "output_tokens": 2,
+                "cost": 0.00087
+            }
+        },
+        {
+            "entity_1": {
+                "title": "hp 27 black inkjet cartridge c8727an",
+                "category": "printers",
+                "brand": "hp",
+                "modelno": "c8727an",
+                "price": "19.97"
+            },
+            "entity_2": {
+                "title": "hp 27 black ink cartridge in retail packaging c8727an 140",
+                "category": "inkjet printer ink",
+                "brand": "hp",
+                "modelno": "hewc8727an",
+                "price": "18.61"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.38,
+            "tokens": {
+                "input_tokens": 163,
+                "output_tokens": 1,
+                "cost": 0.0008300000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "avery shipping labels with trueblock technology 2 x 4 white 1000 box",
+                "category": "stationery & office machinery",
+                "brand": "avery",
+                "modelno": "8463",
+                "price": "45.91"
+            },
+            "entity_2": {
+                "title": "avery shipping labels with trueblock technology inkjet printers 5.5 x 8.5 inches white pack of 50 8126",
+                "category": "shipping labels",
+                "brand": "avery",
+                "modelno": "8126",
+                "price": "9.99"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 178,
+                "output_tokens": 1,
+                "cost": 0.0009050000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "night owl zeus-810 16-channel h. 264 dvr kit with 1tb hard drive",
+                "category": "electronics - general",
+                "brand": "night owl",
+                "modelno": "",
+                "price": "773.82"
+            },
+            "entity_2": {
+                "title": "night owl security zeus-810 16-channel 8-camera h. 264 dvr surveillance kit with d1 recording and hdmi output",
+                "category": "complete surveillance systems",
+                "brand": "night owl optics",
+                "modelno": "zeus-810",
+                "price": "676.63"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.3,
+            "tokens": {
+                "input_tokens": 185,
+                "output_tokens": 1,
+                "cost": 0.0009400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "belkin f8v3311b10 hdmi cable",
+                "category": "tv accessories",
+                "brand": "belkin",
+                "modelno": "f8v3311b10",
+                "price": "12.0"
+            },
+            "entity_2": {
+                "title": "belkin f8v3311b10 hdmi to hdmi cable 10 feet",
+                "category": "hdmi cables",
+                "brand": "belkin",
+                "modelno": "f8v3311b10",
+                "price": "8.79"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.44,
+            "tokens": {
+                "input_tokens": 173,
+                "output_tokens": 1,
+                "cost": 0.0008800000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "sabrent 32 usb 2.0 active extension cable",
+                "category": "electronics - general",
+                "brand": "sabrent",
+                "modelno": "cb-usbxt",
+                "price": "13.88"
+            },
+            "entity_2": {
+                "title": "sabrent cb-usbxt usb 2.0 type a male to type a female active extension cable 32 feet",
+                "category": "usb cables",
+                "brand": "sabrent",
+                "modelno": "cb-usbxt",
+                "price": "16.99"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.58,
+            "tokens": {
+                "input_tokens": 177,
+                "output_tokens": 1,
+                "cost": 0.0009000000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "ampad envirotec 100 recycled file folders 1 3 cut top tab letter brown 100pk",
+                "category": "stationery & office machinery",
+                "brand": "",
+                "modelno": "35113",
+                "price": "12.94"
+            },
+            "entity_2": {
+                "title": "new-ampad 35113 - envirotec recycled file folders 1 3 cut top tab letter brown 100 box - amp35113",
+                "category": "laminating supplies",
+                "brand": "ampad",
+                "modelno": "",
+                "price": "30.0"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 182,
+                "output_tokens": 1,
+                "cost": 0.0009250000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "da-lite cherry veneer model b manual screen with matte white fabric - 96 x 96 video format",
+                "category": "electronics - general",
+                "brand": "da-lite",
+                "modelno": "73263",
+                "price": "446.99"
+            },
+            "entity_2": {
+                "title": "da-lite manual 120 diagonal video format home theater wall screen with concord veneer case and matte white fabric",
+                "category": "home audio theater",
+                "brand": "da-lite",
+                "modelno": "",
+                "price": ""
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No.",
+            "tools_used": [],
+            "latency": 0.43,
+            "tokens": {
+                "input_tokens": 167,
+                "output_tokens": 2,
+                "cost": 0.000865
+            }
+        },
+        {
+            "entity_1": {
+                "title": "siig 3.5 sata superspeed usb 3.0 hard drive enclosure pro",
+                "category": "electronics - general",
+                "brand": "siig",
+                "modelno": "ju-sa0b12-s1",
+                "price": "41.39"
+            },
+            "entity_2": {
+                "title": "superspeed usb 3.0 to sata 3gb s 2.5 in drive enclosure",
+                "category": "cables interconnects",
+                "brand": "siig",
+                "modelno": "ju-sa0312-s1",
+                "price": "29.89"
+            },
+            "pred": "no",
+            "label": 0,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.37,
+            "tokens": {
+                "input_tokens": 184,
+                "output_tokens": 1,
+                "cost": 0.0009350000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "wintec filemate 4gb compactflash memory card",
+                "category": "usb drives",
+                "brand": "wintec",
+                "modelno": "3fmcf4gb-r",
+                "price": "15.98"
+            },
+            "entity_2": {
+                "title": "wintec filemate 32 gb s-professional compactflash card",
+                "category": "memory cards",
+                "brand": "wintec",
+                "modelno": "3fmcf32gbs-r",
+                "price": "79.99"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.42,
+            "tokens": {
+                "input_tokens": 165,
+                "output_tokens": 1,
+                "cost": 0.0008400000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "night owl optics apollo-45 4-channel h. 264 500gb dvr kit",
+                "category": "garden - general",
+                "brand": "night owl",
+                "modelno": "apollo-45",
+                "price": "338.0"
+            },
+            "entity_2": {
+                "title": "night owl security apollo-45 4-channel h. 264 dvr surveillance kit with d1 recording",
+                "category": "digital security recorders",
+                "brand": "night owl optics",
+                "modelno": "apollo-45",
+                "price": "294.48"
+            },
+            "pred": "yes",
+            "label": 1,
+            "model_output": "Yes",
+            "tools_used": [],
+            "latency": 1.91,
+            "tokens": {
+                "input_tokens": 180,
+                "output_tokens": 1,
+                "cost": 0.0009150000000000001
+            }
+        },
+        {
+            "entity_1": {
+                "title": "tp-link tl-ant2405cl 2.4 ghz 5dbi indoor omni-directional antenna",
+                "category": "networking",
+                "brand": "tp link",
+                "modelno": "tl-ant2405cl",
+                "price": "8.88"
+            },
+            "entity_2": {
+                "title": "tp-link tl-ant2405c 2.4 ghz 5dbi indoor desktop omni-directional antenna",
+                "category": "networking products",
+                "brand": "tp-link",
+                "modelno": "tl-ant2405c",
+                "price": "4.49"
+            },
+            "pred": "no",
+            "label": 1,
+            "model_output": "No",
+            "tools_used": [],
+            "latency": 0.39,
+            "tokens": {
+                "input_tokens": 184,
+                "output_tokens": 1,
+                "cost": 0.0009350000000000001
+            }
+        }
+    ],
+    "configs": {
+        "libem": {
+            "parameter": {
+                "model": "gpt-4o",
+                "temperature": "0",
+                "guess": "False",
+                "always": "None"
+            },
+            "prompt": {
+                "role": "You are Libem, an entity matcher that determine if two entity descriptions refer to the same entity."
+            },
+            "browse": {
+                "parameter": {
+                    "engine": "duckduckgo"
+                },
+                "prompt": {
+                    "description": "Browse the web to find additional information for a given entity.",
+                    "rule": "Rules to follow:\n- Use only when you think it would help with the matching task."
+                }
+            },
+            "match": {
+                "parameter": {
+                    "model": "gpt-4o",
+                    "temperature": "0",
+                    "tools": "[]",
+                    "cot": "False",
+                    "confidence": "False"
+                },
+                "prompt": {
+                    "role": "You are an entity matcher that determine whethertwo entity descriptions refer to the same real-world entity.",
+                    "rule": "",
+                    "experience": "",
+                    "output": "At the end, give your answer in the form of a single 'yes' or 'no'.",
+                    "query": "Entity 1: {left}.\nEntity 2: {right}."
+                }
+            },
+            "tune": {
+                "learn": {
+                    "parameter": {
+                        "model": "gpt-4-turbo",
+                        "temperature": "0"
+                    },
+                    "prompt": {
+                        "recap_success": "You achieve successes on entity matching in the following examples: {successes}",
+                        "gen_rules": "generate rules to follow from the mistakes,in the form of a rule list line by line,with each rule in a new line with no bullet point.",
+                        "recap_mistake": "You made mistakes on entity matching in the following examples: {mistakes}",
+                        "gen_experiences": "summarize the type(s) of error(s) you made,if you notice multiple errors, put them in a list,with each error in a new line with no bullet point."
+                    }
+                }
+            }
+        }
+    }
+}
