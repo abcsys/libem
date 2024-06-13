@@ -115,6 +115,9 @@ if leaderboard == None:
                ]
         for name in dataset_list.keys()
     }
+    # save to file
+    with open(lb_file, 'w') as out:
+        json.dump(leaderboard, out)
 
 def compare(a, b):
     return a['score'] - b['score']
