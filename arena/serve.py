@@ -168,6 +168,12 @@ async def submit(data: Submit):
 
 @app.get('/leaderboard/')
 async def get_leaderboard(dataset: str, uuid: str):
+    try:
+        with open(lb_file, 'r') as f:
+            leaderboard = json.load(f)
+    except:
+        pass
+    
     filtered_lb = [e for e in leaderboard[dataset] if e['uuid'] in ['0', '1', '2', uuid]]
     return sorted(filtered_lb, key=cmp_to_key(compare), reverse=True)
 
@@ -197,8 +203,9 @@ async def post_leaderboard(data: Leaderboard):
     leaderboard[data.dataset].append(json.loads(data.model_dump_json()))
     
     # save to file
-    with open(lb_file, 'w') as f:
-        json.dump(leaderboard, f)
+    async with aiofile.async_open(lb_file, 'w') as out:
+        await out.write(json.dumps(leaderboard))
+        await out.flush()
 
 # run the API
 if __name__ == "__main__":
