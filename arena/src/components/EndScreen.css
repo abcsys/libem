@@ -1,0 +1,13 @@
+.stats-box {
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    height: 25em;
+    width: 15em;
+    margin: 1em 1em;
+    padding: 0.5em 1em;
+    text-align: center;
+}
+
+.margin-top {
+    margin-top: 2rem;
+}

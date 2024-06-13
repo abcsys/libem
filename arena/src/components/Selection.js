@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
-import "./Selection.css"
+import EndScreen from "./EndScreen"
 import Timer from "./Timer"
+import "./Selection.css"
 
 const EntityBox = ({ entity, className }) => {
     return (
@@ -21,7 +22,7 @@ const EntityBox = ({ entity, className }) => {
     )
 }
 
-const ResultScreen = ({ userAns, libemAns, label, final, hidden, closeResultScreen, setEndScreen }) => {
+const ResultScreen = ({ userAns, libemAns, label, index, final, hidden, closeResultScreen, setEndScreen }) => {
 
     const resultClasses = hidden 
                             ? "result hidden" 
@@ -45,17 +46,22 @@ const ResultScreen = ({ userAns, libemAns, label, final, hidden, closeResultScre
                           </>
                     }
                     <div>Libem chose <b>{libemAns ? "Match" : "No Match"}</b>.</div>
-                    {final === true
-                        ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
-                        : <p className="value">Click <b>Next</b> to try another pair, 
-                            or <b>End</b> to see your final results.</p>
+                    {index >= 4
+                        ? final
+                            ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
+                            : <p className="value">Click <b>Next</b> to try another pair, 
+                                or <b>End</b> to see your final results.</p>
+                        : <p className="value">Click <b>Next</b> to try another pair, you may end any time after 5 pairs.</p>
                     }
                     
                 </div>
                 <div className="hstack">
-                    <div className="button rect red" onClick={() => setEndScreen(true)}>End</div>
+                    {index >= 4
+                        ? <div className="button rect red" onClick={() => setEndScreen(true)}>End</div>
+                        : <></>
+                    }
                     {
-                        final === true
+                        final
                         ? <></>
                         : <div className="button rect green" onClick={closeResultScreen}>Next</div>
                     }
@@ -66,94 +72,7 @@ const ResultScreen = ({ userAns, libemAns, label, final, hidden, closeResultScre
     )
 }
 
-const EndScreen = ({ userAns, libemAns, userTime, libemTime, labels, returnHome }) => {
-    const labelsTrue = labels.filter(Boolean).length
-    const userAnsTrue = userAns.filter(Boolean).length
-    const userActualTrue = userAns.filter((x, i) => x && labels[i]).length
-    const userCorrect = userAns.filter((x, i) => x === labels[i]).length
-    const userPrecision = userAnsTrue === 0 ? 0 : userActualTrue / userAnsTrue
-    const userRecall = labelsTrue === 0 ? 0 : userActualTrue / labelsTrue
-    const userF1 = userPrecision + userRecall === 0
-                    ? 0 
-                    : 2 * userPrecision * userRecall / (userPrecision + userRecall)
-
-    const libemAnsTrue = libemAns.filter(Boolean).length
-    const libemActualTrue = libemAns.filter((x, i) => x && labels[i]).length
-    const libemCorrect = libemAns.filter((x, i) => x === labels[i]).length
-    const libemPrecision = libemAnsTrue === 0 ? 0 :  libemActualTrue / libemAnsTrue
-    const libemRecall = labelsTrue === 0 ? 0 : libemActualTrue / labelsTrue
-    const libemF1 = libemPrecision + libemRecall === 0
-                    ? 0 
-                    : 2 * libemPrecision * libemRecall / (libemPrecision + libemRecall)
-
-    const userMetrics = {
-        accuracy: Math.round(userCorrect / userAns.length * 100) + '%',
-        precision: Math.round(userPrecision * 100) + '%',
-        recall: Math.round(userRecall * 100) + '%',
-        f1: Math.round(userF1 * 100) + '%',
-        average_time: Math.round(userTime / userAns.length * 100) / 100 + 's',
-        total_time: Math.round(userTime * 100) / 100 + 's',
-    }
-    const libemMetrics = {
-        accuracy: Math.round(libemCorrect / libemAns.length * 100) + '%',
-        precision: Math.round(libemPrecision * 100) + '%',
-        recall: Math.round(libemRecall * 100) + '%',
-        f1: Math.round(libemF1 * 100) + '%',
-        average_time: Math.round(libemTime / libemAns.length * 100) / 100 + 's',
-        total_time: Math.round(libemTime * 100) / 100 + 's',
-    }
-
-    const kvClassName = key => {
-        if (key === 'accuracy' || key === 'precision' || key === 'average_time')
-            return "kv_pair margin-top"
-        else
-            return "kv_pair"
-    }
-
-    useEffect(() => {
-        // scroll to top
-        window.scrollTo(0, 0);
-    }, [])
-
-    return (
-        <div className="center">
-            <div className="pad"></div>
-            <h1 className="fade-in-top">Final Results</h1>
-            <div className="adaptive-stack">
-                <div className="stats-box fade-in-left">
-                    <h2>You</h2>
-                    {Object.keys(userMetrics).map(key =>
-                        <div key={key} className={kvClassName(key)}>
-                            <div className="key">
-                                {key.replaceAll("_", " ").split(' ')
-                                    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-                                    .join(' ')}
-                            </div>
-                            <div className="value">{userMetrics[key]}</div>
-                        </div>
-                    )}
-                </div>
-                <div className="stats-box fade-in-right">
-                <h2>Libem</h2>
-                    {Object.keys(libemMetrics).map(key =>
-                        <div key={key} className={kvClassName(key)}>
-                            <div className="key">
-                                {key.replaceAll("_", " ").split(' ')
-                                    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-                                    .join(' ')}
-                            </div>
-                            <div className="value">{libemMetrics[key]}</div>
-                        </div>
-                    )}
-                </div>
-            </div>
-            <div className="button rect fade-in-bottom" onClick={returnHome}>Home</div>
-        </div>
-        
-    )
-}
-
-const Selection = ({ dataset, size, uuid, returnHome }) => {
+const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
     const [pair, setPair] = useState(null)
     const [index, setIndex] = useState(0)
     const [resultScreen, setResultScreen] = useState(false)
@@ -172,12 +91,12 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
                     <path d="M 12 38 L 38 12"/>
                 </svg>
     const check = <svg viewBox='0 0 50 50' className={'icon'}>
-                    <path d="M 20 35 L 40 12"/>
-                    <path d="M 10 25 L 20 35"/>
+                    <path d="M 22 38 L 40 12"/>
+                    <path d="M 10 25 L 22 38"/>
                  </svg>
     
     const fetchNext = () => {
-        fetch(`http://127.0.0.1:8000/fetch?dataset=${dataset}&index=${index}`)
+        fetch(`http://127.0.0.1:8000/fetch?dataset=${dataset}&index=${order[index]}`)
         .then(r => r.json())
         .then(r => {
             // scroll to top
@@ -193,7 +112,7 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
     }
 
     const match = (answer) => {
-        fetch(`http://127.0.0.1:8000/submit`, {
+        fetch(`http://127.0.0.1:8000/submit/`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -222,8 +141,9 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
     return (
         <>
             {endScreen
-                ? <EndScreen userAns={userAns.current} libemAns={libemAns.current} userTime={timeElapsed.current / 1000}
-                            libemTime={libemTime.current} labels={labels.current} returnHome={returnHome} />
+                ? <EndScreen uuid={uuid} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
+                             userTime={timeElapsed.current / 1000} libemTime={libemTime.current} 
+                             labels={labels.current} returnHome={returnHome} openLB={openLB} />
                 : <div className="selection">
                     {pair === null 
                         ? <div>Loading...</div>
@@ -249,10 +169,11 @@ const Selection = ({ dataset, size, uuid, returnHome }) => {
                                 <div className="button circle red" onClick={() => match(false)}>{ex}</div>
                                 <div className="button circle green" onClick={() => match(true)}>{check}</div>
                             </div>
+                            <div className="pad"></div>
                           </div>}
                     <ResultScreen userAns={userAns.current.at(-1)} libemAns={libemAns.current.at(-1)} 
-                                label={labels.current.at(-1)} final={index+1 === size} hidden={!resultScreen} 
-                                closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
+                                label={labels.current.at(-1)} index={index} final={index+1 === order.length} 
+                                hidden={!resultScreen} closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
                   </div>
             }
         </> 

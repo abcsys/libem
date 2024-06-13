@@ -6,7 +6,11 @@ body {
     overflow: auto;
 }
 
-h1 {
+.logo {
+    color: #fff;
+}
+
+.text-color {
     color: #d9d9d9;
 }
 
@@ -22,13 +26,16 @@ h1 {
 
 .rect {
     padding: 0.5em 0;
-    text-align: center;
     font-size: x-large;
     width: 200px;
     max-width: 60vw;
+    height: 1.5em;
     background-color: #ffc400;
     color: #000;
-    border-radius: 5px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .circle {
@@ -38,6 +45,7 @@ h1 {
     max-width: 25vw;
     max-height: 25vw;
     border-radius: 50%;
+    background-color: #ffc400;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,14 +68,48 @@ h1 {
     color: #333;
     cursor: default;
 }
+.inactive-green {
+    background-color: #12b5009d;
+    color: #333;
+    cursor: default;
+}
 
 .textbox {
     width: 40rem;
-    max-width: 70vw;
+    max-width: 80vw;
     color: #d9d9d9;
     margin: 1rem;
     text-align: center;
     font-size: larger;
+}
+
+.result {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40rem;
+    max-width: 70vw;
+    height: auto;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    padding: 2rem;
+    display: block;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+.hidden {
+    display: none;
 }
 
 .vstack {
@@ -95,6 +137,14 @@ h1 {
     flex-direction: column;
     align-items: left;
     gap: 5px;
+}
+
+.adaptive-stack {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .fade-in-top {

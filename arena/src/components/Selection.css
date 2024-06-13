@@ -16,14 +16,15 @@
 
 .title-bar {
     margin-top: 2em;
+    padding: 0 0.5em;
     height: 50px;
     width: 60rem;
-    max-width: 90vw;
+    max-width: 85vw;
     font-size: clamp(1rem, 3vw, 1.4em);
     color: #d9d9d9;
     text-align: center;
     background-color: #333;
-    border-radius: 20px;
+    border-radius: 25px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
@@ -41,14 +42,14 @@
 
 .entity-box {
     margin: 4px;
-    padding: 1rem 1rem;
+    padding: 1rem;
     text-align: left;
     width: 25rem;
     max-width: 36vw;
     height: 100%;
     background-color: #d9d9d9;
     color: #000;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 .value {
@@ -57,38 +58,6 @@
 
 .indent {
     padding: 0 0 0 1em;
-}
-.margin-top {
-    margin-top: 2rem;
-}
-
-.result {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40rem;
-    max-width: 70vw;
-    height: auto;
-    background-color: #d9d9d9;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    padding: 2rem;
-    display: block;
-}
-
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: block;
-}
-
-.hidden {
-    display: none;
 }
 
 .icon {
@@ -100,35 +69,7 @@
     opacity: 1;
 }
 
-.center {
-    width: 100%;
-    height: auto;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center; */
-    align-items: center;
-}
-
 .result-message {
-    text-align: center;
-}
-
-.adaptive-stack {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.stats-box {
-    background-color: #d9d9d9;
-    border-radius: 5px;
-    height: 25em;
-    width: 15em;
-    margin: 1em 1em;
-    padding: 0.5em 1em;
     text-align: center;
 }
 

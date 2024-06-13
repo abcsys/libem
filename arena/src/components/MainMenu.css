@@ -1,12 +1,12 @@
 .dataset-box {
-    margin: 4px 0;
+    margin: 3px 5px;
     text-align: center;
     width: 25rem;
     max-width: 80vw;
     padding: 10px 15px;
     background-color: #d9d9d9;
     color: #000;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     transition-property: background-color;
     transition-duration: 500ms;
@@ -16,17 +16,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 48vh;
+    height: 50vh;
     overflow-y: auto;
 }
 
 .dataset-box.selected {
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 .description {
     font-size: 0.7em;
     color: #666;
     margin: 0.5em 0.5em 0 0.5em;
+}
+
+.red-text {
+    color: #c90000;
 }
