@@ -182,6 +182,11 @@ async def get_leaderboard(dataset: str, uuid: str):
 
 @app.post('/leaderboard/')
 async def post_leaderboard(data: Leaderboard):
+    try:
+        with open(lb_file, 'r') as f:
+            leaderboard = json.load(f)
+    except:
+        pass
     
     for i, entry in enumerate(leaderboard[data.dataset]):
         if entry['name'] == 'Users Best' and data.score > entry['score']:

@@ -61,8 +61,8 @@ const EndScreen = ({ uuid, dataset, userAns, libemAns, userTime,
                 name: "A",
                 dataset: dataset,
                 pairs: userAns.length,
-                score: userCorrect / userAns.length * 100,
-                avg_time: userTime
+                score: userF1 * 100,
+                avg_time: userTime / userAns.length
             })
         })}
     , [])
