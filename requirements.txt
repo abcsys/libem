@@ -11,7 +11,6 @@ google-api-python-client
 duckduckgo-search
 bs4
 requests
-duckduckgo-search
 fastapi
 pydantic
 uvicorn

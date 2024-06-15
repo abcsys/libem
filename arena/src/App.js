@@ -4,6 +4,7 @@ import MainMenu from "./components/MainMenu"
 import "./App.css"
 import Selection from "./components/Selection"
 import Leaderboard from "./components/Leaderboard"
+import baseURL from "./Constants"
 
 const App = () => {
     const uuid = useRef(0)
@@ -17,7 +18,7 @@ const App = () => {
     useEffect(() => {
         uuid.current = uuidv4()
 
-        fetch("http://127.0.0.1:8000/init/")
+        fetch(baseURL + "/init/")
         .then(r => r.json())
         .then(r => setDatasets(r))
         .catch(e => setDatasets([]))

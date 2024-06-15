@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import baseURL from "../Constants"
 import "./Leaderboard.css"
 
 const LBEntry = ({ name, score, time, highlight }) => {
@@ -31,7 +32,7 @@ const Leaderboard = ({ dataset, uuid, returnHome }) => {
     const [leaderboard, setLeaderboard] = useState([])
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/leaderboard/?dataset=${dataset}&uuid=${uuid}`)
+        fetch(`${baseURL}/leaderboard/?dataset=${dataset}&uuid=${uuid}`)
         .then(r => r.json())
         .then(r => setLeaderboard(r))
     }, [])
@@ -46,7 +47,7 @@ const Leaderboard = ({ dataset, uuid, returnHome }) => {
                     <div className="lb-entry sticky">
                         <div></div>
                         <div className="lb-item">Name</div>
-                        <div className="center-text">Accuracy</div>
+                        <div className="center-text">F1 Score</div>
                         <div className="center-text">Avg. Time</div>
                     </div>
                     {leaderboard.map(k => 

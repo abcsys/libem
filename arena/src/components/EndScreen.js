@@ -1,4 +1,5 @@
 import React, { useEffect } from "react"
+import baseURL from "../Constants"
 import "./EndScreen.css"
 
 const EndScreen = ({ uuid, dataset, userAns, libemAns, userTime, 
@@ -50,7 +51,7 @@ const EndScreen = ({ uuid, dataset, userAns, libemAns, userTime,
         // scroll to top
         window.scrollTo(0, 0)
         
-        fetch(`http://127.0.0.1:8000/leaderboard/`, {
+        fetch(`${baseURL}/leaderboard/`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',

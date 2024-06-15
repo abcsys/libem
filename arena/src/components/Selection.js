@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import EndScreen from "./EndScreen"
 import Timer from "./Timer"
+import baseURL from "../Constants"
 import "./Selection.css"
 
 const EntityBox = ({ entity, className }) => {
@@ -96,7 +97,7 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
                  </svg>
     
     const fetchNext = () => {
-        fetch(`http://127.0.0.1:8000/fetch?dataset=${dataset}&index=${order[index]}`)
+        fetch(`${baseURL}/fetch?dataset=${dataset}&index=${order[index]}`)
         .then(r => r.json())
         .then(r => {
             // scroll to top
@@ -112,7 +113,7 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
     }
 
     const match = (answer) => {
-        fetch(`http://127.0.0.1:8000/submit/`, {
+        fetch(`${baseURL}/submit/`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
