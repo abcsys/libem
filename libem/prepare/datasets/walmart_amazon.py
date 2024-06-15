@@ -3,7 +3,7 @@ import json
 
 import libem.prepare.datasets as datasets
 
-description = "The Walmart-Amazon dataset for entity resolution derives " \
+description = "The Walmart-Amazon dataset derives " \
               "from the online retailers Walmart.com and Amazon.com."
 
 

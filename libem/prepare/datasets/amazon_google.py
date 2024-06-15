@@ -3,8 +3,8 @@ import json
 
 import libem.prepare.datasets as datasets
 
-description = "The Amazon-Google dataset for entity resolution derives " \
-              "from the online retailers Amazon.com and the product search " \
+description = "The Amazon-Google dataset derives from the " \
+              "online retailers Amazon.com and the product search " \
               "service of Google accessible through the Google Base Data API. "
 
 # sample data:

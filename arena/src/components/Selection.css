@@ -1,0 +1,149 @@
+.selection {
+    height: 100vh;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    height: 50px;
+    width: 100%;
+    color: #d9d9d9;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    z-index: 2;
+}
+
+.title-bar {
+    margin-top: 2em;
+    padding: 0 0.5em;
+    height: 50px;
+    width: 60rem;
+    max-width: 85vw;
+    font-size: clamp(1rem, 3vw, 1.4em);
+    color: #d9d9d9;
+    text-align: center;
+    background-color: #333;
+    border-radius: 25px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+}
+
+.title-left {
+    text-align: left;
+    margin-left: 1em;
+}
+
+.title-right {
+    text-align: right;
+    margin-right: 1em;
+}
+
+.entity-box {
+    margin: 4px;
+    padding: 1rem;
+    text-align: left;
+    width: 25rem;
+    max-width: 36vw;
+    height: 100%;
+    background-color: #d9d9d9;
+    color: #000;
+    border-radius: 10px;
+}
+
+.value {
+    color: #666;
+}
+
+.indent {
+    padding: 0 0 0 1em;
+}
+
+.icon {
+    height: 5rem;
+    stroke-width: 5px;
+    stroke: #d9d9d9;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 1;
+}
+
+.result-message {
+    text-align: center;
+}
+
+.kv-pair {
+    margin: 0.5em;
+}
+
+.kv-pair-tight {
+    margin: 0.2em;
+}
+
+.zoom-fade {
+    opacity: 1;
+	animation-name: zoomFade;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in-out;
+	animation-duration: 400ms;
+}
+
+.shake-fade {
+    opacity: 1;
+    animation-name: shakeFade;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in-out;
+	animation-duration: 400ms;
+}
+
+@keyframes zoomFade {
+	0% {
+		opacity: 0;
+        transform: translate(-50%, -50%) scale(95%);
+	}
+	70% {
+		opacity: 1;
+        transform: translate(-50%, -50%) scale(105%);
+	}
+    90% {
+		opacity: 1;
+        transform: translate(-50%, -50%) scale(100%);
+	}
+}
+
+@keyframes shakeFade {
+    0% {
+		opacity: 0;
+        transform: translate(-50%, -50%);
+	}
+	20% {
+        transform: translate(-49%, -50%);
+	}
+    40% {
+        transform: translate(-51%, -50%);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-49.5%, -50%);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50.5%, -50%);
+    }
+    100% {
+		opacity: 1;
+        transform: translate(-50%, -50%);
+	}
+}
+
+@media (max-width: 700px) {
+    .entity-box {
+        width: 25rem;
+        max-width: 70vw;
+    }
+
+    .adaptive-stack {
+        flex-direction: column;
+    }
+}

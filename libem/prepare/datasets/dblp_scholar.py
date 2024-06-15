@@ -3,7 +3,7 @@ import json
 
 import libem.prepare.datasets as datasets
 
-description = "The DBLP-Scholar dataset for entity resolution derives " \
+description = "The DBLP-Scholar dataset derives " \
               "from the DBLP and Google Scholar digital libraries."
 
 # sample data:

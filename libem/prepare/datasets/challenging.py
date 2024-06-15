@@ -3,7 +3,7 @@ import json
 
 import libem.prepare.datasets as datasets
 
-description = "The failed benchmark cases from the 8 datasets."
+description = "This dataset contains commonly failed benchmark cases from the other 8 datasets."
 
 # sample data:
 # {"entity_1": {"name": "sharp over the counter microwave oven r1214ss", "description": "sharp over the counter microwave oven r1214ss 1.5 cubic foot capacity 1100 watts 24 automatic settings 2-color lighted lcd smart and easy sensor settings auto-touch control panel stainless steel finish", "price": 429.0}, 

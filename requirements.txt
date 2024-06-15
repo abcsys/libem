@@ -11,3 +11,7 @@ google-api-python-client
 duckduckgo-search
 bs4
 requests
+fastapi
+pydantic
+uvicorn
+aiofile
