@@ -1,6 +1,6 @@
 import pprint
 
-from libem.tune.calibrate.function import collect, flatten
+from libem.tune.calibrate.function import collect, flatten, unflatten
 
 
 def export(toolchain="libem",

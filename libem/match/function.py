@@ -1,4 +1,5 @@
 import time
+from pprint import pformat
 
 import libem
 from libem.match import prompt, parameter
@@ -29,17 +30,18 @@ schema = {
 }
 
 
-def func(left, right) -> str | tuple[str, int]:
+def func(left, right) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
         prompt.role(),
-        prompt.rule(),
-        prompt.experience(),
+        prompt.rules(),
+        prompt.experiences(),
         struct.CoT() if parameter.cot() else "",
         struct.Confidence() if parameter.confidence() else "",
         prompt.output(),
     )
+
     match_prompt = Prompt.join(
         prompt.query(
             left=left,
@@ -47,48 +49,66 @@ def func(left, right) -> str | tuple[str, int]:
         ),
     )
 
+    shots: list[dict] = prompt.shots()
+
+    _prompt = [
+        {"role": "system", "content": system_prompt},
+        *shots,
+        {"role": "user", "content": match_prompt},
+    ]
+
     model_output = model.call(
-        prompt=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": match_prompt},
-        ],
+        prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
-    libem.debug(f"[match] prompt:\n{system_prompt}\n{match_prompt}\n\n"
-                f"[match] raw output:\n{model_output}")
 
-    pred, confidence = parse_output(model_output)
+    libem.debug(f"[match] prompt:\n"
+                f"{pformat(_prompt, sort_dicts=False)}\n"
+                f"[match] model output:\n"
+                f"{model_output}")
 
-    libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
-                               "pred": pred, "prompt": match_prompt,
+    output = parse_output(model_output)
+
+    libem.trace.add({"match": {"left": left, "right": right,
+                               "prompt": _prompt,
+                               "model_output": model_output,
+                               "answer": output["answer"],
                                "latency": time.time() - start}})
+    return output
+
+
+def parse_output(output: str) -> dict:
+    """Handle the model output of format:
+    ```
+    <explanation> (e.g., "Name Comparison: ...")
+    <confidence> (e.g., "Confidence Score: 5" or "5")
+    <answer> (e.g., yes)
+    ```
+    """
+    output = output.split("\n")[::-1]
+
+    answer = output.pop(0).lower()
+    answer = "yes" if "yes" in answer else "no"
+
+    confidence, explanation = None, None
 
     if parameter.confidence():
-        return pred, confidence
-    else:
-        return pred
-
-
-def parse_output(output: str) -> tuple[str, int | None]:
-    output = [line.lower() for line in output.split("\n")]
-
-    answer = "yes" if "yes" in output[-1] else "no"
-
-    confidence = None
-
-    if parameter.confidence():
-        for i, line in enumerate(list(reversed(output))):
-            if 'confidence score' in line:
+        for i, line in enumerate(output):
+            line = line.lower()
+            if 'confidence score' in line or str.isdigit(line):
                 confidence = ''.join(filter(str.isdigit, line))
-
-                # catch cases when score is on a new line
-                if len(confidence) == 0:
-                    confidence = ''.join(filter(str.isdigit, output[i - 1]))
-
                 confidence = int(confidence)
+                output = output[i + 1:]
                 break
 
-    return answer, confidence
+    if parameter.cot():
+        explanation = "\n".join(output[::-1])
+
+    return {
+        "answer": answer,
+        "confidence": confidence,
+        "explanation": explanation,
+    }

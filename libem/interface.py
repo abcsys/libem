@@ -27,12 +27,20 @@ def chat(message):
 """Programmatic access"""
 
 
-def match(left, right) -> str:
+def match(left, right) -> dict:
     if parameter.always():
-        return parameter.always()
+        return {
+            "answer": parameter.always(),
+            "confidence": None,
+            "explanation": "I'm guessing.",
+        }
 
     if parameter.guess():
-        return random.choice(["yes", "no"])
+        return {
+            "answer": random.choice(["yes", "no"]),
+            "confidence": None,
+            "explanation": "I'm guessing.",
+        }
 
     return match_func(left, right)
 

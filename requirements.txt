@@ -3,11 +3,12 @@ numpy
 pandas
 flask
 openai
+dspy-ai
 langchain
 langchain-community
 langchain-google-community
 google-api-python-client
-dspy-ai
+duckduckgo-search
 bs4
 requests
 duckduckgo-search

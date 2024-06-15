@@ -52,8 +52,8 @@ def run(args):
             "libem.match.prompt.query": "Do the two beer descriptions refer to the same real-world beer? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
                                         "Beer 1: '{left}'\nBeer 2: '{right}'",
-            "libem.match.prompt.rule": Prompt.Rule(),
-            "libem.match.prompt.experience": Prompt.Experience(),
+            "libem.match.prompt.rules": Prompt.Rules(),
+            "libem.match.prompt.experiences": Prompt.Experiences(),
             "libem.match.prompt.output": ""
         })
 

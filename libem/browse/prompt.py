@@ -4,8 +4,8 @@ description = Prompt(
     default="Browse the web to find additional information for "
             "a given entity."
 )
-rule = Prompt(
-    default=Prompt.Rule([
+rules = Prompt(
+    default=Prompt.Rules([
         "Use only when you think it would help with the matching task."
     ])
 )

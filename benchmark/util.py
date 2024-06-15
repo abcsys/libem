@@ -1,14 +1,16 @@
 import os
 import sys
+import time
 import json
 import numpy as np
-import time
 from pathlib import Path
 from datetime import datetime
 
 import libem
 from libem.tune.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
+from libem.core.struct import Prompt
+from libem.match.parameter import tools
 
 
 def benchmark(dataset, args):
@@ -22,14 +24,14 @@ def benchmark(dataset, args):
         libem.calibrate({
             "libem.parameter.guess": True,
         })
-
-    # set configs, sub-tools default off
-    libem.calibrate({
-        "libem.match.parameter.tools": ["libem.browse"] if args.browse else [],
-        "libem.match.parameter.model": args.model,
-    })
-
-    # chain-of-thought and confidence score
+    if args.browse:
+        libem.calibrate({
+            "libem.match.parameter.tools": tools + ["libem.browse"],
+        })
+    if args.model:
+        libem.calibrate({
+            "libem.match.parameter.model": args.model,
+        })
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.cot": True,
@@ -37,6 +39,10 @@ def benchmark(dataset, args):
     if args.confidence:
         libem.calibrate({
             "libem.match.parameter.confidence": True,
+        })
+    if args.rules:
+        libem.calibrate({
+            "libem.match.prompt.rules": Prompt.Rules(args.rules),
         })
 
     truth, predictions, result = [], [], []
@@ -57,17 +63,14 @@ def benchmark(dataset, args):
 
         # call match
         with libem.trace as t:
-            is_match, confidence = None, None
+            is_match = None
             start_time = time.time()
 
             while is_match is None:
                 # retry if model times out
                 num_timeouts = 0
                 try:
-                    if args.confidence and not args.guess:
-                        is_match, confidence = libem.match(e1, e2)
-                    else:
-                        is_match = libem.match(e1, e2)
+                    is_match = libem.match(e1, e2)
                 except libem.ModelTimedoutException:
                     num_timeouts += 1
             if num_timeouts > 0:
@@ -88,8 +91,10 @@ def benchmark(dataset, args):
             result.append({
                 'entity_1': e1,
                 'entity_2': e2,
-                'pred': is_match,
                 'label': label,
+                'pred': is_match["answer"],
+                'confidence': is_match["confidence"],
+                'explanation': is_match["explanation"],
                 'model_output': model_output,
                 'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
                 'latency': round(latency, 2),
@@ -101,11 +106,9 @@ def benchmark(dataset, args):
                     )
                 }
             })
-            if args.confidence:
-                result[-1]['confidence'] = confidence
 
         # track results for evaluation metrics
-        if is_match == 'yes':
+        if is_match["answer"] == 'yes':
             predictions.append(1)
         else:
             predictions.append(0)
@@ -113,10 +116,9 @@ def benchmark(dataset, args):
 
         if not args.quiet:
             print()
-            if args.confidence:
-                print(f"Match: {is_match}; Confidence: {confidence}; Label: {label}\n")
-            else:
-                print(f"Match: {is_match}; Label: {label}\n")
+            print(f"Match: {is_match['answer']}; "
+                  f"Confidence: {is_match['confidence']}; "
+                  f"Label: {label}\n")
 
         # check num_pairs stop condition
         if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
@@ -126,8 +128,8 @@ def benchmark(dataset, args):
     results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
     Path(results_folder).mkdir(parents=True, exist_ok=True)
 
-    if args.file:
-        out_file = os.path.join(results_folder, f'{args.file}.json')
+    if args.output_file:
+        output_file = os.path.join(results_folder, f'{args.output_file}.json')
     else:
         signature = [
             datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
@@ -135,11 +137,15 @@ def benchmark(dataset, args):
         ]
         if args.train:
             signature.append('train')
+        if not args.schema:
+            signature.append('no-schema')
         if args.cot:
             signature.append('cot')
         if args.guess:
             signature.append('guess')
-        out_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
+        if args.rules:
+            signature.append('rules')
+        output_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
     # get stats
     metrics = [precision, recall, f1]
@@ -162,7 +168,7 @@ def benchmark(dataset, args):
         'fn': int(conf_mat[3])
     }
 
-    with open(out_file, 'w') as f:
+    with open(output_file, 'w') as f:
         json.dump({
             'command': sys.argv[1:],
             'stats': stats,
@@ -175,7 +181,7 @@ def benchmark(dataset, args):
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
-    print(f"Benchmark: Results saved to: {out_file}")
+    print(f"Benchmark: Results saved to: {output_file}")
 
 
 def ordinal_suffix(num):

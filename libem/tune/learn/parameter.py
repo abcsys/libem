@@ -6,3 +6,6 @@ model = Parameter(
 temperature = Parameter(
     default=0,
 )
+strategy = Parameter(
+    default="rule-from-mistakes",
+)

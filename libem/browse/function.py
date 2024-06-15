@@ -15,7 +15,7 @@ schema = {
         "name": "browse",
         "description": Prompt.join(
             prompt.description(),
-            prompt.rule()
+            prompt.rules()
         ),
         "parameters": {
             "type": "object",

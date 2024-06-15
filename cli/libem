@@ -24,7 +24,7 @@ def main():
     parser.add_argument("-m", "--model", dest='model', nargs='?',
                         help="The LLM to use.",
                         type=str, default=libem.parameter.model())
-    parser.add_argument("--browse", dest='browse',
+    parser.add_argument("-b", "--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
     parser.add_argument("--cot", dest='cot',
@@ -57,7 +57,7 @@ def main():
     if args.confidence:
         configs.append(('libem.match.parameter.confidence', True))
     if args.browse:
-        configs.append(('libem.match.parameter.tools', tools() + ['libem.browse']))
+        configs.append(('libem.match.parameter.tools', tools + ['libem.browse']))
     if args.guess:
         configs.append(('libem.match.parameter.guess', True))
     if args.debug:
@@ -68,7 +68,12 @@ def main():
 
     with libem.trace as t:
         result = libem.match(entity1, entity2)
-    print("Match result:", result)
+
+    print("Match:", result['answer'])
+    if args.cot:
+        print("Explanation:\n", result['explanation'])
+    if args.confidence:
+        print("Confidence:", result['confidence'])
 
     if args.stats:
         pp = pprint.PrettyPrinter(sort_dicts=False)

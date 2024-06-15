@@ -23,7 +23,8 @@ def main():
     with libem.trace as t:
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
-        pp.pprint(t.stats())
+
+    pp.pprint(t.stats(all=True, readings=True))
 
 
 if __name__ == '__main__':
