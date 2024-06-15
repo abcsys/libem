@@ -1,14 +1,13 @@
 import random
+
 import libem
 from libem.core.struct import Prompt
 from libem.prepare.datasets import itunes_amazon
 
-from benchmark.util import run as benchmark_run
-
-random.seed(libem.LIBEM_SEED)
+from benchmark import util
 
 
-def benchmark(args):
+def run(args):
     '''
     kwargs:
         version (int): the version of the dataset to use.
@@ -17,6 +16,8 @@ def benchmark(args):
                             empty to include all fields. Do not include _left/_right.
         domain_prompt (bool): if True, modifies the prompt to be domain-specific.
     '''
+    random.seed(args.seed)
+
     # construct kwargs dict
     kwargs = {
         'schema': args.schema,
@@ -34,7 +35,10 @@ def benchmark(args):
             kwargs['fields'] = args.kwargs['fields']
 
     # get dataset with kwargs
-    dataset = list(itunes_amazon.read_test(**kwargs))
+    if args.train:
+        dataset = list(itunes_amazon.read_train(**kwargs))
+    else:
+        dataset = list(itunes_amazon.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(dataset)
 
@@ -44,9 +48,9 @@ def benchmark(args):
             "libem.match.prompt.query": "Do the two song descriptions refer to the same real-world song? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
                                         "Song 1: '{left}'\nSong 2: '{right}'",
-            "libem.match.prompt.rule": Prompt.Rule(),
-            "libem.match.prompt.experience": Prompt.Experience(),
+            "libem.match.prompt.rules": Prompt.Rules(),
+            "libem.match.prompt.experiences": Prompt.Experiences(),
             "libem.match.prompt.output": ""
         })
 
-    benchmark_run(dataset, args)
+    util.benchmark(dataset, args)

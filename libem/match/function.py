@@ -1,8 +1,10 @@
 import time
+from pprint import pformat
 
 import libem
 from libem.match import prompt, parameter
 from libem.core.struct import Prompt
+from libem.core import struct
 from libem.core import model
 
 schema = {
@@ -28,49 +30,85 @@ schema = {
 }
 
 
-def func(left, right):
+def func(left, right) -> dict:
     start = time.time()
+
+    system_prompt = Prompt.join(
+        prompt.role(),
+        prompt.rules(),
+        prompt.experiences(),
+        struct.CoT() if parameter.cot() else "",
+        struct.Confidence() if parameter.confidence() else "",
+        prompt.output(),
+    )
+
     match_prompt = Prompt.join(
         prompt.query(
             left=left,
             right=right
         ),
-        prompt.rule(),
-        prompt.experience(),
-        prompt.output(),
     )
+
+    shots: list[dict] = prompt.shots()
+
+    _prompt = [
+        {"role": "system", "content": system_prompt},
+        *shots,
+        {"role": "user", "content": match_prompt},
+    ]
+
     model_output = model.call(
-        prompt=match_prompt,
+        prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
-    pred = parse_output(model_output)
-    libem.trace.add({"match": {"left": left, "right": right, "model_output": model_output,
-                               "pred": pred, "prompt": match_prompt,
+
+    libem.debug(f"[match] prompt:\n"
+                f"{pformat(_prompt, sort_dicts=False)}\n"
+                f"[match] model output:\n"
+                f"{model_output}")
+
+    output = parse_output(model_output)
+
+    libem.trace.add({"match": {"left": left, "right": right,
+                               "prompt": _prompt,
+                               "model_output": model_output,
+                               "answer": output["answer"],
                                "latency": time.time() - start}})
-    return pred
+    return output
 
 
-def parse_output(output: str) -> str:
-    libem.debug("Match raw output:", output)
-    output = [line.lower() for line in output.split("\n")]
-    confidence, answer = None, None
-    
-    # parse answer
-    answer = "yes" if "yes" in output[-1] else "no"
-    
-    # parse confidence score if CoT is True
-    output = list(reversed(output))
-    if parameter.CoT():
+def parse_output(output: str) -> dict:
+    """Handle the model output of format:
+    ```
+    <explanation> (e.g., "Name Comparison: ...")
+    <confidence> (e.g., "Confidence Score: 5" or "5")
+    <answer> (e.g., yes)
+    ```
+    """
+    output = output.split("\n")[::-1]
+
+    answer = output.pop(0).lower()
+    answer = "yes" if "yes" in answer else "no"
+
+    confidence, explanation = None, None
+
+    if parameter.confidence():
         for i, line in enumerate(output):
-            if 'confidence score' in line:
+            line = line.lower()
+            if 'confidence score' in line or str.isdigit(line):
                 confidence = ''.join(filter(str.isdigit, line))
-                
-                # catch cases when score is on a new line
-                if len(confidence) == 0:
-                    confidence = ''.join(filter(str.isdigit, output[i-1]))
-                return answer, int(confidence)
-    
-    return answer
+                confidence = int(confidence)
+                output = output[i + 1:]
+                break
+
+    if parameter.cot():
+        explanation = "\n".join(output[::-1])
+
+    return {
+        "answer": answer,
+        "confidence": confidence,
+        "explanation": explanation,
+    }

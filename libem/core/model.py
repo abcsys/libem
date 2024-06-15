@@ -20,7 +20,7 @@ os.environ.setdefault(
 
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str | list,
+def openai(prompt: str | list | dict,
            tools: list[str] = None,
            model: str = "gpt-4o",
            temperature: float = 0.0,
@@ -34,10 +34,15 @@ def openai(prompt: str | list,
 
     client = OpenAI()
 
-    # format the prompt messages
+    # format the prompt to messages
     match prompt:
         case list():
             messages = prompt
+        case dict():
+            messages = []
+            for role, content in prompt.items():
+                if content:
+                    messages.append({"role": role, "content": content})
         case str():
             messages = [{"role": "user", "content": prompt}]
         case _:
@@ -46,6 +51,7 @@ def openai(prompt: str | list,
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
     tool_outputs = {}
+
     """ Call with no tool use """
     if not tools:
         try:
@@ -104,14 +110,15 @@ def openai(prompt: str | list,
                 function_args = json.loads(tool_call.function.arguments)
                 function_response = function_to_call(**function_args)
                 tool_outputs[function_name] = function_response
+
                 if verbose:
-                    libem.info(f"Tool: {function_name} - {function_response}")
+                    libem.info(f"[{function_name}] {function_response}")
 
                 messages.append(
                     {
                         "role": "tool",
                         "name": function_name,
-                        "content": function_response,
+                        "content": str(function_response),
                         "tool_call_id": tool_call.id,
                     }
                 )
@@ -121,7 +128,7 @@ def openai(prompt: str | list,
                         "id": tool_call.id,
                         'name': function_name,
                         "arguments": function_args,
-                        "response": function_response
+                        "response": function_response,
                     }
                 })
             tool_calls = []
@@ -148,7 +155,7 @@ def openai(prompt: str | list,
                 num_output_tokens += response.usage.completion_tokens
 
             if num_model_calls == max_model_call:
-                libem.debug(f"Max call reached: {messages}\n{response_message}")
+                libem.debug(f"[model] max call reached: {messages}\n{response_message}")
 
     # add model calls to trace
     libem.trace.add({

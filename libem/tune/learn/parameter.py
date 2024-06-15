@@ -8,3 +8,6 @@ temperature = Parameter(
     default=Index(0),
     options=[0, 0.1, 0.5, 0.9, 1.4]
 )
+strategy = Parameter(
+    default="rule-from-mistakes",
+)

@@ -22,22 +22,27 @@ chat:
 all: match no_match browse chat
 
 # tuning examples
-.PHONY: tune
+.PHONY: tune profile
 tune:
-	python examples/tune/rule_from_mistake.py
+	python examples/tune/rule_from_mistakes.py
+profile:
+	python examples/tune/profile.py
 
 
 # benchmarks
-.PHONY: benchmark
+.PHONY: benchmark analyze plot
 benchmark:
-	python -m benchmark.run
+	python -m benchmark.run -q
+analyze:
+	python -m benchmark.analyze -m
+plot:
+	python -m benchmark.plot
 
 
 # tests clean
 .PHONY: test clean
 test: all
 clean:
-	rm -r benchmark/results > /dev/null 2>&1 || true
 	rm -r logs > /dev/null 2>&1 || true
 
 # refresh price

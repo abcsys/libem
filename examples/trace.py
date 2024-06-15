@@ -9,14 +9,11 @@ def main():
     e2 = "Dyson AM09 Hot + Cool Jet Focus Fan Heater - W/S japan"
 
     print("Trace 1:")
-    libem.calibrate({
-        "libem.match.parameter.tools": [],
-    })
     with libem.trace as t:
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
 
-    e1 = "mighty freedom gundam"
+    e1 = "mighty strike freedom gundam"
     e2 = "ZGMF/A-262PD-P"
 
     print("Trace 2:")
@@ -26,7 +23,8 @@ def main():
     with libem.trace as t:
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
-        pp.pprint(t.stats())
+
+    pp.pprint(t.stats(all=True, readings=True))
 
 
 if __name__ == '__main__':

@@ -1,25 +1,34 @@
-from libem.core.struct import Index, Prompt
+from libem.core.struct import Index, Prompt, Shot
 
-query = Prompt(
-    default="Do the two entity descriptions refer to the same real-world entity?\n"
-            "Entity 1: {left}.\nEntity 2: {right}."
-)
-
-rule = Prompt(
+"""System prompts"""
+role = Prompt(
     default=Index(0),
-    options=[Prompt.Rule(), Prompt.Rule(rules=["Color distinguishes entities."])],
+    options=["", "You are an entity matcher that determines whether "
+            "two entity descriptions refer to the same real-world entity."],
 )
 
-experience = Prompt(
-    default=Prompt.Experience(intro="Rules to follow:"),
+rules = Prompt(
+    default=Prompt.Rules(),
+    options=[],
+)
+
+experiences = Prompt(
+    default=Prompt.Experiences(),
+    options=[],
 )
 
 output = Prompt(
-    default=Index(0),
-    options=["Answer with 'Yes' if they do and 'No' if they do not.",
-             "Explain your answer step by step. "
-             "Then give a confidence score from 1 to 5, with 1 being just a guess "
-             "and 5 being extremely confident, give the score only, do not justify. "
-             "Finally, give your final answer in the form of a single 'yes' or 'no' only.",  # CoT
-            ]
+    default="At the end, give your answer in the form of a single 'yes' or 'no'.",
+    options=[],
+)
+
+"""Assistant prompts"""
+shots = Prompt(
+    default=Prompt.Shots([Shot(),]),
+)
+
+"""User prompts"""
+query = Prompt(
+    default="Entity 1: {left}.\nEntity 2: {right}.",
+    options=[],
 )

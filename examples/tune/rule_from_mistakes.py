@@ -5,16 +5,16 @@ from libem.tune import learn, check
 from libem.prepare.datasets import amazon_google
 from libem.core.log import header
 
-from libem.match.prompt import rule as match_rule_prompt
-from libem.match.prompt import experience as match_experience_prompt
+from libem.match.prompt import rules
+from libem.match.prompt import experiences
 
 calibrate = libem.toolchain("tune.calibrate")
 
 
 def main():
     num_iter = 1
-    num_train_sample = 100
-    num_test_sample = 100
+    num_train_sample = 10
+    num_test_sample = 10
     rnd = random.Random(43)
 
     match_model = "gpt-3.5-turbo"
@@ -24,8 +24,9 @@ def main():
 
     libem.calibrate({
         "libem.match.parameter.model": match_model,
-        "libem.tune.learn.parameter.model": learn_model,
         "libem.match.parameter.tools": [],  # turn off browse etc.
+        "libem.tune.learn.parameter.model": learn_model,
+        "libem.tune.learn.parameter.strategy": "rule-from-mistake",
     }, verbose=True)
 
     print("Libem configurations:")
@@ -63,10 +64,10 @@ def main():
 
         print("Train score:", score)
         libem.calibrate({
-            "libem.match.prompt.rule":
-                match_rule_prompt() + learned_rule,
-            "libem.match.prompt.experience":
-                match_experience_prompt() + learned_experience,
+            "libem.match.prompt.rules":
+                rules + learned_rule,
+            "libem.match.prompt.experiences":
+                experiences + learned_experience,
         })
         train_scores.append(score)
     print(header("End Learning"))
