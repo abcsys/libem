@@ -39,7 +39,7 @@ engines = {
 def func(query):
     engine = engines[parameter.engine()]
 
-    libem.info(f"[browse] search {parameter.engine()}: {query}")
+    libem.info(f"[browse] search {parameter.engine()} using query: {query}")
 
     tool = Tool(
         name="online_search",
@@ -47,5 +47,7 @@ def func(query):
         func=engine.search(k=3, full_text=False),
     )
     desc = tool.run(query)
+
+    libem.info(f"[browse] search {parameter.engine()} returns: {desc}")
 
     return desc

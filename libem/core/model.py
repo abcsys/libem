@@ -22,11 +22,11 @@ os.environ.setdefault(
 # LLM call with multiple rounds of tool use
 def openai(prompt: str | list | dict,
            tools: list[str] = None,
+           context: list = None,
            model: str = "gpt-4o",
            temperature: float = 0.0,
            seed: int = None,
            max_model_call: int = 3,
-           verbose: bool = True,
            ) -> dict:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
@@ -46,6 +46,9 @@ def openai(prompt: str | list | dict,
             messages = [{"role": "user", "content": prompt}]
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
+
+    context = context or []
+    messages = context + messages
 
     # trace variables
     num_model_calls = 0
@@ -108,11 +111,11 @@ def openai(prompt: str | list | dict,
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
+
+                libem.debug(f"[{function_name}] {function_args}")
+
                 function_response = function_to_call(**function_args)
                 tool_outputs[function_name] = function_response
-
-                if verbose:
-                    libem.info(f"[{function_name}] {function_response}")
 
                 messages.append(
                     {
