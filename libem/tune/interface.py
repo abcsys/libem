@@ -8,5 +8,3 @@ def learn(*args, **kwargs):
 
 def check(*args, **kwargs):
     return check_func(*args, **kwargs)
-
-from libem.tune.function import profile
