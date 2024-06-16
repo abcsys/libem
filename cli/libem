@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import yaml
 import ast
 import argparse
 import pprint
@@ -7,19 +9,13 @@ import libem
 from libem.match.parameter import tools
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Libem CLI tool")
-    parser.add_argument('e1', type=str, help='First entity')
-    parser.add_argument('e2', type=str, help='Second entity')
-
-    # todo:
-    #  consolidate and reuse the calibration options and parsing
-    #  with the ones in benchmark/run.py and benchmark/util.py
+def add_common_arguments(parser):
     # calibrate any parameters
     parser.add_argument('-c', '--calibrate', metavar="KEY=VALUE",
                         type=parse_key_value_pair, nargs='+',
                         help="Key-value pairs separated by '=', "
                              "e.g., key1=value1 key2=value2")
+
     # shortcuts for calibration
     parser.add_argument("-m", "--model", dest='model', nargs='?',
                         help="The LLM to use.",
@@ -36,6 +32,7 @@ def main():
     parser.add_argument("-g", "--guess", dest='guess',
                         help="Match by guessing.",
                         action='store_true', default=False)
+
     # output options
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
@@ -44,11 +41,8 @@ def main():
                         help="Print stats from trace.",
                         action='store_true', default=False)
 
-    args = parser.parse_args()
 
-    entity1 = args.e1
-    entity2 = args.e2
-
+def match(args, e1, e2):
     configs = args.calibrate or []
     if args.model:
         configs.append(('libem.match.parameter.model', args.model))
@@ -67,7 +61,7 @@ def main():
         libem.calibrate(dict(configs))
 
     with libem.trace as t:
-        result = libem.match(entity1, entity2)
+        result = libem.match(e1, e2)
 
     if args.cot:
         print("Explanation:\n", result['explanation'])
@@ -81,6 +75,58 @@ def main():
     if args.stats:
         pp = pprint.PrettyPrinter(sort_dicts=False)
         pp.pprint(t.stats())
+
+
+def entry():
+    parser = argparse.ArgumentParser(description="Libem CLI tool")
+
+    # libem configuration
+    subparsers = parser.add_subparsers(dest='command', help='Subcommand to run')
+    subparsers.add_parser('configure', help='Set Libem configurations')
+
+    # libem tools
+    match_parser = subparsers.add_parser('match', help='Perform entity matching')
+    add_common_arguments(match_parser)
+
+    # match inputs
+    match_parser.add_argument('e1', type=str, help='First entity', nargs='?')
+    match_parser.add_argument('e2', type=str, help='Second entity', nargs='?')
+
+    args = parser.parse_args()
+
+    if args.command == 'configure':
+        configure()
+        return
+
+    if args.e1 and args.e2:
+        match(args, args.e1, args.e2)
+
+
+def configure():
+    config_path = os.path.expanduser('~/.libem/config.yaml')
+    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+
+    # Load the existing configuration if it exists
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as file:
+            config = yaml.safe_load(file) or {}
+    else:
+        config = {}
+
+    # Prompt for OPENAI_API_KEY
+    existing_key = config.get('OPENAI_API_KEY', '')
+    new_key = input(f"Enter OPENAI_API_KEY (press Enter to keep the existing key: "
+                    f"'{mask_key(existing_key)}'): ").strip()
+
+    # If no input, keep the existing key; otherwise, update
+    if new_key:
+        config['OPENAI_API_KEY'] = new_key
+    else:
+        print("No input provided. Using existing API key.")
+
+    # Save the updated configuration
+    with open(config_path, 'w') as file:
+        yaml.safe_dump(config, file)
 
 
 def parse_key_value_pair(arg_value):
@@ -97,5 +143,11 @@ def parse_key_value_pair(arg_value):
     return key, value
 
 
+def mask_key(key):
+    if len(key) > 4:
+        return '*' * (len(key) - 4) + key[-4:]
+    return key  # If key is less than or equal to 4 characters, return as is
+
+
 if __name__ == '__main__':
-    main()
+    entry()
