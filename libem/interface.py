@@ -14,14 +14,20 @@ from libem.tune import func as tune_func
 """Chat access"""
 
 
-def chat(message):
-    return model.call(
+def chat(message, context=None) -> dict:
+    context = context or []
+    response = model.call(
         prompt=Prompt.join(prompt.role(), message, sep="\n"),
+        context=context,
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )["output"]
+    )
+    return {
+        "content": response["output"],
+        "context": response["messages"],
+    }
 
 
 """Programmatic access"""

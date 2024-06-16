@@ -11,7 +11,7 @@ schema = {
     "type": "function",
     "function": {
         "name": "match",
-        "description": "Perform entity matching given two entity description.",
+        "description": "Perform entity matching given two entity descriptions.",
         "parameters": {
             "type": "object",
             "properties": {

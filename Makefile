@@ -16,7 +16,7 @@ match:
 browse:
 	python examples/tool/browse.py
 chat:
-	python examples/chat.py
+	python examples/tool/chat.py
 all: match browse chat
 
 

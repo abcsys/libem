@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import os
+import sys
 import yaml
 import ast
 import argparse
+import shlex
 import pprint
 
 import libem
@@ -42,67 +44,27 @@ def add_common_arguments(parser):
                         action='store_true', default=False)
 
 
-def match(args, e1, e2):
-    configs = args.calibrate or []
-    if args.model:
-        configs.append(('libem.match.parameter.model', args.model))
-    if args.cot:
-        configs.append(('libem.match.parameter.cot', True))
-    if args.confidence:
-        configs.append(('libem.match.parameter.confidence', True))
-    if args.browse:
-        configs.append(('libem.match.parameter.tools', tools + ['libem.browse']))
-    if args.guess:
-        configs.append(('libem.match.parameter.guess', True))
-    if args.debug:
-        libem.debug_on()
+def chat(args):
+    _ = args
+    print("Welcome to the Libem Chatbot.")
+    print("Type 'quit' to quit the chatbot.")
 
-    if configs:
-        libem.calibrate(dict(configs))
+    context = []
+    while True:
+        user_input = input("libem > ").strip().lower()
+        if user_input == 'quit':
+            sys.exit()
 
-    with libem.trace as t:
-        result = libem.match(e1, e2)
+        response = libem.chat(user_input, context)
 
-    if args.cot:
-        print("Explanation:\n", result['explanation'])
-        print()
+        print("libem >", response["content"])
 
-    print("Match:", result['answer'])
-
-    if args.confidence:
-        print("Confidence:", result['confidence'])
-
-    if args.stats:
-        pp = pprint.PrettyPrinter(sort_dicts=False)
-        pp.pprint(t.stats())
+        context = response["context"]
 
 
-def entry():
-    parser = argparse.ArgumentParser(description="Libem CLI tool")
+def configure(args):
+    _ = args
 
-    # libem configuration
-    subparsers = parser.add_subparsers(dest='command', help='Subcommand to run')
-    subparsers.add_parser('configure', help='Set Libem configurations')
-
-    # libem tools
-    match_parser = subparsers.add_parser('match', help='Perform entity matching')
-    add_common_arguments(match_parser)
-
-    # match inputs
-    match_parser.add_argument('e1', type=str, help='First entity', nargs='?')
-    match_parser.add_argument('e2', type=str, help='Second entity', nargs='?')
-
-    args = parser.parse_args()
-
-    if args.command == 'configure':
-        configure()
-        return
-
-    if args.e1 and args.e2:
-        match(args, args.e1, args.e2)
-
-
-def configure():
     config_path = os.path.expanduser('~/.libem/config.yaml')
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
 
@@ -124,9 +86,80 @@ def configure():
     else:
         print("No input provided. Using existing API key.")
 
+    ...
+
     # Save the updated configuration
     with open(config_path, 'w') as file:
         yaml.safe_dump(config, file)
+
+
+def entry():
+    parser = argparse.ArgumentParser(description="Libem CLI tool")
+    subparsers = parser.add_subparsers(dest='command', help='Available commands:')
+
+    # chat interface
+    chat_parser = subparsers.add_parser('chat', help='Start a Libem chatbot')
+    add_common_arguments(chat_parser)
+
+    # libem configuration
+    configure_parser = subparsers.add_parser('configure', help='Set Libem configurations')
+    _ = configure_parser
+
+    """Libem tools"""
+    # match
+    match_parser = subparsers.add_parser('match', help='Perform entity matching')
+    match_parser.add_argument('e1', type=str, help='First entity')
+    match_parser.add_argument('e2', type=str, help='Second entity')
+    add_common_arguments(match_parser)
+
+    ...
+
+    args = parser.parse_args()
+
+    match args.command:
+        case 'chat':
+            chat(args)
+        case 'configure':
+            configure(args)
+        case 'match':
+            match(args)
+        case _:
+            parser.print_help()
+
+
+def match(args):
+    configs = args.calibrate or []
+    if args.model:
+        configs.append(('libem.match.parameter.model', args.model))
+    if args.cot:
+        configs.append(('libem.match.parameter.cot', True))
+    if args.confidence:
+        configs.append(('libem.match.parameter.confidence', True))
+    if args.browse:
+        configs.append(('libem.match.parameter.tools', tools + ['libem.browse']))
+    if args.guess:
+        configs.append(('libem.match.parameter.guess', True))
+    if args.debug:
+        libem.debug_on()
+
+    if configs:
+        libem.calibrate(dict(configs))
+
+    with libem.trace as t:
+        result = libem.match(args.e1, args.e2)
+
+    if args.cot:
+        print("Explanation:\n", result['explanation'])
+        print()
+
+    print("Match:", result['answer'])
+
+    if args.confidence:
+        print("Confidence:", result['confidence'])
+
+    if args.stats:
+        pp = pprint.PrettyPrinter(sort_dicts=False)
+        pp.pprint(t.stats())
 
 
 def parse_key_value_pair(arg_value):
@@ -144,9 +177,10 @@ def parse_key_value_pair(arg_value):
 
 
 def mask_key(key):
-    if len(key) > 4:
-        return '*' * (len(key) - 4) + key[-4:]
-    return key  # If key is less than or equal to 4 characters, return as is
+    if len(key) > 7:
+        return key[:3] + '*' * (len(key) - 7) + key[-4:]
+    else:
+        return key  # If the key is too short to fully mask, return it as is
 
 
 if __name__ == '__main__':
