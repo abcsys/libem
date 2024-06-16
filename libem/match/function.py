@@ -63,7 +63,7 @@ def func(left, right) -> dict:
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )
+    )["output"]
 
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"

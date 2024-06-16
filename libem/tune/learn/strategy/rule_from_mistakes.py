@@ -36,7 +36,7 @@ def rule_from_success(successes: list) -> Prompt.Rules:
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
         tools=[],
-    )
+    )["output"]
     libem.info("Learned: ", message)
     rules = message.split("\n")
     return Prompt.Rules(rules)
@@ -53,7 +53,7 @@ def experience_from_mistake(mistakes: list) -> Prompt.Experiences:
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
         tools=[],
-    )
+    )["output"]
     libem.info("Learned: ", message)
     mistakes = message.split("\n")
     return Prompt.Experiences(mistakes)

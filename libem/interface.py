@@ -21,7 +21,7 @@ def chat(message):
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )
+    )["output"]
 
 
 """Programmatic access"""
