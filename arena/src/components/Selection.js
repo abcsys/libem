@@ -122,7 +122,7 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
             body: JSON.stringify({
                 uuid: uuid,
                 dataset: dataset,
-                index: index,
+                index: order[index],
                 answer: answer
             })
         })

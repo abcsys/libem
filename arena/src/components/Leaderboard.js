@@ -50,8 +50,8 @@ const Leaderboard = ({ dataset, uuid, returnHome }) => {
                         <div className="center-text">F1 Score</div>
                         <div className="center-text">Avg. Time</div>
                     </div>
-                    {leaderboard.map(k => 
-                        <LBEntry key={k['uuid']} name={k['name']} score={k['score']} time={k['avg_time']} highlight={k['uuid'] === uuid} />
+                    {leaderboard.map((k, i) => 
+                        <LBEntry key={i} name={k['name']} score={k['score']} time={k['avg_time']} highlight={k['uuid'] === uuid} />
                         )}
                 </div>
             </div>
