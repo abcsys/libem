@@ -29,10 +29,6 @@ The frontend can be compiled into static HTML in `./dist` by running
 libem/arena> npm i # installs all dependencies
 libem/arena> npm run build
 ```
-NOTE: You may have to change line 8 in `./package.json` as follows
-```
-"build": "Webpack ." -> "build": "webpack ."
-```
 
 ## Screenshots
 
