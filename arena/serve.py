@@ -74,7 +74,7 @@ libem_results = {
 }
 
 # sql db (results and leaderboard)
-con = sqlite3.connect(":memory:")
+con = sqlite3.connect("results.db")
 con.row_factory = sqlite3.Row
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS matches("
