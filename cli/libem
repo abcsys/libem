@@ -4,7 +4,6 @@ import sys
 import yaml
 import ast
 import argparse
-import shlex
 import pprint
 
 import libem
@@ -112,6 +111,11 @@ def entry():
     match_parser.add_argument('e2', type=str, help='Second entity')
     add_common_arguments(match_parser)
 
+    # extract
+    extract_parser = subparsers.add_parser('extract', help='Perform entity extraction')
+    extract_parser.add_argument('desc', type=str, help='Description')
+    add_common_arguments(extract_parser)
+
     ...
 
     args = parser.parse_args()
@@ -123,6 +127,8 @@ def entry():
             configure(args)
         case 'match':
             match(args)
+        case 'extract':
+            extract(args)
         case _:
             parser.print_help()
 
@@ -160,6 +166,13 @@ def match(args):
     if args.stats:
         pp = pprint.PrettyPrinter(sort_dicts=False)
         pp.pprint(t.stats())
+
+
+def extract(args):
+    with libem.trace as t:
+        result = libem.extract(args.desc)
+
+    print("Entities:", result)
 
 
 def parse_key_value_pair(arg_value):

@@ -19,6 +19,10 @@ chat:
 	python examples/tool/chat.py
 all: match browse chat
 
+# extract examples
+.PHONY: extract
+extract:
+	python examples/extract.py
 
 # tuning examples
 .PHONY: tune
