@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
-from libem.tune.optimize.cost import openai
+from libem.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 from libem.core.struct import Prompt
 from libem.match.parameter import tools

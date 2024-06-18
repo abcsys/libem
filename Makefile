@@ -8,25 +8,31 @@ install:
 uninstall:
 	pip uninstall libem -y && rm -r libem.egg-info || true
 
-# examples
-.PHONY: run match no_match browse chat all
+# match examples
+.PHONY: run match browse chat all
 run: match
 match:
 	python examples/match.py
-no_match:
-	python examples/no_match.py
 browse:
-	python examples/browse.py
+	python examples/tool/browse.py
 chat:
-	python examples/chat.py
-all: match no_match browse chat
+	python examples/tool/chat.py
+all: match browse chat
+
+# extract examples
+.PHONY: extract
+extract:
+	python examples/extract.py
 
 # tuning examples
-.PHONY: tune profile
+.PHONY: tune
 tune:
 	python examples/tune/rule_from_mistakes.py
+
+# optimize examples
+.PHONY: profile
 profile:
-	python examples/tune/profile.py
+	python examples/optimize/profile.py
 
 
 # benchmarks

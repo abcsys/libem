@@ -7,7 +7,7 @@ from openai import OpenAI, APITimeoutError
 import libem
 
 
-def call(*args, **kwargs) -> str:
+def call(*args, **kwargs) -> dict:
     return openai(*args, **kwargs)
 
 
@@ -22,13 +22,12 @@ os.environ.setdefault(
 # LLM call with multiple rounds of tool use
 def openai(prompt: str | list | dict,
            tools: list[str] = None,
+           context: list = None,
            model: str = "gpt-4o",
            temperature: float = 0.0,
            seed: int = None,
            max_model_call: int = 3,
-           return_tool_outputs: bool = False,
-           verbose: bool = True,
-           ) -> str or (str, dict):
+           ) -> dict:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
 
@@ -48,11 +47,16 @@ def openai(prompt: str | list | dict,
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
+    context = context or []
+    messages = context + messages
+
+    # trace variables
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
     tool_outputs = {}
 
-    """ Call with no tool use """
+    """Start call"""
+
     if not tools:
         try:
             response = client.chat.completions.create(
@@ -69,7 +73,6 @@ def openai(prompt: str | list | dict,
         num_output_tokens += response.usage.completion_tokens
         response_message = response.choices[0].message
     else:
-        """ Call with tools """
         # Load the tool modules
         tools = [importlib.import_module(tool) for tool in tools]
 
@@ -108,11 +111,11 @@ def openai(prompt: str | list | dict,
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
                 function_args = json.loads(tool_call.function.arguments)
+
+                libem.debug(f"[{function_name}] {function_args}")
+
                 function_response = function_to_call(**function_args)
                 tool_outputs[function_name] = function_response
-
-                if verbose:
-                    libem.info(f"[{function_name}] {function_response}")
 
                 messages.append(
                     {
@@ -157,7 +160,10 @@ def openai(prompt: str | list | dict,
             if num_model_calls == max_model_call:
                 libem.debug(f"[model] max call reached: {messages}\n{response_message}")
 
-    # add model calls to trace
+    """End call"""
+
+    messages.append(response_message)
+
     libem.trace.add({
         "model": {
             "num_model_calls": num_model_calls,
@@ -166,7 +172,8 @@ def openai(prompt: str | list | dict,
         }
     })
 
-    if return_tool_outputs:
-        return response_message.content, tool_outputs
-    else:
-        return response_message.content
+    return {
+        "output": response_message.content,
+        "messages": messages,
+        "tool_outputs": tool_outputs,
+    }

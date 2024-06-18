@@ -7,7 +7,7 @@ def positive():
 
     is_match: str = libem.chat(f"Match two entities "
                                f"entity 1: {e1}; "
-                               f"entity 2: {e2}")
+                               f"entity 2: {e2}")["content"]
 
     print("Entity 1:", e1)
     print("Entity 2:", e2)

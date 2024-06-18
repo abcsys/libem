@@ -7,6 +7,7 @@ from libem.core.struct import Prompt
 from libem import prompt, parameter
 
 from libem.match import func as match_func
+from libem.extract import func as extract_func
 from libem.tune.calibrate import func as calibrate_func
 from libem.tune.calibrate import export
 from libem.tune import func as tune_func
@@ -14,14 +15,20 @@ from libem.tune import func as tune_func
 """Chat access"""
 
 
-def chat(message):
-    return model.call(
+def chat(message, context=None) -> dict:
+    context = context or []
+    response = model.call(
         prompt=Prompt.join(prompt.role(), message, sep="\n"),
+        context=context,
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
+    return {
+        "content": response["output"],
+        "context": response["messages"],
+    }
 
 
 """Programmatic access"""
@@ -43,6 +50,10 @@ def match(left, right) -> dict:
         }
 
     return match_func(left, right)
+
+
+def extract(desc: str) -> dict:
+    return extract_func(desc)
 
 
 def calibrate(*args, **kwargs):

@@ -1,6 +1,6 @@
 import pprint
 
-from libem.tune import profile
+from libem.optimize import profile
 from libem.prepare.datasets.beer import read_train
 
 if __name__ == "__main__":
