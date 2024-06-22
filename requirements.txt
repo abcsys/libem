@@ -14,4 +14,3 @@ requests
 fastapi
 pydantic
 uvicorn
-sqlite3
