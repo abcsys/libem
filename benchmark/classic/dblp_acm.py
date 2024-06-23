@@ -60,7 +60,7 @@ def run(args):
 
     if args.block:
         libem.calibrate({
-            "libem.block.parameter.similarity": 79
+            "libem.block.parameter.similarity": 81
         })
         
         left = set(json.dumps(d['left']) for d in dataset)
