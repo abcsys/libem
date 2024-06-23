@@ -33,6 +33,9 @@ def run(args):
             kwargs['fields'] = args.kwargs['fields']
         if 'price_diff' in args.kwargs:
             kwargs['price_diff'] = args.kwargs['price_diff']
+    
+    if args.block:
+        raise NotImplementedError("Blocking is not supported for this dataset.")
 
     # get dataset with kwargs
     if args.train:

@@ -1,3 +1,4 @@
+import json
 import random
 
 import libem
@@ -61,5 +62,19 @@ def run(args):
             "libem.match.prompt.experiences": Prompt.Experiences(),
             "libem.match.prompt.output": ""
         })
+
+    if args.block:
+        libem.calibrate({
+            "libem.block.parameter.similarity": 51
+        })
+        
+        left = set(json.dumps(d['left']) for d in dataset)
+        right = set(json.dumps(d['right']) for d in dataset)
+        dataset = {
+            'left': [json.loads(i) for i in left],
+            'right': [json.loads(i) for i in right],
+            'true': [{'left': d['left'], 'right': d['right']} 
+                     for d in dataset if d['label'] == 1]
+        }
 
     util.benchmark(dataset, args)

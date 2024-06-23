@@ -6,6 +6,7 @@ import libem.core.model as model
 from libem.core.struct import Prompt
 from libem import prompt, parameter
 
+from libem.block import func as block_func
 from libem.match import func as match_func
 from libem.extract import func as extract_func
 from libem.tune.calibrate import func as calibrate_func
@@ -33,6 +34,9 @@ def chat(message, context=None) -> dict:
 
 """Programmatic access"""
 
+
+def block(left, right) -> list:
+    return block_func(left, right)
 
 def match(left, right) -> dict:
     if parameter.always():
