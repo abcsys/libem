@@ -6,6 +6,7 @@ from libem.core.struct import Prompt
 from libem.prepare.datasets import dblp_scholar
 
 from benchmark import util
+from benchmark.classic import tuned_similarity
 
 
 def run(args):
@@ -60,7 +61,9 @@ def run(args):
 
     if args.block:
         libem.calibrate({
-            "libem.block.parameter.similarity": 59
+            "libem.block.parameter.similarity": args.similarity
+                                                if 0 <= args.similarity <= 100 
+                                                else tuned_similarity['dblp-scholar']
         })
         
         left = set(json.dumps(d['left']) for d in dataset)

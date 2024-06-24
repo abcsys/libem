@@ -14,6 +14,5 @@ requests
 fastapi
 pydantic
 uvicorn
-sqlite3
 fuzzywuzzy
 python-Levenshtein

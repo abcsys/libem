@@ -1,5 +1,6 @@
 import logging
 import random
+from typing import Iterator
 
 import libem
 import libem.core.model as model
@@ -35,8 +36,8 @@ def chat(message, context=None) -> dict:
 """Programmatic access"""
 
 
-def block(left, right) -> list:
-    return block_func(left, right)
+def block(left, right) -> Iterator[dict]:
+    yield from block_func(left, right)
 
 def match(left, right) -> dict:
     if parameter.always():

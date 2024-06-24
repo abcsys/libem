@@ -1,4 +1,4 @@
-import re
+from typing import Iterator
 from fuzzywuzzy import fuzz
 
 from libem.block import parameter
@@ -26,31 +26,30 @@ schema = {
 }
 
 
-def func(left: list[str | dict], right: list[str | dict]) -> list[dict]:
-    left_strs, right_strs = [], []
-    out = []
+def func(left: list[str | dict], right: list[str | dict]) -> Iterator[dict]:
+    right_strs = []
 
     for l in left:
         if type(l) is dict:
-            left_str = []
+            left_vals = []
             for v in l.values():
-                left_str.append(str(v))
-            left_strs.append(' '.join(i for i in left_str))
+                left_vals.append(str(v))
+            left_str = ' '.join(i for i in left_vals)
         else:
-            left_strs.append(l)
+            left_str = l
 
-    for r in right:
-        if type(r) is dict:
-            right_str = []
-            for v in r.values():
-                right_str.append(str(v))
-            right_strs.append(' '.join(i for i in right_str))
-        else:
-            right_strs.append(l)
-    
-    for i, l in enumerate(left_strs):
-        for j, r in enumerate(right_strs):
-            if fuzz.token_set_ratio(l, r) >= parameter.similarity():
-                out.append({'left': left[i], 'right': right[j]})
-    
-    return out
+        for i, r in enumerate(right):
+            if len(right_strs) > i:
+                right_str = right_strs[i]
+            else:
+                if type(r) is dict:
+                    right_vals = []
+                    for v in r.values():
+                        right_vals.append(str(v))
+                    right_str = ' '.join(i for i in right_vals)
+                else:
+                    right_str = l
+                right_strs.append(right_str)
+        
+            if fuzz.token_set_ratio(left_str, right_str) >= parameter.similarity():
+                    yield {'left': l, 'right': r}

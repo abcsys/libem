@@ -7,7 +7,6 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
-import libem.block
 from libem.optimize.cost import openai
 from libem.core.eval import confusion_matrix, precision, recall, f1
 from libem.core.struct import Prompt
@@ -52,10 +51,7 @@ def benchmark(dataset, args):
         results['block'] = block_results
     if args.match:
         match_stats, match_results = match(dataset, args)
-        if args.block:
-            results['match'] = match_results
-        else:
-            results = match_results
+        results['match'] = match_results
     
     if args.log:
         # save results to ./results
@@ -107,12 +103,28 @@ def benchmark(dataset, args):
  
 
 def block(dataset, args):
-    start_time = time.time()
     total_pairs = len(dataset['left']) * len(dataset['right'])
-    print(f"Benchmark: Blocking {total_pairs} potential pairs "
-          f"from the {args.name} benchmark:")
     
-    blocked = libem.block(dataset['left'], dataset['right'])
+    print(f"Benchmark: Blocking {total_pairs} potential pairs from the {args.name} benchmark", end='')
+    if args.num_pairs > 0:
+        print(f",\nBenchmark: stopping after the first "
+              f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
+              f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
+    else:
+        print(":")
+    
+    blocked = []
+    start_time = time.time()
+    block_iter = libem.block(dataset['left'], dataset['right'])
+    block_next = next(block_iter, None)
+    while block_next:
+        blocked.append(block_next)
+        
+        # check num_pairs stop condition
+        if args.num_pairs > 0 and len(blocked) - args.start_index >= args.num_pairs:
+            break
+        
+        block_next = next(block_iter, None)
     total_time = time.time() - start_time
     
     # generate output and stats
@@ -139,13 +151,19 @@ def block(dataset, args):
             fn.append(pair)
 
     num_tn = total_pairs - len(tp) - len(fp) - len(fn)
-    preci = len(tp) / (len(tp) + len(fp))
-    recal = len(tp) / (len(tp) + len(fn))
+    if len(tp) == 0:
+        preci = 100 if len(fp) == 0 else 0
+        recal = 100 if len(fn) == 0 else 0
+    else:
+        preci = len(tp) / (len(tp) + len(fp)) * 100
+        recal = len(tp) / (len(tp) + len(fn)) * 100
+    f1 = 0 if preci + recal == 0 \
+           else 2 * round(preci * recal / (preci + recal), 2)
     
     stats = {
         'precision': round(preci, 2),
         'recall': round(recal, 2),
-        'f1': 2 * round(preci * recal / (preci + recal), 2),
+        'f1': f1,
         'latency': total_time,
         'confusion_matrix': {
             'tp': len(tp),
@@ -164,10 +182,12 @@ def block(dataset, args):
     
     print()
     print(f"Benchmark: Blocking done in {round(total_time, 2)}s.")
-    print(f"Benchmark: Filtered pairs\t {len(out)}")
-    print(f"Benchmark: Precision\t {stats['precision']}")
-    print(f"Benchmark: Recall\t {stats['recall']}")
-    print(f"Benchmark: F1 score\t {stats['f1']}")
+    if args.num_pairs <= 0 or args.num_pairs > len(out):
+        print(f"Benchmark: Resulting pairs\t {len(out)}")
+        print(f"Benchmark: Percent blocked\t {round((1 - len(out) / total_pairs) * 100, 2)}")
+    print(f"Benchmark: Precision\t\t {stats['precision']}")
+    print(f"Benchmark: Recall\t\t {stats['recall']}")
+    print(f"Benchmark: F1 score\t\t {stats['f1']}")
     
     return out, stats, results
 

@@ -131,6 +131,9 @@ def main():
                         help="The OpenAI model to use.",
                         type=str, default=libem.parameter.model())
 
+    parser.add_argument("--no-match", dest='match',
+                        help="Skip the matching phase.",
+                        action='store_false', default=True)
     parser.add_argument("--block", dest='block',
                         help="Enable the block tool.",
                         action='store_true', default=False)
@@ -143,9 +146,9 @@ def main():
     parser.add_argument("--confidence", dest='confidence',
                         help="Report confidence score.",
                         action='store_true', default=False)
-    parser.add_argument("--no-match", dest='match',
-                        help="Skip the matching phase.",
-                        action='store_false', default=True)
+    parser.add_argument("--similarity", dest='similarity', nargs='?',
+                        help="The similarity score cutoff for block, between 0-100.",
+                        type=int, default=-1)
 
     parser.add_argument("-r", "--rules", dest='rules', nargs='*',
                         help="List of rules to add to match.",

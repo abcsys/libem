@@ -6,6 +6,7 @@ from libem.core.struct import Prompt
 from libem.prepare.datasets import walmart_amazon
 
 from benchmark import util
+from benchmark.classic import tuned_similarity
 
 
 def run(args):
@@ -65,7 +66,9 @@ def run(args):
 
     if args.block:
         libem.calibrate({
-            "libem.block.parameter.similarity": 50
+            "libem.block.parameter.similarity": args.similarity
+                                                if 0 <= args.similarity <= 100 
+                                                else tuned_similarity['walmart-amazon']
         })
         
         left = set(json.dumps(d['left']) for d in dataset)

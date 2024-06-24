@@ -17,7 +17,9 @@ browse:
 	python examples/tool/browse.py
 chat:
 	python examples/tool/chat.py
-all: match browse chat
+block:
+	python examples/tool/block.py
+all: match browse chat block
 
 # extract examples
 .PHONY: extract
