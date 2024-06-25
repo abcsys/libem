@@ -1,3 +1,4 @@
+import json
 import random
 
 import libem
@@ -5,6 +6,7 @@ from libem.core.struct import Prompt
 from libem.prepare.datasets import fodors_zagats
 
 from benchmark import util
+from benchmark.classic import tuned_similarity
 
 
 def run(args):
@@ -52,5 +54,21 @@ def run(args):
             "libem.match.prompt.experiences": Prompt.Experiences(),
             "libem.match.prompt.output": ""
         })
+
+    if args.block:
+        libem.calibrate({
+            "libem.block.parameter.similarity": args.similarity
+                                                if 0 <= args.similarity <= 100 
+                                                else tuned_similarity['fodors-zagats']
+        })
+        
+        left = set(json.dumps(d['left']) for d in dataset)
+        right = set(json.dumps(d['right']) for d in dataset)
+        dataset = {
+            'left': [json.loads(i) for i in left],
+            'right': [json.loads(i) for i in right],
+            'true': [{'left': d['left'], 'right': d['right']} 
+                     for d in dataset if d['label'] == 1]
+        }
 
     util.benchmark(dataset, args)

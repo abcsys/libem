@@ -17,11 +17,11 @@ schema = {
             "properties": {
                 "left": {
                     "type": "string",
-                    "description": "Description of the first entity",
+                    "description": "Description of the first entity.",
                 },
                 "right": {
                     "type": "string",
-                    "description": "Description of the second entity",
+                    "description": "Description of the second entity.",
                 },
             },
             "required": ["left", "right"],
