@@ -1,7 +1,8 @@
-import pprint
 import time
-import libem
 import numpy as np
+import pprint
+
+import libem
 from libem.core.eval import precision, recall, f1
 
 pp = pprint.PrettyPrinter(sort_dicts=False)
@@ -77,14 +78,14 @@ def main():
     print("\nNumber of potential matching pairs:", potential_pairs)
     print("Number of actual matching pairs:", len(matches))
     
-    print("\nStarting blocking...")
+    print("\nBlocking...")
     start_time = time.time()
     output = list(libem.block(ds_l, ds_r))
     block_time = time.time() - start_time
     print("Blocking done.")
     print("Number of pairs after blocking:", len(output))
     
-    print("\nStarting matching...")
+    print("\nMatching...")
     predictions, actual = [], []
     start_time = time.time()
     for p in output:
