@@ -117,7 +117,6 @@ const Match = () => {
                     <path d="M 22 38 L 40 12"/>
                     <path d="M 10 25 L 22 38"/>
                  </svg>
-    const hideButtons = resultScreen ? "hidden" : ""
     
     const returnHome = () => {
         navigate("/")
@@ -213,8 +212,10 @@ const Match = () => {
                                 <EntityBox entity={pair['right']} className={resultScreen ? "entity-box" : "entity-box fade-in-right"} />
                             </div>
                             <div className={resultScreen ? "hstack" : "hstack fade-in-bottom"}>
-                                <div className={`button circle red ${hideButtons}`} onClick={() => match(false)}>{ex}</div>
-                                <div className={`button circle green ${hideButtons}`} onClick={() => match(true)}>{check}</div>
+                                <div className={`button circle red ${resultScreen ? "inactive-red" : ""}`} 
+                                     onClick={() => match(false)}>{ex}</div>
+                                <div className={`button circle green ${resultScreen ? "inactive-green" : ""}`} 
+                                     onClick={() => match(true)}>{check}</div>
                             </div>
                             <div className="pad"></div>
                           </div>}

@@ -69,7 +69,12 @@ body {
     cursor: default;
 }
 .inactive-green {
-    background-color: #12b5009d;
+    background-color: #12b500a0;
+    color: #333;
+    cursor: default;
+}
+.inactive-red {
+    background-color: #c93434a0;
     color: #333;
     cursor: default;
 }
