@@ -1,5 +1,6 @@
-import React from "react"
+import React, { useState } from "react"
 import "./MainMenu.css"
+import { useNavigate } from "react-router-dom"
 
 const MenuChild = ({ name, metadata, selected }) => {
     const className = name === "Challenging" ? "dataset-name red-text" : "dataset-name"
@@ -14,7 +15,17 @@ const MenuChild = ({ name, metadata, selected }) => {
     )
 }
 
-const MainMenu = ({ datasets, selected, setSelected, setActive, setLeaderboard }) => {
+const MainMenu = ({ datasets }) => {
+    const [selected, setSelected] = useState(null)
+    const navigate = useNavigate()
+
+    const openLB = () => {
+        navigate(`/leaderboard/${selected}`)
+    }
+
+    const openMatch = () => {
+        navigate(`/match/${selected}`)
+    }
     
     return (
         <div className="vstack">
@@ -27,23 +38,24 @@ const MainMenu = ({ datasets, selected, setSelected, setActive, setLeaderboard }
                 Do you think you can outperform Libem? <br></br> Select a dataset, then press start to find out.
             </div>
             <div className="options fade-in-right">
-                {Object.keys(datasets).map(key => 
-                    <div key={key} className={selected === key ? "dataset-box selected" : "dataset-box"} onClick={() => setSelected(key)}>
-                        <MenuChild name={key} metadata={datasets[key]} selected={selected === key} />
-                    </div>
-                )}
+                {datasets !== null 
+                    ? Object.keys(datasets).map(key => 
+                        <div key={key} className={selected === key ? "dataset-box selected" : "dataset-box"} onClick={() => setSelected(key)}>
+                            <MenuChild name={key} metadata={datasets[key]} selected={selected === key} />
+                        </div>)
+                    : <></>}
             </div>
             <div className="adaptive-stack">
                 <div className={selected !== null 
                                     ? "button rect green fade-in-bottom" 
                                     : "button rect green fade-in-bottom inactive-green"} 
-                        onClick={() => setLeaderboard(true)}>
+                        onClick={openLB}>
                     Leaderboard
                 </div>
                 <div className={selected !== null 
                                     ? "button rect fade-in-bottom" 
                                     : "button rect fade-in-bottom inactive"} 
-                        onClick={() => setActive(selected)}>
+                        onClick={openMatch}>
                     START
                 </div>
             </div>

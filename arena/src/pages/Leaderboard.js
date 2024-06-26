@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react"
-import baseURL from "../Constants"
+import React, { useEffect, useRef, useState } from "react"
+import { baseURL, getUUID } from "../Common"
 import "./Leaderboard.css"
+import { useNavigate, useParams } from "react-router-dom"
 
 const LBEntry = ({ name, score, time, highlight }) => {
     const hashStr = str => {
@@ -28,11 +29,20 @@ const LBEntry = ({ name, score, time, highlight }) => {
     )
 }
 
-const Leaderboard = ({ dataset, uuid, returnHome }) => {
+const Leaderboard = () => {
+    const { dataset } = useParams()
+    const uuid = useRef()
     const [leaderboard, setLeaderboard] = useState([])
+    const navigate = useNavigate()
+    
+    const returnHome = () => {
+        navigate("/")
+    }
 
     useEffect(() => {
-        fetch(`${baseURL}/leaderboard/?dataset=${dataset}&uuid=${uuid}`)
+        uuid.current = getUUID()
+
+        fetch(`${baseURL}/leaderboard/?dataset=${dataset}&uuid=${uuid.current}`)
         .then(r => r.json())
         .then(r => setLeaderboard(r))
     }, [])
@@ -51,7 +61,7 @@ const Leaderboard = ({ dataset, uuid, returnHome }) => {
                         <div className="center-text">Avg. Time</div>
                     </div>
                     {leaderboard.map((k, i) => 
-                        <LBEntry key={i} name={k['name']} score={k['score']} time={k['avg_time']} highlight={k['uuid'] === uuid} />
+                        <LBEntry key={i} name={k['name']} score={k['score']} time={k['avg_time']} highlight={k['uuid'] === uuid.current} />
                         )}
                 </div>
             </div>

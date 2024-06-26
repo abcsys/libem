@@ -83,35 +83,6 @@ body {
     font-size: larger;
 }
 
-.result {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40rem;
-    max-width: 70vw;
-    height: auto;
-    background-color: #d9d9d9;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    padding: 2rem;
-    display: block;
-}
-
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: block;
-}
-
-.hidden {
-    display: none;
-}
-
 .vstack {
     display: flex;
     flex-direction: column;
