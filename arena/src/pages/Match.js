@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react"
 import EndScreen from "./EndScreen"
 import Timer from "./Timer"
-import baseURL from "../Constants"
-import "./Selection.css"
+import { baseURL, getUUID } from "../Common"
+import "./Match.css"
+import { useNavigate, useParams } from "react-router-dom"
 
 const EntityBox = ({ entity, className }) => {
     return (
@@ -23,39 +24,56 @@ const EntityBox = ({ entity, className }) => {
     )
 }
 
-const ResultScreen = ({ userAns, libemAns, label, index, final, hidden, closeResultScreen, setEndScreen }) => {
+const ResultScreen = ({ userAns, libemAns, label, index, final, inactive, closeResultScreen, setEndScreen }) => {
 
-    const resultClasses = hidden 
+    const [hide, setHide] = useState(false)
+    const resultDiv = useRef(null)
+
+    const collapse = () => {
+        resultDiv.current.className = "result to-bottom select"
+        setHide(true)
+    }
+    const expand = () => {
+        resultDiv.current.className = "result"
+        setHide(false)
+    }
+
+    const resultClasses = inactive 
                             ? "result hidden" 
                             : userAns === label 
-                                ? "result zoom-fade" 
+                                ? "result zoom-fade"
                                 : "result shake-fade"
 
     return (
         <>
-            <div className={hidden ? "background hidden" : "background"} onClick={closeResultScreen}></div>
-            <div className={resultClasses}>
-                <div className="result-message">
-                    {userAns === label
-                        ? <>
-                            <h2>Correct!</h2>
-                            <div>You chose <b>{userAns ? "Match" : "No Match"}</b>, which was correct.</div>
-                        </>
-                        : <>
-                            <h2>Not Quite!</h2>
-                            <div>You chose <b>{userAns ? "Match" : "No Match"}</b>, which was wrong.</div>
-                          </>
-                    }
-                    <div>Libem chose <b>{libemAns ? "Match" : "No Match"}</b>.</div>
-                    {index >= 4
-                        ? final
-                            ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
-                            : <p className="value">Click <b>Next</b> to try another pair, 
-                                or <b>End</b> to see your final results.</p>
-                        : <p className="value">Click <b>Next</b> to try another pair, you may end any time after 5 pairs.</p>
-                    }
-                    
-                </div>
+            <div className={inactive || hide ? "background hidden" : "background"} onClick={collapse}></div>
+            
+            <div className={resultClasses} ref={resultDiv} onClick={expand}>
+                { !hide && !inactive 
+                    ? <div className="result-message">
+                        {userAns === label
+                            ? <>
+                                <h2>Correct!</h2>
+                                <div>You chose <b>{userAns ? "Match" : "No Match"}</b>, which was correct.</div>
+                            </>
+                            : <>
+                                <h2>Not Quite!</h2>
+                                <div>You chose <b>{userAns ? "Match" : "No Match"}</b>, which was wrong.</div>
+                            </>
+                        }
+                        <div>Libem chose <b>{libemAns ? "Match" : "No Match"}</b>.</div>
+                        
+                        {index >= 4
+                            ? final
+                                ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
+                                : <p className="value">Click <b>Next</b> to try another pair, 
+                                    or <b>End</b> to see your final results.</p>
+                            : <p className="value">Click <b>Next</b> to try another pair, you may end any time after 5 pairs.</p>
+                        }
+                    </div>
+                    : <></>
+                }
+                
                 <div className="hstack">
                     {index >= 4
                         ? <div className="button rect red" onClick={() => setEndScreen(true)}>End</div>
@@ -73,9 +91,12 @@ const ResultScreen = ({ userAns, libemAns, label, index, final, hidden, closeRes
     )
 }
 
-const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
+const Match = () => {
+    const { dataset } = useParams()
+    const uuid = useRef()
+    const order = useRef([])
     const [pair, setPair] = useState(null)
-    const [index, setIndex] = useState(0)
+    const [index, setIndex] = useState(-1)
     const [resultScreen, setResultScreen] = useState(false)
     const [endScreen, setEndScreen] = useState(false)
 
@@ -86,6 +107,7 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
 
     const [timer, setTimer] = useState(false)
     const timeElapsed = useRef(0)
+    const navigate = useNavigate()
 
     const ex =  <svg viewBox='0 0 50 50' className={'icon'}>
                     <path d="M 12 12 L 38 38"/>
@@ -96,15 +118,25 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
                     <path d="M 10 25 L 22 38"/>
                  </svg>
     
+    const returnHome = () => {
+        navigate("/")
+    }
+
+    const openLB = () => {
+        navigate(`/leaderboard/${dataset}`)
+    }
+
     const fetchNext = () => {
-        fetch(`${baseURL}/fetch?dataset=${dataset}&index=${order[index]}`)
-        .then(r => r.json())
-        .then(r => {
-            // scroll to top
-            window.scrollTo(0, 0)
-            setPair(r)
-            setTimer(true)
-        })
+        if (index >= 0) {
+            fetch(`${baseURL}/fetch?dataset=${dataset}&index=${order.current[index]}`)
+            .then(r => r.json())
+            .then(r => {
+                // scroll to top
+                window.scrollTo(0, 0)
+                setPair(r)
+                setTimer(true)
+            })
+        }
     }
 
     const closeResultScreen = () => {
@@ -120,9 +152,9 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                uuid: uuid,
+                uuid: uuid.current,
                 dataset: dataset,
-                index: order[index],
+                index: index,
                 answer: answer
             })
         })
@@ -139,15 +171,28 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
 
     useEffect(fetchNext, [index])
 
+    useEffect(() => {
+        uuid.current = getUUID()
+
+        fetch(baseURL + "/init/")
+        .then(r => r.json())
+        .then(r => {
+            const newOrder = [...Array(r[dataset]['size']).keys()]
+            order.current = newOrder.sort((a, b) => 0.5 - Math.random())
+            setIndex(0)
+        })
+        .catch(e => setIndex(-1))
+    }, [])
+
     return (
         <>
             {endScreen
-                ? <EndScreen uuid={uuid} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
+                ? <EndScreen uuid={uuid.current} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
                              userTime={timeElapsed.current / 1000} libemTime={libemTime.current} 
                              labels={labels.current} returnHome={returnHome} openLB={openLB} />
                 : <div className="selection">
                     {pair === null 
-                        ? <div>Loading...</div>
+                        ? <div className="text-color">Loading...</div>
                         : <div className="vstack-wide">
                             <div className="vstack fade-in-top">
                                 <div className="title-bar">
@@ -167,14 +212,16 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
                                 <EntityBox entity={pair['right']} className={resultScreen ? "entity-box" : "entity-box fade-in-right"} />
                             </div>
                             <div className={resultScreen ? "hstack" : "hstack fade-in-bottom"}>
-                                <div className="button circle red" onClick={() => match(false)}>{ex}</div>
-                                <div className="button circle green" onClick={() => match(true)}>{check}</div>
+                                <div className={`button circle red ${resultScreen ? "inactive-red" : ""}`} 
+                                     onClick={() => match(false)}>{ex}</div>
+                                <div className={`button circle green ${resultScreen ? "inactive-green" : ""}`} 
+                                     onClick={() => match(true)}>{check}</div>
                             </div>
                             <div className="pad"></div>
                           </div>}
                     <ResultScreen userAns={userAns.current.at(-1)} libemAns={libemAns.current.at(-1)} 
                                 label={labels.current.at(-1)} index={index} final={index+1 === order.length} 
-                                hidden={!resultScreen} closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
+                                inactive={!resultScreen} closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
                   </div>
             }
         </> 
@@ -182,4 +229,4 @@ const Selection = ({ dataset, order, uuid, returnHome, openLB }) => {
 
 }
 
-export default Selection
+export default Match

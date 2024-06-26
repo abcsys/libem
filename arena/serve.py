@@ -168,7 +168,6 @@ async def get_leaderboard(dataset: str, uuid: str):
     cur.close()
     
     filtered_lb = [dict(libem[0]), dict(best[0]), dict(avg[0])] + [dict(u) for u in user]
-    print(filtered_lb)
     return sorted(filtered_lb, key=cmp_to_key(compare), reverse=True)
 
 @app.post('/leaderboard/')
