@@ -39,19 +39,25 @@ class Telemetry:
         return self.readings
 
     def sum(self):
+        if len(self.readings) == 0:
+            return None
         return sum(self.readings)
 
     def mean(self):
+        if len(self.readings) == 0:
+            return None
         return np.mean(self.readings)
 
     def std(self):
+        if len(self.readings) == 0:
+            return None
         return np.std(self.readings)
 
     def min(self):
-        return min(self.readings)
+        return min(self.readings, default=None)
 
     def max(self):
-        return max(self.readings)
+        return max(self.readings, default=None)
 
     def report(self):
         return {
