@@ -48,7 +48,7 @@ def run_from_file(args):
         "entity_2": {...},
         "label": 0,
       }, ...]
-    These pairs could be nested under a "results",
+    These pairs could be nested under a "results.match",
     "fp", "fn", "tn", "tp" keys or directly in the JSON file.
     """
     pairs = []
@@ -59,7 +59,7 @@ def run_from_file(args):
         pairs = input_data
     else:
         if "results" in input_data:
-            pairs = input_data["results"]
+            pairs = input_data["results"].get("match", pairs)
         if "fp" in input_data:
             pairs.extend(input_data["fp"])
         if "fn" in input_data:
@@ -136,7 +136,6 @@ def main():
     parser.add_argument("-m", "--model", dest='model', nargs='?',
                         help="The OpenAI model to use.",
                         type=str, default=libem.parameter.model())
-
 
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
