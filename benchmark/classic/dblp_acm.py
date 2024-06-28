@@ -32,13 +32,7 @@ def run(args):
         kwargs['keep_null'] = False
         kwargs['fields'] = ["authors", "title", "venue", "year"]
 
-    if args.kwargs is not None:
-        if 'version' in args.kwargs:
-            kwargs['version'] = args.kwargs['version']
-        if 'keep_null' in args.kwargs:
-            kwargs['keep_null'] = args.kwargs['keep_null']
-        if 'fields' in args.kwargs:
-            kwargs['fields'] = args.kwargs['fields']
+    kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
     if args.train:

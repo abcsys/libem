@@ -24,15 +24,7 @@ def run(args):
         'price_diff': False
     }
 
-    if args.kwargs is not None:
-        if 'version' in args.kwargs:
-            kwargs['version'] = args.kwargs['version']
-        if 'keep_null' in args.kwargs:
-            kwargs['keep_null'] = args.kwargs['keep_null']
-        if 'fields' in args.kwargs:
-            kwargs['fields'] = args.kwargs['fields']
-        if 'price_diff' in args.kwargs:
-            kwargs['price_diff'] = args.kwargs['price_diff']
+    kwargs.update(args.kwargs or {})
     
     if args.block:
         raise NotImplementedError("Blocking is not supported for this dataset.")
