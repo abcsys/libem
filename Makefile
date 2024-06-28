@@ -57,3 +57,8 @@ clean:
 .PHONY: price
 price:
 	python -c "from libem import optimize; optimize.refresh_price_cache()"
+
+# download sample data
+.PHONY: data
+data:
+	git clone https://github.com/abcsys/libem-sample-data.git ../libem-sample-data
