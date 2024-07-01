@@ -1,8 +1,8 @@
 from libem.core.struct import Parameter
 
 model = Parameter(
-    default="gpt-4o",
-    options=["gpt-4-turbo", "gpt-3.5-turbo"]
+    default="llama3",
+    options=["gpt-4-turbo", "gpt-3.5-turbo", "gpt-4o"]
 )
 temperature = Parameter(
     default=0,
