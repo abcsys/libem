@@ -1,7 +1,7 @@
 import os
 import json
 import importlib
-
+import time
 from openai import OpenAI, APITimeoutError
 
 import libem
@@ -195,7 +195,7 @@ def local(prompt: str | list | dict,
            seed: int = None,
            max_model_call: int = 3,
            ) -> dict:
-    import time
+
     # Load the model using MLX for apple silicon device
     if model == "llama3":
         model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
@@ -228,6 +228,8 @@ def local(prompt: str | list | dict,
             response = generate(model_local, tokenizer, prompt=messages[0], max_tokens=10, temp=temperature)
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
+    else:
+        raise ToolUseUnsupported("Tool use is not supported")
     return {
         "output": response,
         "messages": "messages is not supported",
