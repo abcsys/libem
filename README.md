@@ -6,7 +6,7 @@ Libem is an open-source compound AI toolchain for fast and accurate entity match
 
 ```bash
 make install
-``` 
+```
 
 Update `~/.libem/config.yaml` with
 > OPENAI_API_KEY: your key

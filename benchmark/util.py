@@ -215,6 +215,7 @@ def benchmark_match(dataset, args):
                     is_match = libem.match(e1, e2)
                 except libem.ModelTimedoutException:
                     num_timeouts += 1
+
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
 
@@ -224,8 +225,13 @@ def benchmark_match(dataset, args):
             model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
             model_output = model_output[0] if model_output else None
 
-            input_tokens = sum([i['model']['num_input_tokens'] for i in t.get() if 'model' in i])
-            output_tokens = sum([i['model']['num_output_tokens'] for i in t.get() if 'model' in i])
+            input_tokens = sum([
+                i['model']['num_input_tokens'] for i in t.get() if 'model' in i
+            ])
+            output_tokens = sum([
+                i['model']['num_output_tokens'] for i in t.get() if 'model' in i
+            ])
+
             total_input_tokens += input_tokens
             total_output_tokens += output_tokens
 
@@ -286,8 +292,8 @@ def benchmark_match(dataset, args):
     }
     stats['confusion_matrix'] = {
         'tp': int(conf_mat[0]),
-        'tn': int(conf_mat[2]),
         'fp': int(conf_mat[1]),
+        'tn': int(conf_mat[2]),
         'fn': int(conf_mat[3])
     }
 

@@ -111,3 +111,19 @@ def confusion_matrix(truth, predictions):
     fn = np.sum(~predictions & truth)
 
     return tp, fp, tn, fn
+
+
+def report(truth: np.array, predictions: np.array):
+    tp, fp, tn, fn = confusion_matrix(
+        truth, predictions
+    )
+    return {
+        "tp": tp,
+        "fp": fp,
+        "tn": tn,
+        "fn": fn,
+        "precision": precision(truth, predictions),
+        "recall": recall(truth, predictions),
+        "f1": f1(truth, predictions),
+        "accuracy": accuracy(truth, predictions),
+    }

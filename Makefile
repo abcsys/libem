@@ -27,9 +27,12 @@ extract:
 	python examples/extract.py
 
 # tuning examples
-.PHONY: tune
-tune:
+.PHONY: rule shot tune
+rule:
 	python examples/tune/rule_from_mistakes.py
+shot:
+	python examples/tune/similar_shots.py
+tune: rule
 
 # optimize examples
 .PHONY: profile
