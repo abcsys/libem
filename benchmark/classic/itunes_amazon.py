@@ -28,13 +28,7 @@ def run(args):
         'fields': ["song_name", "artist_name", "album_name", "genre", "price", "copyright", "time", "released"]
     }
 
-    if args.kwargs is not None:
-        if 'version' in args.kwargs:
-            kwargs['version'] = args.kwargs['version']
-        if 'keep_null' in args.kwargs:
-            kwargs['keep_null'] = args.kwargs['keep_null']
-        if 'fields' in args.kwargs:
-            kwargs['fields'] = args.kwargs['fields']
+    kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
     if args.train:

@@ -9,7 +9,7 @@ def get_mistakes(input_file):
     with open(input_file) as f:
         results = json.load(f)
     fp_cases, fn_cases = [], []
-    for case in results['results']:
+    for case in results['results']['match']:
         if case['pred'] == 'yes' and case['label'] == 0:
             fp_cases.append(case)
         elif case['pred'] == 'no' and case['label'] == 1:
@@ -28,7 +28,7 @@ def get_correct(input_file):
     with open(input_file) as f:
         results = json.load(f)
     tp_cases, tn_cases = [], []
-    for case in results['results']:
+    for case in results['results']['match']:
         if case['pred'] == 'yes' and case['label'] == 1:
             tp_cases.append(case)
         elif case['pred'] == 'no' and case['label'] == 0:

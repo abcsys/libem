@@ -32,13 +32,7 @@ def run(args):
         kwargs['keep_null'] = False
         kwargs['fields'] = ["brew_factory_name", "beer_name", "style", "abv"]
 
-    if args.kwargs is not None:
-        if 'version' in args.kwargs:
-            kwargs['version'] = args.kwargs['version']
-        if 'keep_null' in args.kwargs:
-            kwargs['keep_null'] = args.kwargs['keep_null']
-        if 'fields' in args.kwargs:
-            kwargs['fields'] = args.kwargs['fields']
+    kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
     if args.train:
@@ -62,16 +56,16 @@ def run(args):
     if args.block:
         libem.calibrate({
             "libem.block.parameter.similarity": args.similarity
-                                                if 0 <= args.similarity <= 100 
-                                                else tuned_similarity['beer']
+            if 0 <= args.similarity <= 100
+            else tuned_similarity['beer']
         })
-        
+
         left = set(json.dumps(d['left']) for d in dataset)
         right = set(json.dumps(d['right']) for d in dataset)
         dataset = {
             'left': [json.loads(i) for i in left],
             'right': [json.loads(i) for i in right],
-            'true': [{'left': d['left'], 'right': d['right']} 
+            'true': [{'left': d['left'], 'right': d['right']}
                      for d in dataset if d['label'] == 1]
         }
 

@@ -32,15 +32,7 @@ def run(args):
     else:
         kwargs['fields'] = ["name", "price"]
 
-    if args.kwargs is not None:
-        if 'version' in args.kwargs:
-            kwargs['version'] = args.kwargs['version']
-        if 'keep_null' in args.kwargs:
-            kwargs['keep_null'] = args.kwargs['keep_null']
-        if 'fields' in args.kwargs:
-            kwargs['fields'] = args.kwargs['fields']
-        if 'price_diff' in args.kwargs:
-            kwargs['price_diff'] = args.kwargs['price_diff']
+    kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
     if args.train:
@@ -64,10 +56,10 @@ def run(args):
     if args.block:
         libem.calibrate({
             "libem.block.parameter.similarity": args.similarity
-                                                if 0 <= args.similarity <= 100 
-                                                else tuned_similarity['abt-buy']
+            if 0 <= args.similarity <= 100
+            else tuned_similarity['abt-buy']
         })
-        
+
         left = set(json.dumps(d['left']) for d in dataset)
         right = set(json.dumps(d['right']) for d in dataset)
         dataset = {
@@ -76,5 +68,5 @@ def run(args):
             'true': [{'left': d['left'], 'right': d['right']}
                      for d in dataset if d['label'] == 1]
         }
-        
+
     util.benchmark(dataset, args)

@@ -48,7 +48,7 @@ def run_from_file(args):
         "entity_2": {...},
         "label": 0,
       }, ...]
-    These pairs could be nested under a "results",
+    These pairs could be nested under a "results.match",
     "fp", "fn", "tn", "tp" keys or directly in the JSON file.
     """
     pairs = []
@@ -59,7 +59,7 @@ def run_from_file(args):
         pairs = input_data
     else:
         if "results" in input_data:
-            pairs = input_data["results"]
+            pairs = input_data["results"].get("match", pairs)
         if "fp" in input_data:
             pairs.extend(input_data["fp"])
         if "fn" in input_data:
@@ -116,6 +116,12 @@ def main():
     parser.add_argument("--no-schema", dest='schema',
                         help="Turn off the dataset schema.",
                         action='store_false', default=True)
+    parser.add_argument("--block", dest='block',
+                        help="Perform blocking.",
+                        action='store_true', default=False)
+    parser.add_argument("--no-match", dest='match',
+                        help="Skip the matching phase.",
+                        action='store_false', default=True)
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
@@ -131,12 +137,6 @@ def main():
                         help="The OpenAI model to use.",
                         type=str, default=libem.parameter.model())
 
-    parser.add_argument("--no-match", dest='match',
-                        help="Skip the matching phase.",
-                        action='store_false', default=True)
-    parser.add_argument("--block", dest='block',
-                        help="Enable the block tool.",
-                        action='store_true', default=False)
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)

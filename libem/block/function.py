@@ -50,6 +50,6 @@ def func(left: list[str | dict], right: list[str | dict]) -> Iterator[dict]:
                 else:
                     right_str = l
                 right_strs.append(right_str)
-        
+
             if fuzz.token_set_ratio(left_str, right_str) >= parameter.similarity():
-                    yield {'left': l, 'right': r}
+                yield {'left': l, 'right': r}

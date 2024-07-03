@@ -45,14 +45,13 @@ def benchmark(dataset, args):
             "libem.match.prompt.rules": Prompt.Rules(args.rules),
         })
 
-    results = {}
+    results, stats = {}, {}
     if args.block:
-        dataset, block_stats, block_results = block(dataset, args)
-        results['block'] = block_results
+        dataset, stats['block'], results['block'] = benchmark_block(dataset, args)
     if args.match:
-        match_stats, match_results = match(dataset, args)
-        results['match'] = match_results
-    
+        stats['match'], results['match'] = benchmark_match(dataset, args)
+    stats['total_latency'] = round(time.time() - total_start_time, 2)
+
     if args.log:
         # save results to ./results
         results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
@@ -63,7 +62,7 @@ def benchmark(dataset, args):
         else:
             signature = [
                 datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-                args.name 
+                args.name
             ]
             if args.block:
                 signature.append('block')
@@ -82,15 +81,6 @@ def benchmark(dataset, args):
                 signature.append('rules')
             output_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
 
-        # get stats
-        stats = {
-            'total_latency': round(time.time() - total_start_time, 2)
-        }
-        if args.block:
-            stats['block'] = block_stats
-        if args.match:
-            stats['match'] = match_stats
-
         with open(output_file, 'w') as f:
             json.dump({
                 'command': sys.argv[1:],
@@ -100,11 +90,11 @@ def benchmark(dataset, args):
             }, f, indent=4)
 
         print(f"Benchmark: Results saved to: {output_file}")
- 
 
-def block(dataset, args):
+
+def benchmark_block(dataset, args):
     total_pairs = len(dataset['left']) * len(dataset['right'])
-    
+
     print(f"Benchmark: Blocking {total_pairs} potential pairs from the {args.name} benchmark", end='')
     if args.num_pairs > 0:
         print(f",\nBenchmark: stopping after the first "
@@ -112,21 +102,21 @@ def block(dataset, args):
               f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
     else:
         print(":")
-    
+
     blocked = []
     start_time = time.time()
     block_iter = libem.block(dataset['left'], dataset['right'])
     block_next = next(block_iter, None)
     while block_next:
         blocked.append(block_next)
-        
+
         # check num_pairs stop condition
         if args.num_pairs > 0 and len(blocked) - args.start_index >= args.num_pairs:
             break
-        
+
         block_next = next(block_iter, None)
     total_time = time.time() - start_time
-    
+
     # generate output and stats
     out = []
     tp, fp, fn, num_tn = [], [], [], 0
@@ -152,17 +142,17 @@ def block(dataset, args):
 
     num_tn = total_pairs - len(tp) - len(fp) - len(fn)
     if len(tp) == 0:
-        preci = 100 if len(fp) == 0 else 0
-        recal = 100 if len(fn) == 0 else 0
+        precision = 100 if len(fp) == 0 else 0
+        recall = 100 if len(fn) == 0 else 0
     else:
-        preci = len(tp) / (len(tp) + len(fp)) * 100
-        recal = len(tp) / (len(tp) + len(fn)) * 100
-    f1 = 0 if preci + recal == 0 \
-           else 2 * round(preci * recal / (preci + recal), 2)
-    
+        precision = len(tp) / (len(tp) + len(fp)) * 100
+        recall = len(tp) / (len(tp) + len(fn)) * 100
+    f1 = 0 if precision + recall == 0 \
+        else 2 * round(precision * recall / (precision + recall), 2)
+
     stats = {
-        'precision': round(preci, 2),
-        'recall': round(recal, 2),
+        'precision': round(precision, 2),
+        'recall': round(recall, 2),
         'f1': f1,
         'latency': total_time,
         'confusion_matrix': {
@@ -172,14 +162,14 @@ def block(dataset, args):
             'fn': len(fn)
         }
     }
-    
+
     results = {
         'tp': tp,
         'fp': fp,
         'fn': fn,
         'tn': num_tn
     }
-    
+
     print()
     print(f"Benchmark: Blocking done in {round(total_time, 2)}s.")
     if args.num_pairs <= 0 or args.num_pairs > len(out):
@@ -188,14 +178,15 @@ def block(dataset, args):
     print(f"Benchmark: Precision\t\t {stats['precision']}")
     print(f"Benchmark: Recall\t\t {stats['recall']}")
     print(f"Benchmark: F1 score\t\t {stats['f1']}")
-    
+
     return out, stats, results
 
-def match(dataset, args):
+
+def benchmark_match(dataset, args):
     total_start_time = time.time()
     truth, predictions, results = [], [], []
     total_input_tokens, total_output_tokens = 0, 0
-    
+
     print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
           f"{'pair' if args.num_pairs == 1 else 'pairs'} "
           f"from the {args.name} benchmark:")
@@ -224,6 +215,7 @@ def match(dataset, args):
                     is_match = libem.match(e1, e2)
                 except libem.ModelTimedoutException:
                     num_timeouts += 1
+
             if num_timeouts > 0:
                 print(f"Model timed out {num_timeouts} time(s).")
 
@@ -233,8 +225,13 @@ def match(dataset, args):
             model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
             model_output = model_output[0] if model_output else None
 
-            input_tokens = sum([i['model']['num_input_tokens'] for i in t.get() if 'model' in i])
-            output_tokens = sum([i['model']['num_output_tokens'] for i in t.get() if 'model' in i])
+            input_tokens = sum([
+                i['model']['num_input_tokens'] for i in t.get() if 'model' in i
+            ])
+            output_tokens = sum([
+                i['model']['num_output_tokens'] for i in t.get() if 'model' in i
+            ])
+
             total_input_tokens += input_tokens
             total_output_tokens += output_tokens
 
@@ -274,11 +271,15 @@ def match(dataset, args):
         # check num_pairs stop condition
         if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
             break
-    
+
     # generate stats
     metrics = [precision, recall, f1]
     conf_mat = confusion_matrix(np.array(truth), np.array(predictions))
-    stats = {m.__name__: round(m(np.array(truth), np.array(predictions)) * 100, 2) for m in metrics}
+    stats = {
+        m.__name__:
+            round(m(np.array(truth), np.array(predictions)) * 100, 2)
+        for m in metrics
+    }
     stats['latency'] = round(time.time() - total_start_time, 2)
     stats['tokens'] = {
         'input_tokens': total_input_tokens,
@@ -291,18 +292,18 @@ def match(dataset, args):
     }
     stats['confusion_matrix'] = {
         'tp': int(conf_mat[0]),
-        'tn': int(conf_mat[2]),
         'fp': int(conf_mat[1]),
+        'tn': int(conf_mat[2]),
         'fn': int(conf_mat[3])
     }
-    
+
     print()
     print(f"Benchmark: Matching done in {stats['latency']}s.")
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
-    
+
     return stats, results
 
 
