@@ -13,6 +13,8 @@ uninstall:
 run: match
 match:
 	python examples/match.py
+match-local:
+	python examples/local.py
 browse:
 	python examples/tool/browse.py
 chat:
