@@ -1,21 +1,14 @@
 import os
 import json
 import importlib
-import time
+
 from openai import OpenAI, APITimeoutError
-from mlx_lm import load, generate
+
 import libem
 
 
 def call(*args, **kwargs) -> dict:
-    if 'model' in kwargs:
-        model_type = kwargs['model']
-        if model_type in ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"]:
-            return openai(*args, **kwargs)
-        elif model_type == "llama3":
-            return local(*args, **kwargs)
-        else:
-            raise ValueError(f"Invalid model: {model_type}")
+    return openai(*args, **kwargs)
 
 
 """ OpenAI """
@@ -183,51 +176,4 @@ def openai(prompt: str | list | dict,
         "output": response_message.content,
         "messages": messages,
         "tool_outputs": tool_outputs,
-    }
-
-""" Local Model """
-def local(prompt: str | list | dict,
-           tools: list[str] = None,
-           context: list = None,
-           model: str = "null",
-           temperature: float = 0.0,
-           seed: int = None,
-           max_model_call: int = 3,
-           ) -> dict:
-
-    # Load the model using MLX for apple silicon device
-    if model == "llama3":
-        model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
-    else:
-        raise ValueError(f"{model} is not supported.")
-    start = time.time()
-    model_local, tokenizer = load(model_path)
-    print(f"Model loaded in {time.time() - start:.2f} seconds.")
-
-    # format the prompt to messages
-    match prompt:
-        case list():
-            messages = prompt
-        case dict():
-            messages = []
-            for role, content in prompt.items():
-                if content:
-                    messages.append({"role": role, "content": content})
-        case str():
-            messages = [{"role": "user", "content": prompt}]
-        case _:
-            raise ValueError(f"Invalid prompt type: {type(prompt)}")
-
-    context = context or []
-    input_text = '\n'.join(f"{prompt['role']}: {prompt['content']}" for prompt in messages)
-    messages = context + [input_text]
-
-    if tools:
-        raise libem.ToolUseUnsupported("Tool use is not supported")
-    else:
-        response = generate(model_local, tokenizer, prompt=messages[0], max_tokens=10, temp=temperature)
-    return {
-        "output": response,
-        "messages": "messages is not supported",
-        "tool_outputs": "Tool output is not supported",
     }
