@@ -1,5 +1,7 @@
 # Libem
 
+<img src="./docs/libem.png" alt="libem" style="float: left; margin-right: 10px; width: 30%;" />
+
 An open-source toolchain for fast entity matching with human-level accuracy, powered by LLMs and tools.
 
 ## Installation
@@ -14,7 +16,7 @@ Configure Libem with API keys:
 
 ```bash
 libem $ libem configure
-Enter OPENAI_API_KEY (press Enter to keep the existing key: 'sk-*******************xSAS'):
+Enter OPENAI_API_KEY ('sk-****'):
 ```
 The API key is used to access the OpenAI API. If you don't have an API key, you can get one from the [OpenAI website](https://platform.openai.com/). The key will be stored in the `~/.libem/config.yaml` file.
 
