@@ -13,8 +13,6 @@ uninstall:
 run: match
 match:
 	python examples/match.py
-match-local:
-	python examples/local.py
 browse:
 	python examples/tool/browse.py
 chat:
@@ -37,9 +35,11 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile
+.PHONY: profile local
 profile:
 	python examples/optimize/profile.py
+local:
+	python examples/local.py
 
 
 # benchmarks
