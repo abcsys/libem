@@ -3,7 +3,7 @@ import json
 import importlib
 import time
 from openai import OpenAI, APITimeoutError
-
+from mlx_lm import load, generate
 import libem
 
 
@@ -186,7 +186,6 @@ def openai(prompt: str | list | dict,
     }
 
 """ Local Model """
-from mlx_lm import load, generate
 def local(prompt: str | list | dict,
            tools: list[str] = None,
            context: list = None,
@@ -223,13 +222,10 @@ def local(prompt: str | list | dict,
     input_text = '\n'.join(f"{prompt['role']}: {prompt['content']}" for prompt in messages)
     messages = context + [input_text]
 
-    if not tools:
-        try:
-            response = generate(model_local, tokenizer, prompt=messages[0], max_tokens=10, temp=temperature)
-        except APITimeoutError as e:  # catch timeout error
-            raise libem.ModelTimedoutException(e)
+    if tools:
+        raise libem.ToolUseUnsupported("Tool use is not supported")
     else:
-        raise ToolUseUnsupported("Tool use is not supported")
+        response = generate(model_local, tokenizer, prompt=messages[0], max_tokens=10, temp=temperature)
     return {
         "output": response,
         "messages": "messages is not supported",
