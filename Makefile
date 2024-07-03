@@ -19,7 +19,7 @@ chat:
 	python examples/tool/chat.py
 block:
 	python examples/block.py
-all: match match-local browse chat
+all: match browse chat
 
 # extract examples
 .PHONY: extract
@@ -35,11 +35,9 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile local
+.PHONY: profile
 profile:
 	python examples/optimize/profile.py
-local:
-	python examples/local.py
 
 
 # benchmarks
