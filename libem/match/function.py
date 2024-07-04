@@ -112,3 +112,7 @@ def parse_output(output: str) -> dict:
         "confidence": confidence,
         "explanation": explanation,
     }
+
+
+def batch_func(pairs) -> list[dict]:
+    raise NotImplementedError
