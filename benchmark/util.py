@@ -222,30 +222,26 @@ def benchmark_match(dataset, args):
             # get unparsed model output and telemetry
             latency = time.time() - start_time
 
-            model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
+            output = [i['match'] for i in t.get() if 'match' in i][0]
+            model_output = output['model_output']['output']
             model_output = model_output[0] if model_output else None
 
-            input_tokens = sum([
-                i['model']['num_input_tokens'] for i in t.get() if 'model' in i
-            ])
-            output_tokens = sum([
-                i['model']['num_output_tokens'] for i in t.get() if 'model' in i
-            ])
-
+            input_tokens = output['model_output']['stats']['input_tokens']
+            output_tokens = output['model_output']['stats']['output_tokens']
             total_input_tokens += input_tokens
             total_output_tokens += output_tokens
 
             # append results
             results.append({
-                'entity_1': e1,
-                'entity_2': e2,
+                'left': output['left'],
+                'right': output['right'],
                 'label': label,
-                'pred': is_match["answer"],
-                'confidence': is_match["confidence"],
-                'explanation': is_match["explanation"],
+                'pred': output['result']['answer'],
+                'confidence': output['result']['confidence'],
+                'explanation': output['result']['explanation'],
                 'model_output': model_output,
-                'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
-                'latency': round(latency, 2),
+                'tools_used': output['model_output']['tools_used'],
+                'latency': round(output['latency'], 2),
                 'tokens': {
                     'input_tokens': input_tokens,
                     'output_tokens': output_tokens,

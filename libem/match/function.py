@@ -63,19 +63,20 @@ def func(left, right) -> dict:
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )["output"]
+    )
 
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"
                 f"[match] model output:\n"
-                f"{model_output}")
+                f"{model_output['output']}")
 
-    output = parse_output(model_output)
+    output = parse_output(model_output["output"])
 
-    libem.trace.add({"match": {"left": left, "right": right,
+    libem.trace.add({"match": {"id": id,
+                               "left": left, "right": right,
                                "prompt": _prompt,
                                "model_output": model_output,
-                               "answer": output["answer"],
+                               "result": output,
                                "latency": time.time() - start}})
     return output
 
