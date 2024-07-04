@@ -190,87 +190,63 @@ def benchmark_match(dataset, args):
     print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
           f"{'pair' if args.num_pairs == 1 else 'pairs'} "
           f"from the {args.name} benchmark:")
+    
+    # prepare dataset for batch match
+    left, right, labels = [], [], []
     for i, data in enumerate(dataset[args.start_index:]):
         if i + 1 < args.start_index:
             continue
 
-        e1 = data['left']
-        e2 = data['right']
-        label = data['label']
-
-        if not args.quiet:
-            print(f"Pair #{i + 1}\n")
-            print(f"Entity 1: {e1}\n")
-            print(f"Entity 2: {e2}")
-
-        # call match
-        with libem.trace as t:
-            is_match = None
-            start_time = time.time()
-
-            while is_match is None:
-                # retry if model times out
-                num_timeouts = 0
-                try:
-                    is_match = libem.match(e1, e2)
-                except libem.ModelTimedoutException:
-                    num_timeouts += 1
-
-            if num_timeouts > 0:
-                print(f"Model timed out {num_timeouts} time(s).")
-
-            # get unparsed model output and telemetry
-            latency = time.time() - start_time
-
-            model_output = [i['match']['model_output'] for i in t.get() if 'match' in i]
-            model_output = model_output[0] if model_output else None
-
-            input_tokens = sum([
-                i['model']['num_input_tokens'] for i in t.get() if 'model' in i
-            ])
-            output_tokens = sum([
-                i['model']['num_output_tokens'] for i in t.get() if 'model' in i
-            ])
-
-            total_input_tokens += input_tokens
-            total_output_tokens += output_tokens
-
-            # append results
-            results.append({
-                'entity_1': e1,
-                'entity_2': e2,
-                'label': label,
-                'pred': is_match["answer"],
-                'confidence': is_match["confidence"],
-                'explanation': is_match["explanation"],
-                'model_output': model_output,
-                'tools_used': [i['tool'] for i in t.get() if 'tool' in i],
-                'latency': round(latency, 2),
-                'tokens': {
-                    'input_tokens': input_tokens,
-                    'output_tokens': output_tokens,
-                    'cost': openai.get_cost(
-                        args.model, input_tokens, output_tokens
-                    )
-                }
-            })
-
-        # track results for evaluation metrics
-        if is_match["answer"] == 'yes':
-            predictions.append(1)
-        else:
-            predictions.append(0)
-        truth.append(label)
-
-        if not args.quiet:
-            print()
-            print(f"Match: {is_match['answer']}; "
-                  f"Confidence: {is_match['confidence']}; "
-                  f"Label: {label}\n")
-
+        left.append(data['left'])
+        right.append(data['right'])
+        labels.append(data['label'])
+        
         # check num_pairs stop condition
         if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
             break
+
+    # call match
+    with libem.trace as t:
+        libem.match(left, right)
+
+        # get unparsed model output and telemetry
+        for i in t.get():
+            if 'match' in i:
+                output = i['match']
+                model_output = output['model_output']['output']
+                model_output = model_output[0] if model_output else None
+
+                input_tokens = output['model_output']['stats']['input_tokens']
+                output_tokens = output['model_output']['stats']['output_tokens']
+                total_input_tokens += input_tokens
+                total_output_tokens += output_tokens
+
+                # append results
+                results.append({
+                    'left': output['left'],
+                    'right': output['right'],
+                    'label': labels[output['id']],
+                    'pred': output['result']['answer'],
+                    'confidence': output['result']['confidence'],
+                    'explanation': output['result']['explanation'],
+                    'model_output': model_output,
+                    'tools_used': output['model_output']['tools_used'],
+                    'latency': round(output['latency'], 2),
+                    'tokens': {
+                        'input_tokens': input_tokens,
+                        'output_tokens': output_tokens,
+                        'cost': openai.get_cost(
+                            args.model, input_tokens, output_tokens
+                        )
+                    }
+                })
+
+                # track results for evaluation metrics
+                if output['result']['answer'] == 'yes':
+                    predictions.append(1)
+                else:
+                    predictions.append(0)
+                truth.append(labels[output['id']])
 
     # generate stats
     metrics = [precision, recall, f1]

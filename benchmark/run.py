@@ -44,8 +44,8 @@ def run_from_file(args):
     """
     Entity pairs should follow the Libem result format:
     [{
-        "entity_1": {...},
-        "entity_2": {...},
+        "left": {...},
+        "right": {...},
         "label": 0,
       }, ...]
     These pairs could be nested under a "results.match",
@@ -71,12 +71,6 @@ def run_from_file(args):
         if len(pairs) == 0:
             raise ValueError(f"No entity pairs found in input file, "
                              f"check the input format {run_from_file.__doc__}.")
-
-    for pair in pairs:
-        pair['left'] = pair['entity_1']
-        pair['right'] = pair['entity_2']
-        del pair['entity_1']
-        del pair['entity_2']
 
     # ... other processing steps
     util.benchmark(pairs, args)

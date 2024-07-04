@@ -1,4 +1,9 @@
+import asyncio
 import importlib
+from itertools import islice
+from typing import Iterable
+
+import libem
 
 """ Toolchain utilities. """
 
@@ -30,3 +35,20 @@ def get_func(full_path):
         raise Exception(f"Module '{module_path}' does not have a function named '{function_name}': {e}")
     except Exception as e:
         raise Exception(f"An error occurred: {e}")
+
+async def throttled_async_run_all(tasks: Iterable,
+                            limit: int = libem.LIBEM_MAX_ASYNC_TASKS):
+    ''' Run all async tasks with an imposed max concurrent tasks limit. '''
+    
+    async def sem_run(sem, task):
+        async with sem:
+            return await task
+    
+    async def run():
+        sem = asyncio.Semaphore(limit)
+        futures = [asyncio.ensure_future(sem_run(sem, c)) 
+                   for c in tasks]
+        
+        return await asyncio.gather(*futures)
+    
+    return await run()

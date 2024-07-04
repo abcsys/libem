@@ -1,17 +1,20 @@
 import time
+import asyncio
 from pprint import pformat
+from typing import Any
 
 import libem
 from libem.match import prompt, parameter
 from libem.core.struct import Prompt
 from libem.core import struct
 from libem.core import model
+from libem.core.util import throttled_async_run_all
 
 schema = {
     "type": "function",
     "function": {
         "name": "match",
-        "description": "Perform entity matching given two entity descriptions.",
+        "description": "Perform entity matching given a pair or two lists of entity descriptions.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -29,8 +32,26 @@ schema = {
     }
 }
 
+def func(left: Any | list[Any], 
+         right: Any | list[Any]) -> Any | list[Any]:
 
-def func(left, right) -> dict:
+    return asyncio.run(async_func(left, right))
+
+async def async_func(left: Any | list[Any], 
+         right: Any | list[Any]) -> Any | list[Any]:
+      
+    if type(left) is list and type(right) is list:
+        assert len(left) == len(right)
+        result = await throttled_async_run_all([
+                    match(left[i], right[i], i) 
+                    for i in range(len(left))])
+    else:
+        result = await match(left, right)
+
+    return result
+
+
+async def match(left: Any, right: Any, id: int = 0) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -57,25 +78,26 @@ def func(left, right) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    model_output = model.call(
+    model_output = await model.call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )["output"]
+    )
 
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"
                 f"[match] model output:\n"
-                f"{model_output}")
+                f"{model_output['output']}")
 
-    output = parse_output(model_output)
+    output = parse_output(model_output["output"])
 
-    libem.trace.add({"match": {"left": left, "right": right,
+    libem.trace.add({"match": {"id": id,
+                               "left": left, "right": right,
                                "prompt": _prompt,
                                "model_output": model_output,
-                               "answer": output["answer"],
+                               "result": output,
                                "latency": time.time() - start}})
     return output
 

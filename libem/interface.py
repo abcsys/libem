@@ -1,6 +1,7 @@
+import asyncio
 import logging
 import random
-from typing import Iterator
+from typing import Any, Iterator
 
 import libem
 import libem.core.model as model
@@ -19,14 +20,14 @@ from libem.tune import func as tune_func
 
 def chat(message, context=None) -> dict:
     context = context or []
-    response = model.call(
+    response = asyncio.run(model.call(
         prompt=Prompt.join(prompt.role(), message, sep="\n"),
         context=context,
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )
+    ))
     return {
         "content": response["output"],
         "context": response["messages"],
@@ -36,10 +37,12 @@ def chat(message, context=None) -> dict:
 """Programmatic access"""
 
 
-def block(left, right) -> Iterator[dict]:
+def block(left: list[str | dict], 
+          right: list[str | dict]) -> Iterator[dict]:
     yield from block_func(left, right)
 
-def match(left, right) -> dict:
+def match(left: Any | list[Any], 
+         right: Any | list[Any]) -> Any | list[Any]:
     if parameter.always():
         return {
             "answer": parameter.always(),

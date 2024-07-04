@@ -1,14 +1,16 @@
+import inspect
 import os
 import json
+import httpx
 import importlib
 
-from openai import OpenAI, APITimeoutError
+from openai import AsyncOpenAI, APITimeoutError
 
 import libem
 
 
-def call(*args, **kwargs) -> dict:
-    return openai(*args, **kwargs)
+async def call(*args, **kwargs) -> dict:
+    return await openai(*args, **kwargs)
 
 
 """ OpenAI """
@@ -18,9 +20,17 @@ os.environ.setdefault(
     libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
 )
 
+openai_client = AsyncOpenAI(
+    http_client=httpx.AsyncClient(
+        limits=httpx.Limits(
+            max_connections=1000,
+            max_keepalive_connections=100
+        )
+    )
+)
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str | list | dict,
+async def openai(prompt: str | list | dict,
            tools: list[str] = None,
            context: list = None,
            model: str = "gpt-4o",
@@ -30,8 +40,6 @@ def openai(prompt: str | list | dict,
            ) -> dict:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
-
-    client = OpenAI()
 
     # format the prompt to messages
     match prompt:
@@ -52,14 +60,14 @@ def openai(prompt: str | list | dict,
 
     # trace variables
     num_model_calls = 0
-    num_input_tokens, num_output_tokens = 0, 0
-    tool_outputs = {}
+    input_tokens, output_tokens = 0, 0
+    tools_used = []
 
     """Start call"""
 
     if not tools:
         try:
-            response = client.chat.completions.create(
+            response = await openai_client.chat.completions.create(
                 messages=messages,
                 model=model,
                 temperature=temperature,
@@ -69,8 +77,8 @@ def openai(prompt: str | list | dict,
             raise libem.ModelTimedoutException(e)
 
         num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-        num_output_tokens += response.usage.completion_tokens
+        input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        output_tokens += response.usage.completion_tokens
         response_message = response.choices[0].message
     else:
         # Load the tool modules
@@ -78,14 +86,16 @@ def openai(prompt: str | list | dict,
 
         # Get the functions from the tools
         available_functions = {
-            tool.name: tool.func for tool in tools
+            tool.name: tool.async_func 
+                       if 'async_func' in dir(tool) else tool.func 
+                       for tool in tools
         }
         # Get the schema from the tools
         tools = [tool.schema for tool in tools]
 
         # Call the model
         try:
-            response = client.chat.completions.create(
+            response = await openai_client.chat.completions.create(
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
@@ -100,8 +110,8 @@ def openai(prompt: str | list | dict,
         tool_calls = response_message.tool_calls
 
         num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-        num_output_tokens += response.usage.completion_tokens
+        input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        output_tokens += response.usage.completion_tokens
 
         # Call the tools
         while tool_calls:
@@ -114,8 +124,10 @@ def openai(prompt: str | list | dict,
 
                 libem.debug(f"[{function_name}] {function_args}")
 
-                function_response = function_to_call(**function_args)
-                tool_outputs[function_name] = function_response
+                if inspect.iscoroutinefunction(function_to_call):
+                    function_response = await function_to_call(**function_args)
+                else:
+                    function_response = function_to_call(**function_args)
 
                 messages.append(
                     {
@@ -126,20 +138,18 @@ def openai(prompt: str | list | dict,
                     }
                 )
 
-                libem.trace.add({
-                    'tool': {
-                        "id": tool_call.id,
-                        'name': function_name,
-                        "arguments": function_args,
-                        "response": function_response,
-                    }
+                tools_used.append({
+                    "id": tool_call.id,
+                    'name': function_name,
+                    "arguments": function_args,
+                    "response": function_response,
                 })
             tool_calls = []
 
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
                 try:
-                    response = client.chat.completions.create(
+                    response = await openai_client.chat.completions.create(
                         messages=messages,
                         tools=tools,
                         tool_choice="auto",
@@ -154,8 +164,8 @@ def openai(prompt: str | list | dict,
                 tool_calls = response_message.tool_calls
 
                 num_model_calls += 1
-                num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-                num_output_tokens += response.usage.completion_tokens
+                input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+                output_tokens += response.usage.completion_tokens
 
             if num_model_calls == max_model_call:
                 libem.debug(f"[model] max call reached: {messages}\n{response_message}")
@@ -164,16 +174,15 @@ def openai(prompt: str | list | dict,
 
     messages.append(response_message)
 
-    libem.trace.add({
-        "model": {
-            "num_model_calls": num_model_calls,
-            "num_input_tokens": num_input_tokens,
-            "num_output_tokens": num_output_tokens,
-        }
-    })
+    stats = {
+        "model_calls": num_model_calls,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+    }
 
     return {
         "output": response_message.content,
         "messages": messages,
-        "tool_outputs": tool_outputs,
+        "tools_used": tools_used,
+        "stats": stats
     }

@@ -24,4 +24,6 @@ LIBEM_LOG_LEVEL = \
 LIBEM_3RD_PARTY_LOG_LEVEL = \
     os.environ.get("LIBEM_3RD_PARTY_LOG_LEVEL", logging.WARNING)
 
+LIBEM_MAX_ASYNC_TASKS = 500
+
 LIBEM_SEED = int(os.environ.get("LIBEM_SEED", 42))
