@@ -1,3 +1,4 @@
+import asyncio
 import inspect
 import os
 import json
@@ -9,8 +10,11 @@ from openai import AsyncOpenAI, APITimeoutError
 import libem
 
 
-async def call(*args, **kwargs) -> dict:
-    return await openai(*args, **kwargs)
+def call(*args, **kwargs) -> dict:
+    return openai(*args, **kwargs)
+
+async def async_call(*args, **kwargs) -> dict:
+    return await async_openai(*args, **kwargs)
 
 
 """ OpenAI """
@@ -30,7 +34,20 @@ openai_client = AsyncOpenAI(
 )
 
 # LLM call with multiple rounds of tool use
-async def openai(prompt: str | list | dict,
+def openai(prompt: str | list | dict,
+           tools: list[str] = None,
+           context: list = None,
+           model: str = "gpt-4o",
+           temperature: float = 0.0,
+           seed: int = None,
+           max_model_call: int = 3,
+           ) -> dict:
+    return asyncio.run(async_openai(prompt, tools,
+                                    context, model,
+                                    temperature, seed,
+                                    max_model_call))
+    
+async def async_openai(prompt: str | list | dict,
            tools: list[str] = None,
            context: list = None,
            model: str = "gpt-4o",
@@ -179,6 +196,15 @@ async def openai(prompt: str | list | dict,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
     }
+    
+    libem.trace.add({
+        "model": {
+            "num_model_calls": num_model_calls,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "tools_used": tools_used,
+        }
+    })
 
     return {
         "output": response_message.content,

@@ -1,6 +1,6 @@
 # Libem
 
-<img src="./docs/libem.png" alt="libem" style="float: left; margin-right: 10px; width: 30%;" />
+<img src="./docs/libby.png" alt="libem" style="float: left; margin-right: 10px; width: 15%;" />
 
 An open-source toolchain for fast entity matching with human-level accuracy, powered by LLMs and tools.
 

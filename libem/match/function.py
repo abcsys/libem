@@ -14,7 +14,7 @@ schema = {
     "type": "function",
     "function": {
         "name": "match",
-        "description": "Perform entity matching given a pair or two lists of entity descriptions.",
+        "description": "Perform entity matching given two entity descriptions.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -78,7 +78,7 @@ async def match(left: Any, right: Any, id: int = 0) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    model_output = await model.call(
+    model_output = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
@@ -134,3 +134,7 @@ def parse_output(output: str) -> dict:
         "confidence": confidence,
         "explanation": explanation,
     }
+
+
+def batch_func(pairs) -> list[dict]:
+    raise NotImplementedError

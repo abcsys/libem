@@ -20,14 +20,14 @@ from libem.tune import func as tune_func
 
 def chat(message, context=None) -> dict:
     context = context or []
-    response = asyncio.run(model.call(
+    response = model.call(
         prompt=Prompt.join(prompt.role(), message, sep="\n"),
         context=context,
         tools=["libem.match"],
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    ))
+    )
     return {
         "content": response["output"],
         "context": response["messages"],
