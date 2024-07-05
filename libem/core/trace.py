@@ -178,7 +178,7 @@ trace = Trace(
     telemetry=[
         Telemetry("match.latency"),
         Telemetry("model.num_model_calls"),
-        Telemetry("model.input_tokens"),
-        Telemetry("model.output_tokens"),
+        Telemetry("model.num_input_tokens"),
+        Telemetry("model.num_output_tokens"),
     ],
 ).start()

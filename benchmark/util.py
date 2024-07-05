@@ -226,8 +226,8 @@ def benchmark_match(dataset, args):
             model_output = output['model_output']['output']
             model_output = model_output[0] if model_output else None
 
-            input_tokens = output['model_output']['stats']['input_tokens']
-            output_tokens = output['model_output']['stats']['output_tokens']
+            input_tokens = output['model_output']['usage']['num_input_tokens']
+            output_tokens = output['model_output']['usage']['num_output_tokens']
             total_input_tokens += input_tokens
             total_output_tokens += output_tokens
 
@@ -240,7 +240,7 @@ def benchmark_match(dataset, args):
                 'confidence': output['result']['confidence'],
                 'explanation': output['result']['explanation'],
                 'model_output': model_output,
-                'tools_used': output['model_output']['tools_used'],
+                'tool_outputs': output['model_output']['tool_outputs'],
                 'latency': round(output['latency'], 2),
                 'tokens': {
                     'input_tokens': input_tokens,

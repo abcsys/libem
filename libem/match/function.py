@@ -72,8 +72,7 @@ def func(left, right) -> dict:
 
     output = parse_output(model_output["output"])
 
-    libem.trace.add({"match": {"id": id,
-                               "left": left, "right": right,
+    libem.trace.add({"match": {"left": left, "right": right,
                                "prompt": _prompt,
                                "model_output": model_output,
                                "result": output,

@@ -52,8 +52,8 @@ def openai(prompt: str | list | dict,
 
     # trace variables
     num_model_calls = 0
-    input_tokens, output_tokens = 0, 0
-    tools_used = []
+    num_input_tokens, num_output_tokens = 0, 0
+    tool_outputs = []
 
     """Start call"""
 
@@ -69,8 +69,8 @@ def openai(prompt: str | list | dict,
             raise libem.ModelTimedoutException(e)
 
         num_model_calls += 1
-        input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-        output_tokens += response.usage.completion_tokens
+        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_output_tokens += response.usage.completion_tokens
         response_message = response.choices[0].message
     else:
         # Load the tool modules
@@ -100,8 +100,8 @@ def openai(prompt: str | list | dict,
         tool_calls = response_message.tool_calls
 
         num_model_calls += 1
-        input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-        output_tokens += response.usage.completion_tokens
+        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_output_tokens += response.usage.completion_tokens
 
         # Call the tools
         while tool_calls:
@@ -125,7 +125,7 @@ def openai(prompt: str | list | dict,
                     }
                 )
 
-                tools_used.append({
+                tool_outputs.append({
                     "id": tool_call.id,
                     'name': function_name,
                     "arguments": function_args,
@@ -151,8 +151,8 @@ def openai(prompt: str | list | dict,
                 tool_calls = response_message.tool_calls
 
                 num_model_calls += 1
-                input_tokens += response.usage.total_tokens - response.usage.completion_tokens
-                output_tokens += response.usage.completion_tokens
+                num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+                num_output_tokens += response.usage.completion_tokens
 
             if num_model_calls == max_model_call:
                 libem.debug(f"[model] max call reached: {messages}\n{response_message}")
@@ -161,24 +161,24 @@ def openai(prompt: str | list | dict,
 
     messages.append(response_message)
 
-    stats = {
-        "model_calls": num_model_calls,
-        "input_tokens": input_tokens,
-        "output_tokens": output_tokens,
+    usage = {
+        "num_model_calls": num_model_calls,
+        "num_input_tokens": num_input_tokens,
+        "num_output_tokens": num_output_tokens,
     }
     
     libem.trace.add({
         "model": {
             "num_model_calls": num_model_calls,
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
-            "tools_used": tools_used,
+            "num_input_tokens": num_input_tokens,
+            "num_output_tokens": num_output_tokens,
+            "tool_outputs": tool_outputs,
         }
     })
 
     return {
         "output": response_message.content,
         "messages": messages,
-        "tools_used": tools_used,
-        "stats": stats
+        "tool_outputs": tool_outputs,
+        "usage": usage
     }
