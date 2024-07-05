@@ -165,20 +165,15 @@ def openai(prompt: str | list | dict,
         "num_model_calls": num_model_calls,
         "num_input_tokens": num_input_tokens,
         "num_output_tokens": num_output_tokens,
+        "tool_outputs": tool_outputs
     }
     
     libem.trace.add({
-        "model": {
-            "num_model_calls": num_model_calls,
-            "num_input_tokens": num_input_tokens,
-            "num_output_tokens": num_output_tokens,
-            "tool_outputs": tool_outputs,
-        }
+        "model": usage
     })
 
     return {
         "output": response_message.content,
         "messages": messages,
-        "tool_outputs": tool_outputs,
-        "usage": usage
+        **usage
     }

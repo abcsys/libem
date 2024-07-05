@@ -206,7 +206,6 @@ def benchmark_match(dataset, args):
         # call match
         with libem.trace as t:
             is_match = None
-            start_time = time.time()
 
             while is_match is None:
                 # retry if model times out
@@ -220,14 +219,13 @@ def benchmark_match(dataset, args):
                 print(f"Model timed out {num_timeouts} time(s).")
 
             # get unparsed model output and telemetry
-            latency = time.time() - start_time
-
+            
+            # get 'match' trace
             output = [i['match'] for i in t.get() if 'match' in i][0]
-            model_output = output['model_output']['output']
-            model_output = model_output[0] if model_output else None
+            model_output = output['model_response']['output']
 
-            input_tokens = output['model_output']['usage']['num_input_tokens']
-            output_tokens = output['model_output']['usage']['num_output_tokens']
+            input_tokens = output['model_response']['num_input_tokens']
+            output_tokens = output['model_response']['num_output_tokens']
             total_input_tokens += input_tokens
             total_output_tokens += output_tokens
 
@@ -236,11 +234,11 @@ def benchmark_match(dataset, args):
                 'left': output['left'],
                 'right': output['right'],
                 'label': label,
-                'pred': output['result']['answer'],
-                'confidence': output['result']['confidence'],
-                'explanation': output['result']['explanation'],
+                'pred': output['answer'],
+                'confidence': output['confidence'],
+                'explanation': output['explanation'],
                 'model_output': model_output,
-                'tool_outputs': output['model_output']['tool_outputs'],
+                'tool_outputs': output['model_response']['tool_outputs'],
                 'latency': round(output['latency'], 2),
                 'tokens': {
                     'input_tokens': input_tokens,

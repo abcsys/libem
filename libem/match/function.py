@@ -57,7 +57,7 @@ def func(left, right) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    model_output = model.call(
+    response = model.call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
@@ -68,15 +68,18 @@ def func(left, right) -> dict:
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"
                 f"[match] model output:\n"
-                f"{model_output['output']}")
+                f"{response['output']}")
 
-    output = parse_output(model_output["output"])
+    output = parse_output(response["output"])
 
-    libem.trace.add({"match": {"left": left, "right": right,
-                               "prompt": _prompt,
-                               "model_output": model_output,
-                               "result": output,
-                               "latency": time.time() - start}})
+    libem.trace.add({"match": {
+                        "left": left, "right": right,
+                        "prompt": _prompt,
+                        **output,
+                        "model_response": response,
+                        "latency": time.time() - start
+                    }})
+    
     return output
 
 
