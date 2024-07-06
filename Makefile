@@ -35,9 +35,11 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile
+.PHONY: profile batch
 profile:
 	python examples/optimize/profile.py
+batch:
+	python examples/optimize/batch.py
 
 
 # benchmarks

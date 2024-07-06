@@ -16,3 +16,11 @@ cot = Parameter(
 confidence = Parameter(
     default=False
 )
+
+# match query batching
+batch = Parameter(
+    default=False
+)
+batch_size = Parameter(
+    default=5
+)
