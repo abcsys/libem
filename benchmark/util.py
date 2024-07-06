@@ -7,14 +7,15 @@ from pathlib import Path
 from datetime import datetime
 
 import libem
-from libem.optimize.cost import openai
-from libem.core.eval import confusion_matrix, precision, recall, f1
+from libem.core import eval
 from libem.core.struct import Prompt
+from libem.optimize.cost import openai
 from libem.match.parameter import tools
+from libem.match import digest as match_digest
 
 
 def benchmark(dataset, args):
-    total_start_time = time.time()
+    start_time = time.time()
 
     if args.quiet:
         libem.quiet()
@@ -47,18 +48,24 @@ def benchmark(dataset, args):
 
     results, stats = {}, {}
     if args.block:
-        dataset, stats['block'], results['block'] = benchmark_block(dataset, args)
+        dataset, stats['block'], results['block'] = run_block(dataset, args)
     if args.match:
-        stats['match'], results['match'] = benchmark_match(dataset, args)
-    stats['total_latency'] = round(time.time() - total_start_time, 2)
+        stats['match'], results['match'] = run_match(dataset, args)
+    stats['latency'] = round(time.time() - start_time, 2)
 
     if args.log:
         # save results to ./results
-        results_folder = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'results')
+        results_folder = os.path.join(
+            os.path.split(os.path.abspath(__file__))[0],
+            'results'
+        )
         Path(results_folder).mkdir(parents=True, exist_ok=True)
 
         if args.output_file:
-            output_file = os.path.join(results_folder, f'{args.output_file}.json')
+            output_file = os.path.join(
+                results_folder,
+                f'{args.output_file}.json'
+            )
         else:
             signature = [
                 datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
@@ -68,7 +75,9 @@ def benchmark(dataset, args):
                 signature.append('block')
             if args.match:
                 signature.append(args.model)
-                signature.append(str(args.num_pairs if args.num_pairs > 0 else 'all'))
+                signature.append(
+                    str(args.num_pairs if args.num_pairs > 0 else 'all')
+                )
             if args.train:
                 signature.append('train')
             if not args.schema:
@@ -79,7 +88,9 @@ def benchmark(dataset, args):
                 signature.append('guess')
             if args.rules:
                 signature.append('rules')
-            output_file = os.path.join(results_folder, f'{"-".join(signature)}.json')
+            output_file = os.path.join(
+                results_folder, f'{"-".join(signature)}.json'
+            )
 
         with open(output_file, 'w') as f:
             json.dump({
@@ -92,10 +103,11 @@ def benchmark(dataset, args):
         print(f"Benchmark: Results saved to: {output_file}")
 
 
-def benchmark_block(dataset, args):
+def run_block(dataset, args):
     total_pairs = len(dataset['left']) * len(dataset['right'])
 
-    print(f"Benchmark: Blocking {total_pairs} potential pairs from the {args.name} benchmark", end='')
+    print(f"Benchmark: Blocking {total_pairs} potential pairs "
+          f"from the {args.name} benchmark", end='')
     if args.num_pairs > 0:
         print(f",\nBenchmark: stopping after the first "
               f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
@@ -182,113 +194,119 @@ def benchmark_block(dataset, args):
     return out, stats, results
 
 
-def benchmark_match(dataset, args):
-    total_start_time = time.time()
-    truth, predictions, results = [], [], []
-    total_input_tokens, total_output_tokens = 0, 0
+def run_match(dataset, args):
+    start_time = time.time()
+
+    results = {}
+    truth, predictions, = [], []
 
     print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
           f"{'pair' if args.num_pairs == 1 else 'pairs'} "
           f"from the {args.name} benchmark:")
-    for i, data in enumerate(dataset[args.start_index:]):
-        if i + 1 < args.start_index:
-            continue
 
-        e1 = data['left']
-        e2 = data['right']
-        label = data['label']
+    with libem.trace as t:
 
-        if not args.quiet:
-            print(f"Pair #{i + 1}\n")
-            print(f"Entity 1: {e1}\n")
-            print(f"Entity 2: {e2}")
+        # iterate over dataset
+        idx = max(args.start_index or 0, 0)
+        for i, data in enumerate(dataset[idx:]):
+            if args.num_pairs > 0 and i + 1 > args.num_pairs:
+                break
 
-        # call match
-        with libem.trace as t:
-            is_match = None
+            left = data['left']
+            right = data['right']
+            label = data['label']
 
-            while is_match is None:
-                # retry if model times out
-                num_timeouts = 0
+            if not args.quiet:
+                print(f"Pair #{i + 1}\n")
+                print(f"Entity 1: {left}\n")
+                print(f"Entity 2: {right}")
+
+            # call match
+            num_retries = 0
+            while True:
                 try:
-                    is_match = libem.match(e1, e2)
+                    is_match = libem.match(left, right)
+                    results[match_digest(left, right)] = {
+                        'entity_1': left,
+                        'entity_2': right,
+                        'label': label,
+                        'pred': is_match['answer'],
+                        'confidence': is_match['confidence'],
+                        'explanation': is_match['explanation'],
+                    }
+
+                    if is_match["answer"] == 'yes':
+                        predictions.append(1)
+                    else:
+                        predictions.append(0)
+                    truth.append(label)
+
+                    if not args.quiet:
+                        print(f"Match: {is_match['answer']}; "
+                              f"Confidence: {is_match['confidence']}; "
+                              f"Label: {label}\n")
+                    break
                 except libem.ModelTimedoutException:
-                    num_timeouts += 1
+                    num_retries += 1
+                    print(f"Retrying {num_retries} time(s) "
+                          f"due to model call timeout..")
 
-            if num_timeouts > 0:
-                print(f"Model timed out {num_timeouts} time(s).")
+        # get additional info from the trace
+        for span in t.get():
+            if not 'match' in span:
+                continue
 
-            # get unparsed model output and telemetry
-            
-            # get 'match' trace
-            output = [i['match'] for i in t.get() if 'match' in i][0]
-            model_output = output['model_response']['output']
+            match = span['match']
+            left, right = match['left'], match['right']
+            digest = match_digest(left, right)
 
-            input_tokens = output['model_response']['num_input_tokens']
-            output_tokens = output['model_response']['num_output_tokens']
-            total_input_tokens += input_tokens
-            total_output_tokens += output_tokens
-
-            # append results
-            results.append({
-                'left': output['left'],
-                'right': output['right'],
-                'label': label,
-                'pred': output['answer'],
-                'confidence': output['confidence'],
-                'explanation': output['explanation'],
-                'model_output': model_output,
-                'tool_outputs': output['model_response']['tool_outputs'],
-                'latency': round(output['latency'], 2),
-                'tokens': {
-                    'input_tokens': input_tokens,
-                    'output_tokens': output_tokens,
-                    'cost': openai.get_cost(
-                        args.model, input_tokens, output_tokens
-                    )
+            model_usage = match['model_usage']
+            results[digest].update(
+                {
+                    'model_output': match['model_output'],
+                    'tool_outputs': match['tool_outputs'],
+                    'latency': round(match['latency'], 2),
+                    'tokens': {
+                        'num_input_tokens': model_usage['num_input_tokens'],
+                        'num_output_tokens': model_usage['num_output_tokens'],
+                        'cost': openai.get_cost(
+                            args.model,
+                            model_usage['num_input_tokens'],
+                            model_usage['num_output_tokens'],
+                        )
+                    }
                 }
-            })
+            )
 
-        # track results for evaluation metrics
-        if is_match["answer"] == 'yes':
-            predictions.append(1)
-        else:
-            predictions.append(0)
-        truth.append(label)
-
-        if not args.quiet:
-            print()
-            print(f"Match: {is_match['answer']}; "
-                  f"Confidence: {is_match['confidence']}; "
-                  f"Label: {label}\n")
-
-        # check num_pairs stop condition
-        if args.num_pairs > 0 and i - args.start_index + 1 >= args.num_pairs:
-            break
+    # ignore the digest key
+    results = list(results.values())
 
     # generate stats
-    metrics = [precision, recall, f1]
-    conf_mat = confusion_matrix(np.array(truth), np.array(predictions))
+    metrics = eval.report(
+        truth, predictions
+    )
+    telemetry = t.telemetry(flatten=True)
+
     stats = {
-        m.__name__:
-            round(m(np.array(truth), np.array(predictions)) * 100, 2)
-        for m in metrics
-    }
-    stats['latency'] = round(time.time() - total_start_time, 2)
-    stats['tokens'] = {
-        'input_tokens': total_input_tokens,
-        'output_tokens': total_output_tokens,
-        'cost': openai.get_cost(
-            args.model,
-            total_input_tokens,
-            total_output_tokens
-        )
-    }
-    stats['confusion_matrix'] = {
-        'tp': int(conf_mat[0]),
-        'fp': int(conf_mat[1]),
-        'tn': int(conf_mat[2]),
-        'fn': int(conf_mat[3])
+        'precision': round(metrics['precision'] * 100, 2),
+        'recall': round(metrics['recall'] * 100, 2),
+        'f1': round(metrics['f1'] * 100, 2),
+        'latency': round(time.time() - start_time, 2),
+        'tokens': {
+            'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
+            'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
+            'cost': openai.get_cost(
+                args.model,
+                telemetry['model.num_input_tokens']['sum'],
+                telemetry['model.num_output_tokens']['sum'],
+            )
+        },
+        'confusion_matrix': {
+            'tp': metrics['tp'],
+            'fp': metrics['fp'],
+            'tn': metrics['tn'],
+            'fn': metrics['fn'],
+        }
     }
 
     print()
