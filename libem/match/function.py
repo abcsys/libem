@@ -1,5 +1,6 @@
 import time
 from pprint import pformat
+import hashlib
 
 import libem
 from libem.match import prompt, parameter
@@ -72,15 +73,25 @@ def func(left, right) -> dict:
 
     output = parse_output(response["output"])
 
-    libem.trace.add({"match": {
-                        "left": left, "right": right,
-                        "prompt": _prompt,
-                        **output,
-                        "model_response": response,
-                        "latency": time.time() - start
-                    }})
-    
+    libem.trace.add({
+        "match": {
+            "left": left, "right": right,
+            "output": output,
+            "prompt": _prompt,
+            "model_output": response["output"],
+            "tool_outputs": response["tool_outputs"],
+            "model_usage": response["stats"],
+            "latency": time.time() - start,
+        }
+    })
+
     return output
+
+
+def digest(left, right) -> str:
+    return hashlib.md5(
+        f"{left} {right}".encode()
+    ).hexdigest()
 
 
 def parse_output(output: str) -> dict:

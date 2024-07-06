@@ -39,6 +39,7 @@ def chat(message, context=None) -> dict:
 def block(left, right) -> Iterator[dict]:
     yield from block_func(left, right)
 
+
 def match(left, right) -> dict:
     if parameter.always():
         return {

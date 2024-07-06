@@ -79,7 +79,7 @@ class Trace:
         self.trace = []
         self.history = []
 
-        self.telemetry = []
+        self._telemetry = []
         self.add_telemetry(telemetry)
 
     def __enter__(self):
@@ -124,32 +124,18 @@ class Trace:
         else:
             return self.trace
 
-    def add_telemetry(self, telemetry: TelemetrySpec):
-        match telemetry:
-            case str():
-                self.telemetry.append(Telemetry(telemetry))
-            case Telemetry():
-                self.telemetry.append(telemetry)
-            case list():
-                for t in telemetry:
-                    if isinstance(t, str):
-                        self.telemetry.append(Telemetry(t))
-                    elif isinstance(t, Telemetry):
-                        self.telemetry.append(t)
-                    else:
-                        raise ValueError(f"Unknown telemetry type: {type(t)}; "
-                                         f"must be one of {TelemetrySpec}")
-        return self
+    def telemetry(self, *args, **kwargs):
+        return self.stats(*args, **kwargs)
 
     def stats(self, all=False, flatten=False, readings=False):
         trace = self.get(all=all)
 
         stats = {}
         for span in trace:
-            for telemetry in self.telemetry:
+            for telemetry in self._telemetry:
                 telemetry.add(span)
 
-        for telemetry in self.telemetry:
+        for telemetry in self._telemetry:
             stats[telemetry.name] = telemetry.report()
             if readings:
                 stats[telemetry.name]["readings"] = telemetry.readings
@@ -158,6 +144,23 @@ class Trace:
             return stats
         else:
             return nest(stats)
+
+    def add_telemetry(self, telemetry: TelemetrySpec):
+        match telemetry:
+            case str():
+                self._telemetry.append(Telemetry(telemetry))
+            case Telemetry():
+                self._telemetry.append(telemetry)
+            case list():
+                for t in telemetry:
+                    if isinstance(t, str):
+                        self._telemetry.append(Telemetry(t))
+                    elif isinstance(t, Telemetry):
+                        self._telemetry.append(t)
+                    else:
+                        raise ValueError(f"Unknown telemetry type: {type(t)}; "
+                                         f"must be one of {TelemetrySpec}")
+        return self
 
 
 def nest(flat_dict):
