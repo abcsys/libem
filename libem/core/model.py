@@ -53,7 +53,7 @@ def openai(prompt: str | list | dict,
     # trace variables
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
-    tool_outputs = {}
+    tool_outputs = []
 
     """Start call"""
 
@@ -115,7 +115,6 @@ def openai(prompt: str | list | dict,
                 libem.debug(f"[{function_name}] {function_args}")
 
                 function_response = function_to_call(**function_args)
-                tool_outputs[function_name] = function_response
 
                 messages.append(
                     {
@@ -126,13 +125,11 @@ def openai(prompt: str | list | dict,
                     }
                 )
 
-                libem.trace.add({
-                    'tool': {
-                        "id": tool_call.id,
-                        'name': function_name,
-                        "arguments": function_args,
-                        "response": function_response,
-                    }
+                tool_outputs.append({
+                    "id": tool_call.id,
+                    'name': function_name,
+                    "arguments": function_args,
+                    "response": function_response,
                 })
             tool_calls = []
 
@@ -164,16 +161,19 @@ def openai(prompt: str | list | dict,
 
     messages.append(response_message)
 
+    usage = {
+        "num_model_calls": num_model_calls,
+        "num_input_tokens": num_input_tokens,
+        "num_output_tokens": num_output_tokens,
+        "tool_outputs": tool_outputs
+    }
+    
     libem.trace.add({
-        "model": {
-            "num_model_calls": num_model_calls,
-            "num_input_tokens": num_input_tokens,
-            "num_output_tokens": num_output_tokens,
-        }
+        "model": usage
     })
 
     return {
         "output": response_message.content,
         "messages": messages,
-        "tool_outputs": tool_outputs,
+        **usage
     }
