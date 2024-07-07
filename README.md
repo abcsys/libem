@@ -2,10 +2,11 @@
   <img src="./docs/images/libem.png" alt="libem" style="width: 70%;" />
 </p>
 
-**Fast entity matching with human-level accuracy, powered by LLMs and tools.**
+**Scalable entity matching with human-level accuracy, powered by LLMs and tooling.**
 
-[Jul'24] [Libem Arena: Online Evaluation and Leaderboards for EM](http://arena.libem.org/)  
+[Jul'24] [Libem Arena: Online Evaluation and Leaderboard for EM](http://arena.libem.org/)  
 [Jun'24] [Liberal Entity Matching as a Compound AI Toolchain](https://arxiv.org/abs/2406.11255)  
+[Jun'24] [Presented at Compound AI Systems Workshop - Data + AI Summit 2024](https://github.com/abcsys/public/blob/main/data-ai-summit-24/libem-poster.pdf)
 
 [![Downloads](https://static.pepy.tech/badge/libem)](https://pepy.tech/project/libem) [![Downloads](https://static.pepy.tech/badge/libem/month)](https://pepy.tech/project/libem)
 
@@ -141,8 +142,8 @@ If you use Libem in a research paper, please cite our work as follows:
 
 You can also read more about the research behind Libem in the following manuscripts:
 
-* [**Liberal Entity Matching as a Compound AI Toolchain**](https://arxiv.org/abs/2406.11255) (Academic Paper, Jun 2024) 
-* [**Poster: Liberal Entity Matching as a Compound AI Toolchaing**](https://github.com/abcsys/public/blob/main/data-ai-summit-24/libem-poster.pdf) (Poster, Compound AI Systems Workshop, San Francisco at Data + AI Summit, Jun 2024) 
-* [**Libem Arena**](http://arena.libem.org/) (Online evaluation, Jun 2024)
+* [**Liberal Entity Matching as a Compound AI Toolchain**](https://arxiv.org/abs/2406.11255) (Academic Paper, June 2024) 
+* [**Poster: Liberal Entity Matching as a Compound AI Toolchain**](https://github.com/abcsys/public/blob/main/data-ai-summit-24/libem-poster.pdf) (Poster, Compound AI Systems Workshop, San Francisco at Data + AI Summit, June 2024) 
+* [**Libem Arena**](http://arena.libem.org/) (Online evaluation, July 2024)
 
 Please report any issues or feedback to the [GitHub repository](libem.org). We welcome contributions and collaborations!
