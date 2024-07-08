@@ -68,3 +68,11 @@ price:
 .PHONY: data
 data:
 	git clone https://github.com/abcsys/libem-sample-data.git ../libem-sample-data
+
+# libem serve
+.PHONY: serve build
+serve:
+	python -m serve.run
+build:
+	docker build -t libem-serve -f serve/deploy/Dockerfile . && \
+	docker push libem-serve
