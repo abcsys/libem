@@ -39,7 +39,7 @@ tune: rule
 profile:
 	python examples/optimize/profile.py
 batch:
-	python examples/optimize/batch.py
+	python examples/optimize/prompt_batch.py
 
 
 # benchmarks

@@ -10,3 +10,5 @@ def get_openai_cost(model, num_input_tokens, num_output_tokens):
 
 
 from libem.optimize.function import profile
+
+_ = profile
