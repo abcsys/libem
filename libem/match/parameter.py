@@ -16,3 +16,12 @@ cot = Parameter(
 confidence = Parameter(
     default=False
 )
+
+# prompt-level batching
+batch_size = query_per_prompt = Parameter(
+    default=1
+)
+
+quiet = Parameter(
+    default=True,
+)

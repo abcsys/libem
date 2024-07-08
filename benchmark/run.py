@@ -2,6 +2,7 @@ import json
 import argparse
 
 import libem
+from libem.match import parameter as match_param
 import benchmark.util as util
 from benchmark.classic import (
     abt_buy,
@@ -44,8 +45,8 @@ def run_from_file(args):
     """
     Entity pairs should follow the Libem result format:
     [{
-        "entity_1": {...},
-        "entity_2": {...},
+        "left": {...},
+        "right": {...},
         "label": 0,
       }, ...]
     These pairs could be nested under a "results.match",
@@ -71,12 +72,6 @@ def run_from_file(args):
         if len(pairs) == 0:
             raise ValueError(f"No entity pairs found in input file, "
                              f"check the input format {run_from_file.__doc__}.")
-
-    for pair in pairs:
-        pair['left'] = pair['entity_1']
-        pair['right'] = pair['entity_2']
-        del pair['entity_1']
-        del pair['entity_2']
 
     # ... other processing steps
     util.benchmark(pairs, args)
@@ -122,6 +117,9 @@ def main():
     parser.add_argument("--no-match", dest='match',
                         help="Skip the matching phase.",
                         action='store_false', default=True)
+    parser.add_argument("--batch-size", dest='batch_size', nargs='?',
+                        help="The batch size to use for matching.",
+                        type=int, default=match_param.batch_size())
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)

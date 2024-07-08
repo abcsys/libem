@@ -35,6 +35,10 @@ class Telemetry:
         self.readings.append(reading)
         return self
 
+    def reset(self):
+        self.readings = []
+        return self
+
     def readings(self):
         return self.readings
 
@@ -103,6 +107,9 @@ class Trace:
         if trace:
             self.history.append(trace)
         self.trace = []
+
+        for telemetry in self._telemetry:
+            telemetry.reset()
         return self
 
     def stop(self):
@@ -127,7 +134,9 @@ class Trace:
     def telemetry(self, *args, **kwargs):
         return self.stats(*args, **kwargs)
 
-    def stats(self, all=False, flatten=False, readings=False):
+    def stats(self, all=False,
+              flatten=False,
+              readings=False):
         trace = self.get(all=all)
 
         stats = {}
