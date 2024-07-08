@@ -74,5 +74,5 @@ data:
 serve:
 	python -m serve.run
 build:
-	docker build -t libem-serve -f serve/deploy/Dockerfile . && \
-	docker push libem-serve
+	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
+	docker push silveryfu/libem-serve:0.0.17
