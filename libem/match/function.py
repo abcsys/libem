@@ -1,7 +1,6 @@
 import re
 import time
 from pprint import pformat
-from typing import Any
 import hashlib
 
 import libem
@@ -33,35 +32,16 @@ schema = {
 }
 
 
-def func(left: Any | list[Any], 
-         right: Any | list[Any]) -> Any | list[Any]:
-    if parameter.batch():
-        assert len(left) == len(right)
-        left_batches, right_batches, batch_ids = [], [], []
-        
-        # generate batches
-        i = 0
-        while i < len(left):
-            left_batches.append([left[i+j]
-                for j in range(min(parameter.batch_size(), len(left) - i))]
-            )
-            right_batches.append([right[i+j]
-                for j in range(min(parameter.batch_size(), len(left) - i))]
-            )
-            batch_ids.append([digest(left[i+j], right[i+j]) 
-                for j in range(min(parameter.batch_size(), len(left) - i))])
-            i += parameter.batch_size()
-        
-        output = []
-        for l, r, ids in zip(left_batches, right_batches, batch_ids):
-            output.extend(batch_match(l, r, ids))
-        
-        return output
-    else:
-        return match(left, right)
-    
+def func(left: str | list, right: str | list) -> dict | list[dict]:
+    assert type(left) == type(right)
 
-def match(left, right) -> dict:
+    if parameter.batch_size() > 1:
+        return batch(left, right)
+    else:
+        return once(left, right)
+
+
+def once(left: str, right: str) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -117,10 +97,46 @@ def match(left, right) -> dict:
 
     return output
 
-def batch_match(left: list[Any], right: list[Any], ids: list[Any]) -> list[dict]:
-    start = time.time()
+
+def batch(left: list, right: list) -> list[dict]:
+    assert len(left) == len(right)
+
+    num_pairs = len(left)
+    batch_size = parameter.batch_size()
+    left_batches, right_batches, pair_ids = [], [], []
+    batch_start = 0
+
+    # generate left and right batches
+    while batch_start < num_pairs:
+        batch_end = min(batch_start + batch_size, num_pairs)
+
+        left_batches.append(
+            left[batch_start:batch_end]
+        )
+        right_batches.append(
+            right[batch_start:batch_end]
+        )
+
+        batch_start += batch_size
+
     output = []
-    
+    for l, r in zip(left_batches, right_batches):
+        output.extend(_proc_batch(l, r))
+
+    return output
+
+
+def _proc_batch(left: list, right: list) -> list[dict]:
+    start = time.time()
+
+    output, size = [], len(left)
+    digests = []
+
+    digests.append([
+        digest(l, r)
+        for l, r in zip(left, right)
+    ])
+
     system_prompt = Prompt.join(
         prompt.role(),
         prompt.rules(),
@@ -129,17 +145,18 @@ def batch_match(left: list[Any], right: list[Any], ids: list[Any]) -> list[dict]
     )
 
     shots: list[dict] = prompt.shots()
-    
+
     match_prompt = Prompt.join(*[
         Prompt.join(
-            f"Q{i+1}:",
+            f"Q{i + 1}:",
             prompt.query(
                 left=l,
                 right=r
             )
         )
-        for i, l, r in zip(range(len(left)), left, right)]
-    )
+        for i, l, r in zip(
+            range(size), left, right
+        )])
 
     _prompt = [
         {"role": "system", "content": system_prompt},
@@ -154,29 +171,47 @@ def batch_match(left: list[Any], right: list[Any], ids: list[Any]) -> list[dict]
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
-    
-    model_answer = response["output"].split('\n')
-    # if model only gives a single answer, assume all pairs are that answer
-    if not re.match(r"^Q\d+:", model_answer[0]):
-        answer = parse_output(response["output"])
-        output.extend([answer for _ in ids])
-    else:
-        # split model output into individual pairs
-        current_lines = []
-        for line in model_answer:
+
+    output_lines = response["output"].split('\n')
+
+    # parsing model output for each pair
+    # assuming model output is in the format:
+    # Q1: <answer>
+    # Q2: <answer>
+    # ...
+    # Qn: <answer>
+    # where each <answer> may contain multiple lines.
+    if re.match(r"^Q\d+:", output_lines[0]):
+        answer_lines = []
+
+        for line in output_lines:
             if re.match(r"^Q\d+:", line):
-                if len(current_lines) > 0:
-                    out = parse_output('\n'.join(current_lines))
-                    output.append(out)
-                current_lines = []
-            current_lines.append(line)
-        if len(current_lines) > 0:
-            out = parse_output('\n'.join(current_lines))
-            output.append(out)
-    
+                # parse the previous answer
+                if len(answer_lines) > 0:
+                    output.append(
+                        parse_output('\n'.join(answer_lines))
+                    )
+                # reset answer lines
+                answer_lines = [line]
+            else:
+                answer_lines.append(line)
+
+        # parse the last answer
+        if len(answer_lines) > 0:
+            output.append(
+                parse_output('\n'.join(answer_lines))
+            )
+    else:
+        # if the model output does not follow the expected
+        # format, assume all answers are the same
+        answer = parse_output(response["output"])
+        output = [answer for _ in range(size)]
+
+    libem.debug(f"[match] batch output:\n"
+                f"{response['output']}")
+
     libem.trace.add({
-        "batch_match": {
-            "ids": ids,
+        "match": {
             "left": left, "right": right,
             "output": output,
             "prompt": _prompt,
@@ -186,8 +221,9 @@ def batch_match(left: list[Any], right: list[Any], ids: list[Any]) -> list[dict]
             "latency": time.time() - start,
         }
     })
-        
+
     return output
+
 
 def digest(left, right) -> str:
     return hashlib.md5(

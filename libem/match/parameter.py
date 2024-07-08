@@ -17,10 +17,7 @@ confidence = Parameter(
     default=False
 )
 
-# match query batching
-batch = Parameter(
-    default=False
-)
-batch_size = Parameter(
-    default=5
+# prompt-level batching
+batch_size = query_per_prompt = Parameter(
+    default=1
 )
