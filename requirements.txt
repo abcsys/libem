@@ -4,7 +4,6 @@ numpy
 pandas
 flask
 openai
-dspy-ai
 langchain
 langchain-community
 langchain-google-community
