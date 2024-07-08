@@ -1,4 +1,5 @@
 pyyaml
+pytest
 numpy
 pandas
 flask

@@ -54,7 +54,8 @@ plot:
 
 # tests clean
 .PHONY: test clean
-test: all
+test:
+	pytest -v test/*
 clean:
 	rm -r logs > /dev/null 2>&1 || true
 
