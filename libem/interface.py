@@ -1,7 +1,6 @@
 import random
 import logging
-from typing import Iterator
-import decimal
+from typing import Any, Iterator
 import pprint as pp
 
 import libem
@@ -38,11 +37,13 @@ def chat(message, context=None) -> dict:
 """Programmatic access"""
 
 
-def block(left: list, right: list) -> Iterator[dict]:
+def block(left: list[str | dict], 
+          right: list[str | dict]) -> Iterator[dict]:
     yield from block_func(left, right)
 
 
-def match(left: str | list, right: str | list) -> dict | list[dict]:
+def match(left: Any | list[Any], 
+          right: Any | list[Any]) -> Any | list[Any]:
     assert type(left) == type(right)
 
     if isinstance(left, list):
@@ -97,6 +98,10 @@ def config():
         nest=True,
     )
 
+
+def info_on():
+    libem.LIBEM_LOG_LEVEL = logging.INFO
+    
 
 def debug_on():
     libem.LIBEM_LOG_LEVEL = logging.DEBUG

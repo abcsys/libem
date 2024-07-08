@@ -1,13 +1,16 @@
 import re
 import time
-from pprint import pformat
+import asyncio
 import hashlib
+from pprint import pformat
+from typing import Any
 
 import libem
 from libem.match import prompt, parameter
-from libem.core.struct import Prompt
 from libem.core import struct
 from libem.core import model
+from libem.core.struct import Prompt
+from libem.core.util import throttled_async_run_all
 
 schema = {
     "type": "function",
@@ -32,16 +35,24 @@ schema = {
 }
 
 
-def func(left: str | list, right: str | list) -> dict | list[dict]:
+def func(left: Any | list[Any], 
+         right: Any | list[Any]) -> dict | list[dict]:
+    return asyncio.run(async_func(left, right))
+
+async def async_func(left: Any | list[Any], 
+                     right: Any | list[Any]) -> dict | list[dict]:
     assert type(left) == type(right)
 
     if parameter.batch_size() > 1:
-        return batch(left, right)
+        return await batch(left, right)
     else:
-        return once(left, right)
+        if type(left) is list:
+            return await individual(left, right)
+        else:
+            return await once(left, right)
+    
 
-
-def once(left: str, right: str) -> dict:
+async def once(left: str, right: str) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -68,7 +79,7 @@ def once(left: str, right: str) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    response = model.call(
+    response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
@@ -98,41 +109,52 @@ def once(left: str, right: str) -> dict:
     return output
 
 
-def batch(left: list, right: list) -> list[dict]:
-    assert len(left) == len(right)
+async def individual(left: list, right: list) -> list[dict]:
+    return await throttled_async_run_all(
+        once(l, r)
+        for l, r in zip(left, right)
+    )
 
+
+async def batch(left: list, right: list) -> list[dict]:
+    assert len(left) == len(right)
+    
+    if len(left) <= parameter.batch_size():
+        return await _proc_batch(left, right)
+    else:
+        batches = _create_batches(left, right)
+    
+        results = await throttled_async_run_all(
+            _proc_batch(l, r)
+            for l, r in batches
+        )
+        
+        # flatten results list
+        output = []
+        for r in results:
+            output.extend(r)
+        
+        return output
+
+
+def _create_batches(left: list, right: list) -> list:
     num_pairs = len(left)
     batch_size = parameter.batch_size()
-    left_batches, right_batches, pair_ids = [], [], []
     batch_start = 0
+    batches = []
 
     # generate left and right batches
     while batch_start < num_pairs:
         batch_end = min(batch_start + batch_size, num_pairs)
-
-        left_batches.append(
-            left[batch_start:batch_end]
-        )
-        right_batches.append(
-            right[batch_start:batch_end]
-        )
+        
+        batches.append((left[batch_start:batch_end], right[batch_start:batch_end]))
 
         batch_start += batch_size
 
-    num_batches = len(left_batches)
-
-    output = []
-    for i, (l, r) in enumerate(zip(left_batches, right_batches)):
-        if not parameter.quiet():
-            libem.info(f"[match] processing batch "
-                       f"{i + 1} / {num_batches} "
-                       f"of size {len(l)}.")
-        output.extend(_proc_batch(l, r))
-
-    return output
+    return batches
 
 
-def _proc_batch(left: list, right: list) -> list[dict]:
+async def _proc_batch(left: list, right: list) -> list[dict]:
     start = time.time()
 
     output, size = [], len(left)
@@ -170,7 +192,7 @@ def _proc_batch(left: list, right: list) -> list[dict]:
         {"role": "user", "content": match_prompt},
     ]
 
-    response = model.call(
+    response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),

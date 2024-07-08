@@ -123,10 +123,6 @@ def main():
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
-
-    parser.add_argument("-q", "--quiet", dest='quiet',
-                        help="Suppress messages for matching each pair.",
-                        action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")
 
@@ -152,8 +148,13 @@ def main():
                         help="List of rules to add to match.",
                         type=str, default='')
 
+    parser.add_argument("--info", dest='info',
+                        help="Enable info mode; print messages when matching "
+                             "and will not use async to speed up.",
+                        action='store_true', default=False)
     parser.add_argument("-d", "--debug", dest='debug',
-                        help="Enable debug mode.",
+                        help="Enable debug mode; print messages when matching "
+                             "and will not use async to speed up.",
                         action='store_true', default=False)
     parser.add_argument("-g", "--guess", dest='guess',
                         help="Match by guessing.",

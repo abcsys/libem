@@ -1,8 +1,11 @@
+import asyncio
+import inspect
 import os
 import json
+import httpx
 import importlib
 
-from openai import OpenAI, APITimeoutError
+from openai import AsyncOpenAI, APITimeoutError
 
 import libem
 
@@ -10,6 +13,8 @@ import libem
 def call(*args, **kwargs) -> dict:
     return openai(*args, **kwargs)
 
+async def async_call(*args, **kwargs) -> dict:
+    return await async_openai(*args, **kwargs)
 
 """ OpenAI """
 
@@ -18,6 +23,14 @@ os.environ.setdefault(
     libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
 )
 
+openai_client = AsyncOpenAI(
+    http_client=httpx.AsyncClient(
+        limits=httpx.Limits(
+            max_connections=1000,
+            max_keepalive_connections=100
+        )
+    )
+)
 
 # LLM call with multiple rounds of tool use
 def openai(prompt: str | list | dict,
@@ -28,10 +41,21 @@ def openai(prompt: str | list | dict,
            seed: int = None,
            max_model_call: int = 3,
            ) -> dict:
+    return asyncio.run(async_openai(prompt, tools,
+                                    context, model,
+                                    temperature, seed,
+                                    max_model_call))
+
+async def async_openai(prompt: str | list | dict,
+           tools: list[str] = None,
+           context: list = None,
+           model: str = "gpt-4o",
+           temperature: float = 0.0,
+           seed: int = None,
+           max_model_call: int = 3,
+           ) -> dict:
     if not os.environ.get("OPENAI_API_KEY"):
         raise EnvironmentError(f"OPENAI_API_KEY is not set.")
-
-    client = OpenAI()
 
     # format the prompt to messages
     match prompt:
@@ -59,7 +83,7 @@ def openai(prompt: str | list | dict,
 
     if not tools:
         try:
-            response = client.chat.completions.create(
+            response = await openai_client.chat.completions.create(
                 messages=messages,
                 model=model,
                 temperature=temperature,
@@ -79,14 +103,16 @@ def openai(prompt: str | list | dict,
 
         # Get the functions from the tools
         available_functions = {
-            tool.name: tool.func for tool in tools
+            tool.name: tool.async_func 
+                       if 'async_func' in dir(tool) else tool.func 
+                       for tool in tools
         }
         # Get the schema from the tools
         tools = [tool.schema for tool in tools]
 
         # Call model
         try:
-            response = client.chat.completions.create(
+            response = await openai_client.chat.completions.create(
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
@@ -115,7 +141,11 @@ def openai(prompt: str | list | dict,
 
                 libem.debug(f"[{function_name}] {function_args}")
 
-                function_response = function_to_call(**function_args)
+                # await if tool is async
+                if inspect.iscoroutinefunction(function_to_call):
+                    function_response = await function_to_call(**function_args)
+                else:
+                    function_response = function_to_call(**function_args)
 
                 messages.append(
                     {
@@ -142,7 +172,7 @@ def openai(prompt: str | list | dict,
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
                 try:
-                    response = client.chat.completions.create(
+                    response = await openai_client.chat.completions.create(
                         messages=messages,
                         tools=tools,
                         tool_choice="auto",

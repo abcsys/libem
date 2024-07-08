@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 import time
@@ -16,8 +17,8 @@ from libem.match import digest as match_digest
 def benchmark(dataset, args):
     start_time = time.time()
 
-    if args.quiet:
-        libem.quiet()
+    if args.info:
+        libem.info_on()
     if args.debug:
         libem.debug_on()
     if args.guess:
@@ -45,12 +46,20 @@ def benchmark(dataset, args):
             "libem.match.prompt.rules": Prompt.Rules(args.rules),
         })
 
-    results, stats = {}, {}
+    results, stats, avg_latency = {}, {}, {}
+    
+    # blocking
     if args.block:
         dataset, stats['block'], results['block'] = run_block(dataset, args)
+        avg_latency['block'] = stats['block']['latency'] / len(dataset)
+    
+    # matching
     if args.match:
         stats['match'], results['match'] = run_match(dataset, args)
-    stats['total_latency'] = round(time.time() - start_time, 2)
+        avg_latency['match'] = stats['match']['latency'] / len(dataset)
+        
+    stats['benchmark_latency'] = round(time.time() - start_time, 2)
+    stats['avg_pair_latency'] = avg_latency
 
     if args.log:
         # save results to ./results
@@ -201,77 +210,116 @@ def run_match(dataset, args):
     results = {}
     truth, predictions, = [], []
 
-    print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
-          f"{'pair' if args.num_pairs == 1 else 'pairs'} "
+    num_pairs = args.num_pairs if args.num_pairs > 0 else len(dataset) - start_index
+    print(f"Benchmark: Matching {num_pairs} "
+          f"{'pair' if num_pairs == 1 else 'pairs'} "
+          f"{f'in {math.ceil(num_pairs / args.batch_size)} batches ' \
+                if args.batch_size > 1 else ''}"
           f"from the {args.name} benchmark:")
+    
+    # prepare the dataset
+    start_index = max(args.start_index or 0, 0)
+    left_set, right_set, labels = [], [], []
+    for i, data in enumerate(dataset[start_index:]):
+        if args.num_pairs > 0 and i + 1 > args.num_pairs:
+            break
+
+        left_set.append(data['left'])
+        right_set.append(data['right'])
+        labels.append(data['label'])
 
     with libem.trace as t:
-        start_index = max(args.start_index or 0, 0)
-
-        if args.batch_size == 1:
-            # iterate over dataset
-            for i, data in enumerate(dataset[start_index:]):
-                if args.num_pairs > 0 and i + 1 > args.num_pairs:
-                    break
-
-                left = data['left']
-                right = data['right']
-                label = data['label']
-
-                if not args.quiet:
+        libem.calibrate({
+                "libem.match.parameter.batch_size": args.batch_size,
+            })
+        
+        # no async
+        if args.info or args.debug:
+            if args.batch_size == 1:
+                # iterate over dataset
+                for i, left, right, label in zip(range(len(labels)), 
+                                                  left_set, right_set, labels):
                     print(f"Pair #{i + 1}\n")
                     print(f"Entity 1: {left}\n")
                     print(f"Entity 2: {right}")
 
-                num_retries = 0
-                while True:
-                    try:
-                        is_match = libem.match(left, right)
-                        results[match_digest(left, right)] = {
-                            'left': left,
-                            'right': right,
-                            'label': label,
-                            'pred': is_match['answer'],
-                            'confidence': is_match['confidence'],
-                            'explanation': is_match['explanation'],
-                        }
+                    num_retries = 0
+                    while True:
+                        try:
+                            is_match: dict = libem.match(left, right)
+                            results[match_digest(left, right)] = {
+                                'left': left,
+                                'right': right,
+                                'label': label,
+                                'pred': is_match['answer'],
+                                'confidence': is_match['confidence'],
+                                'explanation': is_match['explanation'],
+                            }
+
+                            predictions.append(
+                                1 if is_match['answer'] == 'yes' else 0
+                            )
+                            truth.append(label)
+
+                            print(f"Match: {is_match['answer']}; "
+                                f"Confidence: {is_match['confidence']}; "
+                                f"Label: {label}\n")
+                            break
+                        except libem.ModelTimedoutException:
+                            num_retries += 1
+                            print(f"Retrying {num_retries} time(s) "
+                                f"due to model call timeout..")
+            else:
+                # generate left and right batches
+                num_pairs = len(left_set)
+                batch_start, batch_index = 0, 0
+                batches = []
+
+                while batch_start < num_pairs:
+                    batch_end = min(batch_start + args.batch_size, num_pairs)
+                    batches.append((batch_index,
+                                   left_set[batch_start:batch_end],
+                                   right_set[batch_start:batch_end],
+                                   labels[batch_start:batch_end]))
+                    batch_start += args.batch_size
+                    batch_index += 1
+                
+                # iterate over batches
+                for i, left, right, label in batches:
+                    print(f"Batch #{i + 1}\n")
+                    
+                    answers: list[dict] = libem.match(left, right)
+                    
+                    for i in range(len(answers)):
+                        is_match = answers[i]
+                        
+                        print(f"Pair #{i + 1}:")
+                        print(f"Entity 1: {left[i]}\n")
+                        print(f"Entity 2: {right[i]}")
+                        print(f"Match: {is_match['answer']}; "
+                              f"Label: {label[i]}\n")
+
+                        results[match_digest(left[i], right[i])] = {
+                                'left': left[i],
+                                'right': right[i],
+                                'label': label[i],
+                                'pred': is_match['answer'],
+                                'confidence': is_match['confidence'],
+                                'explanation': is_match['explanation'],
+                            }
 
                         predictions.append(
                             1 if is_match['answer'] == 'yes' else 0
                         )
-                        truth.append(label)
-
-                        if not args.quiet:
-                            print(f"Match: {is_match['answer']}; "
-                                  f"Confidence: {is_match['confidence']}; "
-                                  f"Label: {label}\n")
-                        break
-                    except libem.ModelTimedoutException:
-                        num_retries += 1
-                        print(f"Retrying {num_retries} time(s) "
-                              f"due to model call timeout..")
+                        truth.append(label[i])
+        
+        # with async
         else:
-            # batch matching
-            libem.calibrate({
-                "libem.match.parameter.batch_size": args.batch_size,
-                "libem.match.parameter.quiet": args.quiet,
-            })
-
-            # prepare datasets
-            left, right, labels = [], [], []
-            for i, data in enumerate(dataset[start_index:]):
-                if args.num_pairs > 0 and i + 1 > args.num_pairs:
-                    break
-
-                left.append(data['left'])
-                right.append(data['right'])
-                labels.append(data['label'])
-
-            answers: list[dict] = libem.match(left, right)
+            answers: list[dict] = libem.match(left_set, right_set)
 
             results = {}
             for l, r, label, is_match in \
-                    zip(left, right, labels, answers):
+                    zip(left_set, right_set, labels, answers):
                 results[match_digest(l, r)] = {
                     'left': l,
                     'right': r,
@@ -294,9 +342,7 @@ def run_match(dataset, args):
 
             # for batch matching, the trace are
             # shared between pairs in each batch
-            if isinstance(left, list):
-                pass
-            else:
+            if not isinstance(left, list):
                 left, right = [left], [right]
 
             for l, r in zip(left, right):
@@ -354,7 +400,7 @@ def run_match(dataset, args):
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
-    print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
+    print(f"Benchmark: Cost \t $ {stats['tokens']['cost']}")
 
     return stats, results
 
