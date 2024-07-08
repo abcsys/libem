@@ -21,3 +21,7 @@ confidence = Parameter(
 batch_size = query_per_prompt = Parameter(
     default=1
 )
+
+quiet = Parameter(
+    default=True,
+)

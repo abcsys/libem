@@ -10,7 +10,7 @@ def func():
     pass
 
 
-def profile(dataset, verbose=False):
+def profile(dataset, detailed=False):
     with libem.trace as t:
         preds, truths = [], []
 
@@ -49,7 +49,7 @@ def profile(dataset, verbose=False):
         num_output_tokens=stats["model"]["num_output_tokens"]["sum"],
     )
 
-    if verbose:
+    if detailed:
         return {
             "f1": f1,
             "precision": p,

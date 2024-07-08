@@ -119,8 +119,14 @@ def batch(left: list, right: list) -> list[dict]:
 
         batch_start += batch_size
 
+    num_batches = len(left_batches)
+
     output = []
-    for l, r in zip(left_batches, right_batches):
+    for i, (l, r) in enumerate(zip(left_batches, right_batches)):
+        if not parameter.quiet():
+            libem.info(f"[match] processing batch "
+                       f"{i + 1} / {num_batches} "
+                       f"of size {len(l)}.")
         output.extend(_proc_batch(l, r))
 
     return output

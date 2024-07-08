@@ -2,7 +2,6 @@ import os
 import sys
 import time
 import json
-import numpy as np
 from pathlib import Path
 from datetime import datetime
 
@@ -51,7 +50,7 @@ def benchmark(dataset, args):
         dataset, stats['block'], results['block'] = run_block(dataset, args)
     if args.match:
         stats['match'], results['match'] = run_match(dataset, args)
-    stats['latency'] = round(time.time() - start_time, 2)
+    stats['total_latency'] = round(time.time() - start_time, 2)
 
     if args.log:
         # save results to ./results
@@ -73,8 +72,8 @@ def benchmark(dataset, args):
             ]
             if args.block:
                 signature.append('block')
-            if args.batch:
-                signature.append('batch')
+            if args.batch_size > 1:
+                signature.append(f'batch-{args.batch_size}')
             if args.match:
                 signature.append(args.model)
                 signature.append(
@@ -198,145 +197,129 @@ def run_block(dataset, args):
 
 def run_match(dataset, args):
     start_time = time.time()
+
+    results = {}
     truth, predictions, = [], []
 
     print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
           f"{'pair' if args.num_pairs == 1 else 'pairs'} "
           f"from the {args.name} benchmark:")
-    
-    # prepare the dataset
-    left_records, right_records, labels = [], [], []
-    idx = max(args.start_index or 0, 0)
-    for i, data in enumerate(dataset[idx:]):
-        if args.num_pairs > 0 and i + 1 > args.num_pairs:
-            break
 
-        left_records.append(data['left'])
-        right_records.append(data['right'])
-        labels.append(data['label'])
-
-    # iterate over the dataset
     with libem.trace as t:
-        if args.batch:
-            libem.calibrate({
-                "libem.match.parameter.batch": True,
-            })
-            
-            responses = libem.match(left_records, right_records)
-            
-            temp_results = {}
-            results = []
-            for left, right, label, response in \
-                        zip(left_records, right_records, labels, responses):
-                temp_results[match_digest(left, right)] = {
-                            'left': left,
-                            'right': right,
-                            'label': label,
-                            'pred': response['answer'],
-                        }
-                
-                if response['answer'] == 'yes':
-                    predictions.append(1)
-                else:
-                    predictions.append(0)
-                truth.append(label)
-            
-            # get additional info from the trace
-            for span in t.get():
-                if not 'batch_match' in span:
-                    continue
+        start_index = max(args.start_index or 0, 0)
 
-                match = span['batch_match']
-                left, right = match['left'], match['right']
-                digest = match_digest(left, right)
+        if args.batch_size == 1:
+            # iterate over dataset
+            for i, data in enumerate(dataset[start_index:]):
+                if args.num_pairs > 0 and i + 1 > args.num_pairs:
+                    break
 
-                model_usage = match['model_usage']
-                results.append({
-                    'pairs': [
-                        temp_results[id]
-                        for id in match['ids']
-                    ],
-                    'model_output': match['model_output'],
-                    'tool_outputs': match['tool_outputs'],
-                    'latency': round(match['latency'], 2),
-                    'tokens': {
-                        'num_input_tokens': model_usage['num_input_tokens'],
-                        'num_output_tokens': model_usage['num_output_tokens'],
-                        'cost': openai.get_cost(
-                            args.model,
-                            model_usage['num_input_tokens'],
-                            model_usage['num_output_tokens'],
-                        )
-                    }
-                })
-            
-        else:
-            results = {}
-            for left, right, label in zip(left_records, right_records, labels):
+                left = data['left']
+                right = data['right']
+                label = data['label']
+
                 if not args.quiet:
                     print(f"Pair #{i + 1}\n")
                     print(f"Entity 1: {left}\n")
                     print(f"Entity 2: {right}")
 
-                # call match, retrying if model timeout
                 num_retries = 0
                 while True:
                     try:
-                        response = libem.match(left, right)
+                        is_match = libem.match(left, right)
                         results[match_digest(left, right)] = {
                             'left': left,
                             'right': right,
                             'label': label,
-                            'pred': response['answer'],
-                            'confidence': response['confidence'],
-                            'explanation': response['explanation'],
+                            'pred': is_match['answer'],
+                            'confidence': is_match['confidence'],
+                            'explanation': is_match['explanation'],
                         }
 
-                        if response['answer'] == 'yes':
-                            predictions.append(1)
-                        else:
-                            predictions.append(0)
+                        predictions.append(
+                            1 if is_match['answer'] == 'yes' else 0
+                        )
                         truth.append(label)
 
                         if not args.quiet:
-                            print(f"Match: {response['answer']}; "
-                                f"Confidence: {response['confidence']}; "
-                                f"Label: {label}\n")
+                            print(f"Match: {is_match['answer']}; "
+                                  f"Confidence: {is_match['confidence']}; "
+                                  f"Label: {label}\n")
                         break
                     except libem.ModelTimedoutException:
                         num_retries += 1
                         print(f"Retrying {num_retries} time(s) "
-                            f"due to model call timeout..")
+                              f"due to model call timeout..")
+        else:
+            # batch matching
+            libem.calibrate({
+                "libem.match.parameter.batch_size": args.batch_size,
+                "libem.match.parameter.quiet": args.quiet,
+            })
 
-                # get additional info from the trace
-                for span in t.get():
-                    if not 'match' in span:
-                        continue
+            # prepare datasets
+            left, right, labels = [], [], []
+            for i, data in enumerate(dataset[start_index:]):
+                if args.num_pairs > 0 and i + 1 > args.num_pairs:
+                    break
 
-                    match = span['match']
-                    left, right = match['left'], match['right']
-                    digest = match_digest(left, right)
+                left.append(data['left'])
+                right.append(data['right'])
+                labels.append(data['label'])
 
-                    model_usage = match['model_usage']
-                    results[digest].update(
-                        {
-                            'model_output': match['model_output'],
-                            'tool_outputs': match['tool_outputs'],
-                            'latency': round(match['latency'], 2),
-                            'tokens': {
-                                'num_input_tokens': model_usage['num_input_tokens'],
-                                'num_output_tokens': model_usage['num_output_tokens'],
-                                'cost': openai.get_cost(
-                                    args.model,
-                                    model_usage['num_input_tokens'],
-                                    model_usage['num_output_tokens'],
-                                )
-                            }
+            answers: list[dict] = libem.match(left, right)
+
+            results = {}
+            for l, r, label, is_match in \
+                    zip(left, right, labels, answers):
+                results[match_digest(l, r)] = {
+                    'left': l,
+                    'right': r,
+                    'label': label,
+                    'pred': is_match['answer'],
+                }
+
+                predictions.append(
+                    1 if is_match['answer'] == 'yes' else 0
+                )
+                truth.append(label)
+
+        # fill in additional info from the trace
+        for span in t.get():
+            if not 'match' in span:
+                continue
+
+            match = span['match']
+            left, right = match['left'], match['right']
+
+            # for batch matching, the trace are
+            # shared between pairs in each batch
+            if isinstance(left, list):
+                pass
+            else:
+                left, right = [left], [right]
+
+            for l, r in zip(left, right):
+                digest = match_digest(l, r)
+                model_usage = match['model_usage']
+                results[digest].update(
+                    {
+                        'model_output': match['model_output'],
+                        'tool_outputs': match['tool_outputs'],
+                        'latency': round(match['latency'], 2),
+                        'tokens': {
+                            'num_input_tokens': model_usage['num_input_tokens'],
+                            'num_output_tokens': model_usage['num_output_tokens'],
+                            'cost': openai.get_cost(
+                                args.model,
+                                model_usage['num_input_tokens'],
+                                model_usage['num_output_tokens'],
+                            )
                         }
-                    )
-
-            # ignore the digest key
-            results = list(results.values())
+                    }
+                )
+        # ignore the digest key
+        results = list(results.values())
 
     # generate stats
     metrics = eval.report(

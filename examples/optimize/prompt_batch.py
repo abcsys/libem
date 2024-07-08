@@ -31,7 +31,7 @@ def main():
 
     print(f"F1 loss: {f1_loss}")
     print(f"Speedup: {speedup}x")
-    print(f"Cost savings: {cost_savings}")
+    print(f"Cost savings: ${cost_savings}")
 
 
 if __name__ == "__main__":

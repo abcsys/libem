@@ -2,6 +2,7 @@ import json
 import argparse
 
 import libem
+from libem.match import parameter as match_param
 import benchmark.util as util
 from benchmark.classic import (
     abt_buy,
@@ -116,9 +117,9 @@ def main():
     parser.add_argument("--no-match", dest='match',
                         help="Skip the matching phase.",
                         action='store_false', default=True)
-    parser.add_argument("--batch", dest='batch',
-                        help="Batch multiple pairs into a single model query during matching.",
-                        action='store_true', default=False)
+    parser.add_argument("--batch-size", dest='batch_size', nargs='?',
+                        help="The batch size to use for matching.",
+                        type=int, default=match_param.batch_size())
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
