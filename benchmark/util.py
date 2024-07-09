@@ -18,9 +18,9 @@ def benchmark(dataset, args):
     start_time = time.time()
 
     if args.info:
-        libem.info_on()
+        libem.info_mode()
     if args.debug:
-        libem.debug_on()
+        libem.debug_mode()
     if args.guess:
         libem.calibrate({
             "libem.parameter.guess": True,
@@ -46,20 +46,16 @@ def benchmark(dataset, args):
             "libem.match.prompt.rules": Prompt.Rules(args.rules),
         })
 
-    results, stats, avg_latency = {}, {}, {}
+    results, stats = {}, {}
     
     # blocking
     if args.block:
         dataset, stats['block'], results['block'] = run_block(dataset, args)
-        avg_latency['block'] = stats['block']['latency'] / len(dataset)
     
     # matching
     if args.match:
-        stats['match'], results['match'] = run_match(dataset, args)
-        avg_latency['match'] = stats['match']['latency'] / len(dataset)
-        
-    stats['benchmark_latency'] = round(time.time() - start_time, 2)
-    stats['avg_pair_latency'] = avg_latency
+        stats['match'], results['match'] = run_match(dataset, args)  
+    stats['total_latency'] = round(time.time() - start_time, 2)
 
     if args.log:
         # save results to ./results
@@ -176,7 +172,7 @@ def run_block(dataset, args):
         'precision': round(precision, 2),
         'recall': round(recall, 2),
         'f1': f1,
-        'latency': total_time,
+        'runtime_latency': total_time,
         'confusion_matrix': {
             'tp': len(tp),
             'fp': len(fp),
@@ -206,19 +202,22 @@ def run_block(dataset, args):
 
 def run_match(dataset, args):
     start_time = time.time()
+    start_index = max(args.start_index or 0, 0)
 
     results = {}
     truth, predictions, = [], []
+    total_latency = 0
 
-    num_pairs = args.num_pairs if args.num_pairs > 0 else len(dataset) - start_index
+    if args.num_pairs > 0:
+        num_pairs = min(args.num_pairs, len(dataset) - start_index)
+    else:
+        num_pairs = len(dataset) - start_index
     print(f"Benchmark: Matching {num_pairs} "
           f"{'pair' if num_pairs == 1 else 'pairs'} "
-          f"{f'in {math.ceil(num_pairs / args.batch_size)} batches ' \
-                if args.batch_size > 1 else ''}"
+          f"{f'in {math.ceil(num_pairs / args.batch_size)} batches ' if args.batch_size > 1 else ''}"
           f"from the {args.name} benchmark:")
     
     # prepare the dataset
-    start_index = max(args.start_index or 0, 0)
     left_set, right_set, labels = [], [], []
     for i, data in enumerate(dataset[start_index:]):
         if args.num_pairs > 0 and i + 1 > args.num_pairs:
@@ -339,6 +338,7 @@ def run_match(dataset, args):
 
             match = span['match']
             left, right = match['left'], match['right']
+            total_latency += match['latency']
 
             # for batch matching, the trace are
             # shared between pairs in each batch
@@ -364,6 +364,7 @@ def run_match(dataset, args):
                         }
                     }
                 )
+                
         # ignore the digest key
         results = list(results.values())
 
@@ -377,7 +378,8 @@ def run_match(dataset, args):
         'precision': round(metrics['precision'] * 100, 2),
         'recall': round(metrics['recall'] * 100, 2),
         'f1': round(metrics['f1'] * 100, 2),
-        'latency': round(time.time() - start_time, 2),
+        'runtime_latency': round(time.time() - start_time, 2),
+        'avg_per_pair_latency': round(total_latency / len(left_set), 2),
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
@@ -396,11 +398,11 @@ def run_match(dataset, args):
     }
 
     print()
-    print(f"Benchmark: Matching done in {stats['latency']}s.")
+    print(f"Benchmark: Matching done in {stats['runtime_latency']}s.")
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
-    print(f"Benchmark: Cost \t $ {stats['tokens']['cost']}")
+    print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
 
     return stats, results
 

@@ -99,11 +99,11 @@ def config():
     )
 
 
-def info_on():
+def info_mode():
     libem.LIBEM_LOG_LEVEL = logging.INFO
     
 
-def debug_on():
+def debug_mode():
     libem.LIBEM_LOG_LEVEL = logging.DEBUG
 
 

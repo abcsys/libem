@@ -3,7 +3,7 @@
 
 ## Block
 
-To reproduce the benchmark in `/classic`:
+To reproduce the following in `/classic`:
 ```
 python -m benchmark.run --name <benchmark-name> --block --no-match --num-pairs -1
 ```
@@ -32,7 +32,7 @@ similarity score cutoff between 1-100.
 
 ## Match
 
-To reproduce the benchmark in `/classic`:
+To reproduce the following in `/classic`:
 ```
 python -m benchmark.run --name <benchmark-name> --num-pairs -1
 ```
@@ -57,3 +57,45 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 | itunes-amazon |  89.3, **100.0**   | 92.6, **96.3**  | 90.9, **98.11** |
 | walmart-amazon|   75.4, **85.4**   | 95.3, **91.2**  | 84.2, **88.2**  |
 
+### Prompt-level batching
+
+To reproduce the following:
+```
+python -m benchmark.run --name abt-buy --num-pairs -1 --batch-size <size>
+```
+
+#### Setup
+
+Groups of candidate pairs are batched into the same prompt when querying the model, similar to [BatchER](https://github.com/fmh1art/BatchER). Each pair is prefixed with "Q#:"
+
+```
+# input
+Q1:
+<pair>
+Q2:
+<pair>
+...
+
+# expected model response
+Q1: <ans>
+Q2: <ans>
+...
+```
+
+Where each \<ans\> may contain multiple lines, and if the model only returns a single answer, assume that is the answer for all pairs in the batch.
+
+Note: no additional instructional prompts were added to address the batching nature of the prompt.
+
+#### Result
+
+Different batch sizes were applied to the `abt-buy` dataset.
+
+| Batch Size | F1    | Runtime Latency | Per Pair Latency | Cost |
+|:----------:|:-----:|:---------------:|:----------------:|:----:|
+| 1          | 94.37 | 14.44           | 2.44             | 1.20 |
+| 4          | 93.78 | 3.65            | 0.41             | 1.06 |
+| 16         | 94.06 | 11.60           | 0.15             | 1.01 |
+| 64         | 94.86 | 11.98           | 0.12             | 0.99 |
+| 128        | 94.54 | 22.32           | 0.11             | 0.99 |
+| 256        | 93.43 | 32.93           | 0.10             | 0.99 |
+| 512        | 70.87 | 74.44           | 0.08             | 0.95 |
