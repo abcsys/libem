@@ -37,9 +37,11 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile
+.PHONY: profile batch
 profile:
 	python examples/optimize/profile.py
+batch:
+	python examples/optimize/prompt_batch.py
 
 
 # benchmarks
@@ -54,7 +56,8 @@ plot:
 
 # tests clean
 .PHONY: test clean
-test: all
+test:
+	pytest -v test/*
 clean:
 	rm -r logs > /dev/null 2>&1 || true
 
@@ -67,3 +70,11 @@ price:
 .PHONY: data
 data:
 	git clone https://github.com/abcsys/libem-sample-data.git ../libem-sample-data
+
+# libem serve
+.PHONY: serve build
+serve:
+	python -m serve.run
+build:
+	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
+	docker push silveryfu/libem-serve:0.0.17

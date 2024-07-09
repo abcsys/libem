@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: libem-web-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: libem-web-service
+  template:
+    metadata:
+      labels:
+        app: libem-web-service
+    spec:
+      containers:
+      - name: libem-web-service
+        image: silveryfu/libem-serve:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libem-web-service
+spec:
+  selector:
+    app: libem-web-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

@@ -60,7 +60,7 @@ def openai(prompt: str | list | dict,
     # trace variables
     num_model_calls = 0
     num_input_tokens, num_output_tokens = 0, 0
-    tool_outputs = {}
+    tool_usages, tool_outputs = [], []
 
     """Start call"""
 
@@ -75,10 +75,11 @@ def openai(prompt: str | list | dict,
         except APITimeoutError as e:  # catch timeout error
             raise libem.ModelTimedoutException(e)
 
+        response_message = response.choices[0].message
+
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
-        response_message = response.choices[0].message
     else:
         # Load the tool modules
         tools = [importlib.import_module(tool) for tool in tools]
@@ -90,7 +91,7 @@ def openai(prompt: str | list | dict,
         # Get the schema from the tools
         tools = [tool.schema for tool in tools]
 
-        # Call the model
+        # Call model
         try:
             response = client.chat.completions.create(
                 messages=messages,
@@ -110,7 +111,7 @@ def openai(prompt: str | list | dict,
         num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
 
-        # Call the tools
+        # Call tools
         while tool_calls:
             messages.append(response_message)
 
@@ -122,7 +123,6 @@ def openai(prompt: str | list | dict,
                 libem.debug(f"[{function_name}] {function_args}")
 
                 function_response = function_to_call(**function_args)
-                tool_outputs[function_name] = function_response
 
                 messages.append(
                     {
@@ -133,14 +133,17 @@ def openai(prompt: str | list | dict,
                     }
                 )
 
-                libem.trace.add({
-                    'tool': {
-                        "id": tool_call.id,
-                        'name': function_name,
-                        "arguments": function_args,
-                        "response": function_response,
-                    }
+                tool_usages.append({
+                    "id": tool_call.id,
+                    'name': function_name,
+                    "arguments": function_args,
+                    "response": function_response,
                 })
+
+                tool_outputs.append({
+                    function_name: function_response,
+                })
+
             tool_calls = []
 
             if num_model_calls < max_model_call:
@@ -173,6 +176,8 @@ def openai(prompt: str | list | dict,
 
     libem.trace.add({
         "model": {
+            "messages": messages,
+            "tool_usages": tool_usages,
             "num_model_calls": num_model_calls,
             "num_input_tokens": num_input_tokens,
             "num_output_tokens": num_output_tokens,
@@ -181,8 +186,13 @@ def openai(prompt: str | list | dict,
 
     return {
         "output": response_message.content,
-        "messages": messages,
         "tool_outputs": tool_outputs,
+        "messages": messages,
+        "stats": {
+            "num_model_calls": num_model_calls,
+            "num_input_tokens": num_input_tokens,
+            "num_output_tokens": num_output_tokens,
+        }
     }
 
 """ Local Model """

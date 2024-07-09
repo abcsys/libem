@@ -1,5 +1,7 @@
+import re
 import time
 from pprint import pformat
+import hashlib
 
 import libem
 from libem.match import prompt, parameter
@@ -30,7 +32,16 @@ schema = {
 }
 
 
-def func(left, right) -> dict:
+def func(left: str | list, right: str | list) -> dict | list[dict]:
+    assert type(left) == type(right)
+
+    if parameter.batch_size() > 1:
+        return batch(left, right)
+    else:
+        return once(left, right)
+
+
+def once(left: str, right: str) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -57,27 +68,173 @@ def func(left, right) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    model_output = model.call(
+    response = model.call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
-    )["output"]
+    )
 
     libem.debug(f"[match] prompt:\n"
                 f"{pformat(_prompt, sort_dicts=False)}\n"
                 f"[match] model output:\n"
-                f"{model_output}")
+                f"{response['output']}")
 
-    output = parse_output(model_output)
+    output = parse_output(response["output"])
 
-    libem.trace.add({"match": {"left": left, "right": right,
-                               "prompt": _prompt,
-                               "model_output": model_output,
-                               "answer": output["answer"],
-                               "latency": time.time() - start}})
+    libem.trace.add({
+        "match": {
+            "left": left, "right": right,
+            "output": output,
+            "prompt": _prompt,
+            "model_output": response["output"],
+            "tool_outputs": response["tool_outputs"],
+            "model_usage": response["stats"],
+            "latency": time.time() - start,
+        }
+    })
+
     return output
+
+
+def batch(left: list, right: list) -> list[dict]:
+    assert len(left) == len(right)
+
+    num_pairs = len(left)
+    batch_size = parameter.batch_size()
+    left_batches, right_batches, pair_ids = [], [], []
+    batch_start = 0
+
+    # generate left and right batches
+    while batch_start < num_pairs:
+        batch_end = min(batch_start + batch_size, num_pairs)
+
+        left_batches.append(
+            left[batch_start:batch_end]
+        )
+        right_batches.append(
+            right[batch_start:batch_end]
+        )
+
+        batch_start += batch_size
+
+    num_batches = len(left_batches)
+
+    output = []
+    for i, (l, r) in enumerate(zip(left_batches, right_batches)):
+        if not parameter.quiet():
+            libem.info(f"[match] processing batch "
+                       f"{i + 1} / {num_batches} "
+                       f"of size {len(l)}.")
+        output.extend(_proc_batch(l, r))
+
+    return output
+
+
+def _proc_batch(left: list, right: list) -> list[dict]:
+    start = time.time()
+
+    output, size = [], len(left)
+    digests = []
+
+    digests.append([
+        digest(l, r)
+        for l, r in zip(left, right)
+    ])
+
+    system_prompt = Prompt.join(
+        prompt.role(),
+        prompt.rules(),
+        prompt.experiences(),
+        prompt.output(),
+    )
+
+    shots: list[dict] = prompt.shots()
+
+    match_prompt = Prompt.join(*[
+        Prompt.join(
+            f"Q{i + 1}:",
+            prompt.query(
+                left=l,
+                right=r
+            )
+        )
+        for i, l, r in zip(
+            range(size), left, right
+        )])
+
+    _prompt = [
+        {"role": "system", "content": system_prompt},
+        *shots,
+        {"role": "user", "content": match_prompt},
+    ]
+
+    response = model.call(
+        prompt=_prompt,
+        tools=parameter.tools(),
+        model=parameter.model(),
+        temperature=parameter.temperature(),
+        seed=libem.LIBEM_SEED,
+    )
+
+    output_lines = response["output"].split('\n')
+
+    # parsing model output for each pair
+    # assuming model output is in the format:
+    # Q1: <answer>
+    # Q2: <answer>
+    # ...
+    # Qn: <answer>
+    # where each <answer> may contain multiple lines.
+    if re.match(r"^Q\d+:", output_lines[0]):
+        answer_lines = []
+
+        for line in output_lines:
+            if re.match(r"^Q\d+:", line):
+                # parse the previous answer
+                if len(answer_lines) > 0:
+                    output.append(
+                        parse_output('\n'.join(answer_lines))
+                    )
+                # reset answer lines
+                answer_lines = [line]
+            else:
+                answer_lines.append(line)
+
+        # parse the last answer
+        if len(answer_lines) > 0:
+            output.append(
+                parse_output('\n'.join(answer_lines))
+            )
+    else:
+        # if the model output does not follow the expected
+        # format, assume all answers are the same
+        answer = parse_output(response["output"])
+        output = [answer for _ in range(size)]
+
+    libem.debug(f"[match] batch output:\n"
+                f"{response['output']}")
+
+    libem.trace.add({
+        "match": {
+            "left": left, "right": right,
+            "output": output,
+            "prompt": _prompt,
+            "model_output": response["output"],
+            "tool_outputs": response["tool_outputs"],
+            "model_usage": response["stats"],
+            "latency": time.time() - start,
+        }
+    })
+
+    return output
+
+
+def digest(left, right) -> str:
+    return hashlib.md5(
+        f"{left} {right}".encode()
+    ).hexdigest()
 
 
 def parse_output(output: str) -> dict:

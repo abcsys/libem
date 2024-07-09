@@ -1,6 +1,8 @@
-import logging
 import random
+import logging
 from typing import Iterator
+import decimal
+import pprint as pp
 
 import libem
 import libem.core.model as model
@@ -36,23 +38,43 @@ def chat(message, context=None) -> dict:
 """Programmatic access"""
 
 
-def block(left, right) -> Iterator[dict]:
+def block(left: list, right: list) -> Iterator[dict]:
     yield from block_func(left, right)
 
-def match(left, right) -> dict:
+
+def match(left: str | list, right: str | list) -> dict | list[dict]:
+    assert type(left) == type(right)
+
+    if isinstance(left, list):
+        assert len(left) == len(right)
+
     if parameter.always():
-        return {
-            "answer": parameter.always(),
-            "confidence": None,
-            "explanation": "I'm guessing.",
-        }
+        if isinstance(left, list):
+            return [{
+                "answer": parameter.always(),
+                "confidence": None,
+                "explanation": "I'm guessing.",
+            } for _ in range(len(left))]
+        else:
+            return {
+                "answer": parameter.always(),
+                "confidence": None,
+                "explanation": "I'm guessing.",
+            }
 
     if parameter.guess():
-        return {
-            "answer": random.choice(["yes", "no"]),
-            "confidence": None,
-            "explanation": "I'm guessing.",
-        }
+        if isinstance(left, list):
+            return [{
+                "answer": random.choice(["yes", "no"]),
+                "confidence": None,
+                "explanation": "I'm guessing.",
+            } for _ in range(len(left))]
+        else:
+            return {
+                "answer": random.choice(["yes", "no"]),
+                "confidence": None,
+                "explanation": "I'm guessing.",
+            }
 
     return match_func(left, right)
 
@@ -87,3 +109,15 @@ def quiet():
 def seed(seed=42):
     libem.LIBEM_SEED = seed
     random.seed(seed)
+
+
+""" Utilities """
+
+
+def pprint(*args, **kwargs):
+    pp.pprint(*args, **kwargs,
+              sort_dicts=False)
+
+
+def round(number, n):
+    return float(f"{number:.{n}g}")

@@ -110,7 +110,7 @@ def confusion_matrix(truth, predictions):
     # False Negatives: Predictions are False, but truth is True
     fn = np.sum(~predictions & truth)
 
-    return tp, fp, tn, fn
+    return int(tp), int(fp), int(tn), int(fn)
 
 
 def report(truth: np.array, predictions: np.array):

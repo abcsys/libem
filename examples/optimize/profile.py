@@ -1,7 +1,7 @@
 import pprint
 
 from libem.optimize import profile
-from libem.prepare.datasets.beer import read_train
+from libem.prepare.datasets.abt_buy import read_train
 
 if __name__ == "__main__":
     num_samples = 10
