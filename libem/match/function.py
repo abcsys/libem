@@ -267,7 +267,8 @@ def parse_output(output: str) -> dict:
     <answer> (e.g., yes)
     ```
     """
-    output = output.split("\n")[::-1]
+    # remove any empty lines and reverse output order
+    output = [s for s in output.splitlines() if s][::-1]
 
     answer = output.pop(0).lower()
     answer = "yes" if "yes" in answer else "no"
