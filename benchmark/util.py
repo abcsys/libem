@@ -17,10 +17,8 @@ from libem.match import digest as match_digest
 def benchmark(dataset, args):
     start_time = time.time()
 
-    if args.info:
-        libem.info_mode()
     if args.debug:
-        libem.debug_mode()
+        libem.debug_on()
     if args.guess:
         libem.calibrate({
             "libem.parameter.guess": True,
@@ -54,7 +52,7 @@ def benchmark(dataset, args):
     
     # matching
     if args.match:
-        stats['match'], results['match'] = run_match(dataset, args)  
+        stats['match'], results['match'] = run_match(dataset, args)
     stats['total_latency'] = round(time.time() - start_time, 2)
 
     if args.log:
@@ -172,7 +170,7 @@ def run_block(dataset, args):
         'precision': round(precision, 2),
         'recall': round(recall, 2),
         'f1': f1,
-        'runtime_latency': total_time,
+        'latency': total_time,
         'confusion_matrix': {
             'tp': len(tp),
             'fp': len(fp),
@@ -232,85 +230,41 @@ def run_match(dataset, args):
                 "libem.match.parameter.batch_size": args.batch_size,
             })
         
-        # no async
-        if args.info or args.debug:
-            if args.batch_size == 1:
-                # iterate over dataset
-                for i, left, right, label in zip(range(len(labels)), 
-                                                  left_set, right_set, labels):
-                    print(f"Pair #{i + 1}\n")
-                    print(f"Entity 1: {left}\n")
-                    print(f"Entity 2: {right}")
+        # no async and batch size of 1, prints match details
+        if args.sync and args.batch_size == 1:
+            # iterate over dataset
+            for i, left, right, label in zip(range(len(labels)), 
+                                                left_set, right_set, labels):
+                print(f"Pair #{i + 1}\n")
+                print(f"Entity 1: {left}\n")
+                print(f"Entity 2: {right}")
 
-                    num_retries = 0
-                    while True:
-                        try:
-                            is_match: dict = libem.match(left, right)
-                            results[match_digest(left, right)] = {
-                                'left': left,
-                                'right': right,
-                                'label': label,
-                                'pred': is_match['answer'],
-                                'confidence': is_match['confidence'],
-                                'explanation': is_match['explanation'],
-                            }
-
-                            predictions.append(
-                                1 if is_match['answer'] == 'yes' else 0
-                            )
-                            truth.append(label)
-
-                            print(f"Match: {is_match['answer']}; "
-                                f"Confidence: {is_match['confidence']}; "
-                                f"Label: {label}\n")
-                            break
-                        except libem.ModelTimedoutException:
-                            num_retries += 1
-                            print(f"Retrying {num_retries} time(s) "
-                                f"due to model call timeout..")
-            else:
-                # generate left and right batches
-                num_pairs = len(left_set)
-                batch_start, batch_index = 0, 0
-                batches = []
-
-                while batch_start < num_pairs:
-                    batch_end = min(batch_start + args.batch_size, num_pairs)
-                    batches.append((batch_index,
-                                   left_set[batch_start:batch_end],
-                                   right_set[batch_start:batch_end],
-                                   labels[batch_start:batch_end]))
-                    batch_start += args.batch_size
-                    batch_index += 1
-                
-                # iterate over batches
-                for i, left, right, label in batches:
-                    print(f"Batch #{i + 1}\n")
-                    
-                    answers: list[dict] = libem.match(left, right)
-                    
-                    for i in range(len(answers)):
-                        is_match = answers[i]
-                        
-                        print(f"Pair #{i + 1}:")
-                        print(f"Entity 1: {left[i]}\n")
-                        print(f"Entity 2: {right[i]}")
-                        print(f"Match: {is_match['answer']}; "
-                              f"Label: {label[i]}\n")
-
-                        results[match_digest(left[i], right[i])] = {
-                                'left': left[i],
-                                'right': right[i],
-                                'label': label[i],
-                                'pred': is_match['answer'],
-                                'confidence': is_match['confidence'],
-                                'explanation': is_match['explanation'],
-                            }
+                num_retries = 0
+                while True:
+                    try:
+                        is_match: dict = libem.match(left, right)
+                        results[match_digest(left, right)] = {
+                            'left': left,
+                            'right': right,
+                            'label': label,
+                            'pred': is_match['answer'],
+                            'confidence': is_match['confidence'],
+                            'explanation': is_match['explanation'],
+                        }
 
                         predictions.append(
                             1 if is_match['answer'] == 'yes' else 0
                         )
-                        truth.append(label[i])
+                        truth.append(label)
+
+                        print(f"Match: {is_match['answer']}; "
+                            f"Confidence: {is_match['confidence']}; "
+                            f"Label: {label}\n")
+                        break
+                    except libem.ModelTimedoutException:
+                        num_retries += 1
+                        print(f"Retrying {num_retries} time(s) "
+                              f"due to model call timeout..")
         
         # with async
         else:
@@ -319,12 +273,23 @@ def run_match(dataset, args):
             results = {}
             for l, r, label, is_match in \
                     zip(left_set, right_set, labels, answers):
-                results[match_digest(l, r)] = {
+                digest = match_digest(l, r)
+                results[digest] = {
                     'left': l,
                     'right': r,
                     'label': label,
                     'pred': is_match['answer'],
                 }
+
+                # confidence and explanation are currently only
+                # supported with batch size = 1
+                if args.batch_size == 1:
+                    results[digest].update(
+                        {
+                            'confidence': is_match['confidence'],
+                            'explanation': is_match['explanation'],
+                        }
+                    )
 
                 predictions.append(
                     1 if is_match['answer'] == 'yes' else 0
@@ -356,11 +321,11 @@ def run_match(dataset, args):
                         'tokens': {
                             'num_input_tokens': model_usage['num_input_tokens'],
                             'num_output_tokens': model_usage['num_output_tokens'],
-                            'cost': openai.get_cost(
+                            'cost': round(openai.get_cost(
                                 args.model,
                                 model_usage['num_input_tokens'],
                                 model_usage['num_output_tokens'],
-                            )
+                            ), 6)
                         }
                     }
                 )
@@ -378,16 +343,16 @@ def run_match(dataset, args):
         'precision': round(metrics['precision'] * 100, 2),
         'recall': round(metrics['recall'] * 100, 2),
         'f1': round(metrics['f1'] * 100, 2),
-        'runtime_latency': round(time.time() - start_time, 2),
-        'avg_per_pair_latency': round(total_latency / len(left_set), 2),
+        'latency': round(time.time() - start_time, 2),
+        'per_pair_latency': round(total_latency / len(left_set), 2),
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
-            'cost': openai.get_cost(
+            'cost': round(openai.get_cost(
                 args.model,
                 telemetry['model.num_input_tokens']['sum'],
                 telemetry['model.num_output_tokens']['sum'],
-            )
+            ), 6)
         },
         'confusion_matrix': {
             'tp': metrics['tp'],
@@ -398,7 +363,7 @@ def run_match(dataset, args):
     }
 
     print()
-    print(f"Benchmark: Matching done in {stats['runtime_latency']}s.")
+    print(f"Benchmark: Matching done in {stats['latency']}s.")
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")

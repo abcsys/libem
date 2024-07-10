@@ -18,33 +18,12 @@ async def async_call(*args, **kwargs) -> dict:
 
 """ OpenAI """
 
-os.environ.setdefault(
-    "OPENAI_API_KEY",
-    libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
-)
-
-openai_client = AsyncOpenAI(
-    http_client=httpx.AsyncClient(
-        limits=httpx.Limits(
-            max_connections=1000,
-            max_keepalive_connections=100
-        )
-    )
-)
+# use a single openai client to avoid memory leak
+openai_client = None
 
 # LLM call with multiple rounds of tool use
-def openai(prompt: str | list | dict,
-           tools: list[str] = None,
-           context: list = None,
-           model: str = "gpt-4o",
-           temperature: float = 0.0,
-           seed: int = None,
-           max_model_call: int = 3,
-           ) -> dict:
-    return asyncio.run(async_openai(prompt, tools,
-                                    context, model,
-                                    temperature, seed,
-                                    max_model_call))
+def openai(*args, **kwargs) -> dict:
+    return asyncio.run(async_openai(*args, **kwargs))
 
 async def async_openai(prompt: str | list | dict,
            tools: list[str] = None,
@@ -54,8 +33,26 @@ async def async_openai(prompt: str | list | dict,
            seed: int = None,
            max_model_call: int = 3,
            ) -> dict:
+    
+    # retrieve api key and set up openai client
+    global openai_client
+    
     if not os.environ.get("OPENAI_API_KEY"):
-        raise EnvironmentError(f"OPENAI_API_KEY is not set.")
+        os.environ.setdefault(
+            "OPENAI_API_KEY",
+            libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
+        )
+    
+    if not openai_client:
+        # set limits to prevent too many connections error
+        openai_client = AsyncOpenAI(
+            http_client=httpx.AsyncClient(
+                limits=httpx.Limits(
+                    max_connections=1000,
+                    max_keepalive_connections=100
+                )
+            )
+        )
 
     # format the prompt to messages
     match prompt:

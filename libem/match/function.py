@@ -3,14 +3,13 @@ import time
 import asyncio
 import hashlib
 from pprint import pformat
-from typing import Any
 
 import libem
 from libem.match import prompt, parameter
 from libem.core import struct
 from libem.core import model
 from libem.core.struct import Prompt
-from libem.core.util import throttled_async_run_all
+from libem.core.util import async_run
 
 schema = {
     "type": "function",
@@ -35,12 +34,12 @@ schema = {
 }
 
 
-def func(left: Any | list[Any], 
-         right: Any | list[Any]) -> dict | list[dict]:
+def func(left: str | list[str], 
+          right: str | list[str]) -> dict | list[dict]:
     return asyncio.run(async_func(left, right))
 
-async def async_func(left: Any | list[Any], 
-                     right: Any | list[Any]) -> dict | list[dict]:
+async def async_func(left: str | list[str], 
+          right: str | list[str]) -> dict | list[dict]:
     assert type(left) == type(right)
 
     if parameter.batch_size() > 1:
@@ -109,61 +108,52 @@ async def once(left: str, right: str) -> dict:
     return output
 
 
-async def individual(left: list, right: list) -> list[dict]:
-    return await throttled_async_run_all(
+async def individual(left: list[str], right: list[str]) -> list[dict]:
+    return await async_run(
         once(l, r)
         for l, r in zip(left, right)
     )
 
 
-async def batch(left: list, right: list) -> list[dict]:
+async def batch(left: list[str], right: list[str]) -> list[dict]:
     assert len(left) == len(right)
     
-    if len(left) <= parameter.batch_size():
-        return await _proc_batch(left, right)
-    else:
-        batches = _create_batches(left, right)
-    
-        results = await throttled_async_run_all(
-            _proc_batch(l, r)
-            for l, r in batches
-        )
-        
-        # flatten results list
-        output = []
-        for r in results:
-            output.extend(r)
-        
-        return output
-
-
-def _create_batches(left: list, right: list) -> list:
     num_pairs = len(left)
     batch_size = parameter.batch_size()
+    left_batches, right_batches = [], []
     batch_start = 0
-    batches = []
 
     # generate left and right batches
     while batch_start < num_pairs:
         batch_end = min(batch_start + batch_size, num_pairs)
-        
-        batches.append((left[batch_start:batch_end], right[batch_start:batch_end]))
+
+        left_batches.append(
+            left[batch_start:batch_end]
+        )
+        right_batches.append(
+            right[batch_start:batch_end]
+        )
 
         batch_start += batch_size
 
-    return batches
+    # call model
+    results = await async_run(
+        _proc_batch(l, r)
+        for l, r in zip(left_batches, right_batches)
+    )
+    
+    # flatten results list
+    output = []
+    for r in results:
+        output.extend(r)
+    
+    return output
 
 
 async def _proc_batch(left: list, right: list) -> list[dict]:
     start = time.time()
 
     output, size = [], len(left)
-    digests = []
-
-    digests.append([
-        digest(l, r)
-        for l, r in zip(left, right)
-    ])
 
     system_prompt = Prompt.join(
         prompt.role(),
@@ -273,7 +263,7 @@ def parse_output(output: str) -> dict:
     <answer> (e.g., yes)
     ```
     """
-    # remove any empty lines and reverse output order
+    # remove any empty lines and reverse output lines
     output = [s for s in output.splitlines() if s][::-1]
 
     answer = output.pop(0).lower()

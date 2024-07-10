@@ -1,6 +1,6 @@
 import random
 import logging
-from typing import Any, Iterator
+from typing import Iterator
 import pprint as pp
 
 import libem
@@ -42,8 +42,8 @@ def block(left: list[str | dict],
     yield from block_func(left, right)
 
 
-def match(left: Any | list[Any], 
-          right: Any | list[Any]) -> Any | list[Any]:
+def match(left: str | list[str], 
+          right: str | list[str]) -> dict | list[dict]:
     assert type(left) == type(right)
 
     if isinstance(left, list):
@@ -99,11 +99,7 @@ def config():
     )
 
 
-def info_mode():
-    libem.LIBEM_LOG_LEVEL = logging.INFO
-    
-
-def debug_mode():
+def debug_on():
     libem.LIBEM_LOG_LEVEL = logging.DEBUG
 
 

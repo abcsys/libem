@@ -148,13 +148,13 @@ def main():
                         help="List of rules to add to match.",
                         type=str, default='')
 
-    parser.add_argument("--info", dest='info',
-                        help="Enable info mode; print messages when matching "
-                             "and will not use async to speed up.",
+    parser.add_argument("--sync", dest='sync',
+                        help="Will not use async to speed up matching "
+                             "and will print details during matching. "
+                             "Not compatible with batch-size > 1.",
                         action='store_true', default=False)
     parser.add_argument("-d", "--debug", dest='debug',
-                        help="Enable debug mode; print messages when matching "
-                             "and will not use async to speed up.",
+                        help="Enable debug mode.",
                         action='store_true', default=False)
     parser.add_argument("-g", "--guess", dest='guess',
                         help="Match by guessing.",

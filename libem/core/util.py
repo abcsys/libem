@@ -36,8 +36,8 @@ def get_func(full_path):
     except Exception as e:
         raise Exception(f"An error occurred: {e}")
 
-async def throttled_async_run_all(tasks: Iterable,
-                            limit: int = libem.LIBEM_MAX_ASYNC_TASKS):
+async def async_run(tasks: Iterable,
+                    max_concurrency: int = libem.LIBEM_MAX_ASYNC_TASKS):
     ''' Run all async tasks with an imposed max concurrent tasks limit. '''
 
     async def sem_run(sem, task):
@@ -45,7 +45,7 @@ async def throttled_async_run_all(tasks: Iterable,
             return await task
 
     async def run():
-        sem = asyncio.Semaphore(limit)
+        sem = asyncio.Semaphore(max_concurrency)
         futures = [asyncio.ensure_future(sem_run(sem, c)) 
                    for c in tasks]
 
