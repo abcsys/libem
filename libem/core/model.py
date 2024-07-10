@@ -3,17 +3,23 @@ import json
 import importlib
 import time
 from openai import OpenAI, APITimeoutError
-from mlx_lm import load, generate
 import libem
+import platform
 
+IS_APPLE_SILICON = platform.machine() == "arm64" and platform.system() == "Darwin"
+print(f"IS_APPLE_SILICON: {IS_APPLE_SILICON}")
+if IS_APPLE_SILICON:
+    from mlx_lm import load, generate
 
 def call(*args, **kwargs) -> dict:
     if 'model' in kwargs:
         model_type = kwargs['model']
         if model_type in ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"]:
             return openai(*args, **kwargs)
-        elif model_type == "llama3":
+        elif model_type == "llama3" and IS_APPLE_SILICON:
             return local(*args, **kwargs)
+        elif model_type == "llama3" and not IS_APPLE_SILICON:
+            raise ValueError(f"local support is currently unavailable on non-apple silicon devices.")
         else:
             raise ValueError(f"Invalid model: {model_type}")
 
@@ -240,4 +246,9 @@ def local(prompt: str | list | dict,
         "output": response,
         "messages": "messages is not supported",
         "tool_outputs": "Tool output is not supported",
+        "stats": {
+            "num_model_calls": "dummy value",
+            "num_input_tokens": "dummy value",
+            "num_output_tokens": "dummy value",
+        }
     }
