@@ -229,6 +229,12 @@ async def _proc_batch(left: list, right: list) -> list[dict]:
             output.append(
                 parse_output('\n'.join(answer_lines))
             )
+        
+        # if number of answers are greater than number of inputs,
+        # only return the first len(inputs) answers.
+        # This can happen if the model does not follow the expected format.
+        if len(output) > size:
+            output = output[0:size]
     else:
         # if the model output does not follow the expected
         # format, assume all answers are the same
