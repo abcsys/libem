@@ -25,8 +25,6 @@ def get_output_cost(model, num_tokens):
 
 
 def get_cost(model, num_input_tokens, num_output_tokens):
-    if model == "llama3":
-        return 0
     return get_input_cost(model, num_input_tokens) + get_output_cost(model, num_output_tokens)
 
 
