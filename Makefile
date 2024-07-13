@@ -13,8 +13,6 @@ uninstall:
 run: match
 match:
 	python examples/match.py
-match-local:
-	python examples/local.py
 browse:
 	python examples/tool/browse.py
 chat:
@@ -78,3 +76,8 @@ serve:
 build:
 	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
 	docker push silveryfu/libem-serve:0.0.17
+
+# libem local examples
+.PHONY: local
+local:
+	python examples/local.py

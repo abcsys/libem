@@ -7,7 +7,7 @@ import libem
 import platform
 
 IS_APPLE_SILICON = platform.machine() == "arm64" and platform.system() == "Darwin"
-print(f"IS_APPLE_SILICON: {IS_APPLE_SILICON}")
+
 if IS_APPLE_SILICON:
     from mlx_lm import load, generate
 
@@ -16,10 +16,8 @@ def call(*args, **kwargs) -> dict:
         model_type = kwargs['model']
         if model_type in ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"]:
             return openai(*args, **kwargs)
-        elif model_type == "llama3" and IS_APPLE_SILICON:
+        elif model_type in ["llama3"]:
             return local(*args, **kwargs)
-        elif model_type == "llama3" and not IS_APPLE_SILICON:
-            raise ValueError(f"local support is currently unavailable on non-apple silicon devices.")
         else:
             raise ValueError(f"Invalid model: {model_type}")
 
@@ -82,7 +80,7 @@ def openai(prompt: str | list | dict,
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-
+        print(response_message)
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
@@ -201,6 +199,8 @@ def openai(prompt: str | list | dict,
         }
     }
 
+model_local_cache, tokenizer_cache = None, None
+
 """ Local Model """
 def local(prompt: str | list | dict,
            tools: list[str] = None,
@@ -210,15 +210,7 @@ def local(prompt: str | list | dict,
            seed: int = None,
            max_model_call: int = 3,
            ) -> dict:
-
-    # Load the model using MLX for apple silicon device
-    if model == "llama3":
-        model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
-    else:
-        raise ValueError(f"{model} is not supported.")
-    start = time.time()
-    model_local, tokenizer = load(model_path)
-    print(f"Model loaded in {time.time() - start:.2f} seconds.")
+    global model_local_cache, tokenizer_cache
 
     # format the prompt to messages
     match prompt:
@@ -233,15 +225,44 @@ def local(prompt: str | list | dict,
             messages = [{"role": "user", "content": prompt}]
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
+    
+    BOS = "<|begin_of_text|>"
+    SYS = "<|start_header_id|>system<|end_header_id|>"
+    USER = "<|start_header_id|>user<|end_header_id|>"
+    ASSIS = "<|start_header_id|>assistant<|end_header_id|>"
+    EOS = "<|eot_id|>"
+
+    input_text = BOS
+    for message in prompt:
+        if message['role'] == 'system':
+            input_text = input_text + SYS + message['content'] + EOS
+        elif message['role'] == 'user':
+            input_text = input_text + USER + message['content'] + EOS
+    input_text = input_text + ASSIS
 
     context = context or []
-    input_text = '\n'.join(f"{prompt['role']}: {prompt['content']}" for prompt in messages)
     messages = context + [input_text]
 
-    if tools:
-        raise libem.ToolUseUnsupported("Tool use is not supported")
-    else:
-        response = generate(model_local, tokenizer, prompt=messages[0], max_tokens=10, temp=temperature)
+    if IS_APPLE_SILICON:
+        # Load the model using MLX for apple silicon device
+        if model == "llama3":
+            model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
+        else:
+            raise ValueError(f"{model} is not supported.")
+        
+        if model_local_cache is None or tokenizer_cache is None:
+            start = time.time()
+            model_local_cache, tokenizer_cache = load(model_path)
+            print(f"Model loaded in {time.time() - start:.2f} seconds. No model is being cached")
+        else:
+            print("Model loaded from cache")
+        model_local, tokenizer = model_local_cache, tokenizer_cache
+
+        if tools:
+            raise libem.ToolUseUnsupported("Tool use is not supported")
+        else:
+            response = generate(model_local, tokenizer, prompt=messages[0], temp=temperature)
+
     return {
         "output": response,
         "messages": "messages is not supported",

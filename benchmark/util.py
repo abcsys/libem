@@ -8,7 +8,7 @@ from datetime import datetime
 import libem
 from libem.core import eval
 from libem.core.struct import Prompt
-from libem.optimize.cost import openai
+from libem.optimize.cost import get_cost
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
 
@@ -310,7 +310,7 @@ def run_match(dataset, args):
                         'tokens': {
                             'num_input_tokens': model_usage['num_input_tokens'],
                             'num_output_tokens': model_usage['num_output_tokens'],
-                            'cost': openai.get_cost(
+                            'cost': get_cost.get_cost(
                                 args.model,
                                 model_usage['num_input_tokens'],
                                 model_usage['num_output_tokens'],
@@ -335,7 +335,7 @@ def run_match(dataset, args):
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
-            'cost': openai.get_cost(
+            'cost': get_cost.get_cost(
                 args.model,
                 telemetry['model.num_input_tokens']['sum'],
                 telemetry['model.num_output_tokens']['sum'],
