@@ -1,9 +1,21 @@
 # Benchmark Results
 
+Available benchmarks in the `classic` directory:
 
-## Block
+- [abt-buy](https://github.com/abcsys/libem-sample-data/tree/main/abt-buy)
+- [amazon-google](https://github.com/abcsys/libem-sample-data/tree/main/amazon-google)
+- [beer](https://github.com/abcsys/libem-sample-data/tree/main/beer)
+- [dblp-acm](https://github.com/abcsys/libem-sample-data/tree/main/dblp-acm)
+- [dblp-scholar](https://github.com/abcsys/libem-sample-data/tree/main/dblp-scholar)
+- [fodors-zagats](https://github.com/abcsys/libem-sample-data/tree/main/fodors-zagats)
+- [itunes-amazon](https://github.com/abcsys/libem-sample-data/tree/main/itunes-amazon)
+- [walmart-amazon](https://github.com/abcsys/libem-sample-data/tree/main/walmart-amazon)
+- [challenging](https://github.com/abcsys/libem-sample-data/tree/main/challenging)
 
-To reproduce the following in `/classic`:
+## Blocking
+
+To run the blocking benchmarks in `/classic`:
+
 ```
 python -m benchmark.run --name <benchmark-name> --block --no-match --num-pairs -1
 ```
@@ -12,12 +24,13 @@ python -m benchmark.run --name <benchmark-name> --block --no-match --num-pairs -
 
 ### Setup
 
-Each dataset is first separated into two sets containing the left and right entries 
-respectively, then the two sets are cross joined with blocking acting as a filter. 
-Finally, each dataset is tuned to achieve a score of 100% in recall by adjusting the 
+Each dataset is first separated into two sets containing the left and right entries
+respectively, then the two sets are cross joined with blocking acting as a filter.
+Finally, each dataset is tuned to achieve a score of 100% in recall by adjusting the
 similarity score cutoff between 1-100.
 
-### Result
+### Results
+
 | Dataset       | Total Pairs | Similarity Cutoff | Percentage Blocked |    F1    |
 | :------------ |:-----------:|:-----------------:|:------------------:|:--------:|
 | abt-buy       |   367136    |        29         |        27.2        |   1.2    |
@@ -29,10 +42,10 @@ similarity score cutoff between 1-100.
 | itunes-amazon |    7488     |        63         |        95.8        |   15.2   |
 | walmart-amazon|   716846    |        50         |        96.7        |   1.6    |
 
+## Entity Matching
 
-## Match
+To run the matching benchmarks in `/classic`:
 
-To reproduce the following in `/classic`:
 ```
 python -m benchmark.run --name <benchmark-name> --num-pairs -1
 ```
@@ -40,12 +53,14 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 ----
 
 ### Setup
+
 | Setup   | Model    | Tools | Data Preparation                       |
 | :------ | :------- | :---- | :------------------------------------  |
 | S1      | `gpt-4o` | Off   | Field values only separated by spaces  |
 | S2      | `gpt-4o` | Off   | Schema inline with entity description  |
 
-### Result
+### Results
+
 | Dataset       | Precision (S1, S2) | Recall (S1, S2) |   F1 (S1, S2)   |
 | :------------ |:------------------:|:---------------:|:---------------:|
 | abt-buy       |   84.0, **89.9**   |   99.5, 99.5    | 91.1, **94.5**  |
@@ -59,14 +74,14 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 
 ### Prompt-level batching
 
-To reproduce the following:
+To run the benchmark with batching, use the `--batch-size` flag with the desired batch size. For example, to run
+the `abt-buy` benchmark with a batch size of 16, use the following command:
+
 ```
-python -m benchmark.run --name abt-buy --num-pairs -1 --batch-size <size>
+python -m benchmark.run --name abt-buy --num-pairs -1 --batch-size 16
 ```
 
-#### Setup
-
-Groups of candidate pairs are batched into the same prompt when querying the model, similar to [BatchER](https://github.com/fmh1art/BatchER). Each pair is prefixed with "Q#:"
+The queries over multiple candidate pairs are grouped into the same prompt request. Each pair is prefixed with "Q#:"
 
 ```
 # input
@@ -82,20 +97,16 @@ Q2: <ans>
 ...
 ```
 
-Where each \<ans\> may contain multiple lines, and if the model only returns a single answer, assume that is the answer for all pairs in the batch.
+### Results
 
-Note: no additional instructional prompts were added to address the batching nature of the prompt.
+Varying batch sizes when performing EM over `abt-buy` dataset.
 
-#### Result
-
-Different batch sizes were applied to the `abt-buy` dataset.
-
-| Batch Size | F1    | Runtime Latency | Per Pair Latency | Cost |
-|:----------:|:-----:|:---------------:|:----------------:|:----:|
-| 1          | 94.37 | 14.44           | 2.44             | 1.20 |
-| 4          | 93.78 | 3.65            | 0.41             | 1.06 |
-| 16         | 94.06 | 11.60           | 0.15             | 1.01 |
-| 64         | 94.86 | 11.98           | 0.12             | 0.99 |
-| 128        | 94.54 | 22.32           | 0.11             | 0.99 |
-| 256        | 93.43 | 32.93           | 0.10             | 0.99 |
-| 512        | 70.87 | 74.44           | 0.08             | 0.95 |
+| Batch Size | F1    | Latency    | Per Pair Latency | Cost |
+|:----------:|:-----:|:----------:|:----------------:|:----:|
+|     1      | 94.37 |   14.44    | 2.44             | 1.20 |
+|   **4**    | 93.78 |  **3.65**  | 0.41             | 1.06 |
+|     16     | 94.06 |   11.60    | 0.15             | 1.01 |
+|     64     | 94.86 |   11.98    | 0.12             | 0.99 |
+|    128     | 94.54 |   22.32    | 0.11             | 0.99 |
+|    256     | 93.43 |   32.93    | 0.10             | 0.99 |
+|    512     | 70.87 |   74.44    | 0.08             | 0.95 |
