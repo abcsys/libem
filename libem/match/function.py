@@ -2,12 +2,14 @@ import re
 import time
 import asyncio
 import hashlib
+from tqdm import tqdm
+from itertools import chain
 from pprint import pformat
+from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core import struct
-from libem.core import model
+from libem.core import struct, model
 from libem.core.struct import Prompt
 from libem.core.util import async_run
 
@@ -34,22 +36,89 @@ schema = {
 }
 
 
-def func(left: str | list[str], 
-          right: str | list[str]) -> dict | list[dict]:
-    return asyncio.run(async_func(left, right))
-
-async def async_func(left: str | list[str], 
-          right: str | list[str]) -> dict | list[dict]:
-    assert type(left) == type(right)
-
-    if parameter.batch_size() > 1:
-        return await batch(left, right)
+def func(left: str | list, right: str | list) -> dict | list[dict]:
+    if parameter.sync():
+        return sync_func(left, right)
     else:
-        if type(left) is list:
-            return await individual(left, right)
-        else:
-            return await once(left, right)
-    
+        return asyncio.run(
+            async_func(left, right)
+        )
+
+
+def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
+    if isinstance(left, str):
+        return asyncio.run(
+            once(left, right)
+        )
+
+    if parameter.batch_size() == 1:
+        tasks = create_once_tasks(left, right)
+    else:
+        tasks = create_batch_tasks(left, right)
+
+    output = []
+    for task in tqdm(tasks):
+        output.extend(
+            asyncio.run(task)
+        )
+
+    return output
+
+
+async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
+    if isinstance(left, str):
+        return await once(left, right)
+
+    if parameter.batch_size() == 1:
+        tasks = create_once_tasks(left, right)
+    else:
+        tasks = create_batch_tasks(left, right)
+
+    return list(chain.from_iterable(
+        await async_run(tasks)
+    ))
+
+
+def create_once_tasks(left: list, right: list) -> list[Coroutine]:
+    async def _once(left, right):
+        # wrap the result in a list to
+        # follow the batch output format
+
+        return [await once(left, right)]
+
+    return [
+        _once(left, right)
+        for left, right in zip(left, right)
+    ]
+
+
+def create_batch_tasks(left: list, right: list) -> list[Coroutine]:
+    assert len(left) == len(right)
+
+    num_pairs = len(left)
+    batch_size = parameter.batch_size()
+    left_batches, right_batches = [], []
+    batch_start = 0
+
+    # generate left and right batches
+    while batch_start < num_pairs:
+        batch_end = min(batch_start + batch_size, num_pairs)
+
+        left_batches.append(
+            left[batch_start:batch_end]
+        )
+        right_batches.append(
+            right[batch_start:batch_end]
+        )
+
+        batch_start += batch_size
+
+    # generate tasks for each batch
+    return [
+        batch(left, right)
+        for left, right in zip(left_batches, right_batches)
+    ]
+
 
 async def once(left: str, right: str) -> dict:
     start = time.time()
@@ -108,49 +177,7 @@ async def once(left: str, right: str) -> dict:
     return output
 
 
-async def individual(left: list[str], right: list[str]) -> list[dict]:
-    return await async_run(
-        once(l, r)
-        for l, r in zip(left, right)
-    )
-
-
-async def batch(left: list[str], right: list[str]) -> list[dict]:
-    assert len(left) == len(right)
-    
-    num_pairs = len(left)
-    batch_size = parameter.batch_size()
-    left_batches, right_batches = [], []
-    batch_start = 0
-
-    # generate left and right batches
-    while batch_start < num_pairs:
-        batch_end = min(batch_start + batch_size, num_pairs)
-
-        left_batches.append(
-            left[batch_start:batch_end]
-        )
-        right_batches.append(
-            right[batch_start:batch_end]
-        )
-
-        batch_start += batch_size
-
-    # call model
-    results = await async_run(
-        _proc_batch(l, r)
-        for l, r in zip(left_batches, right_batches)
-    )
-    
-    # flatten results list
-    output = []
-    for r in results:
-        output.extend(r)
-    
-    return output
-
-
-async def _proc_batch(left: list, right: list) -> list[dict]:
+async def batch(left: list, right: list) -> list[dict]:
     start = time.time()
 
     output, size = [], len(left)
@@ -219,15 +246,12 @@ async def _proc_batch(left: list, right: list) -> list[dict]:
             output.append(
                 parse_output('\n'.join(answer_lines))
             )
-        
-        # if number of answers are greater than number of inputs,
-        # only return the first len(inputs) answers.
-        # This can happen if the model does not follow the expected format.
-        if len(output) > size:
-            output = output[0:size]
+
+        assert len(output) <= size
     else:
         # if the model output does not follow the expected
-        # format, assume all answers are the same
+        # format, assume all answers are the same and only
+        # one answer is returned for all pairs
         answer = parse_output(response["output"])
         output = [answer for _ in range(size)]
 
@@ -249,7 +273,7 @@ async def _proc_batch(left: list, right: list) -> list[dict]:
     return output
 
 
-def digest(left, right) -> str:
+def digest(left: str, right: str) -> str:
     return hashlib.md5(
         f"{left} {right}".encode()
     ).hexdigest()
@@ -263,7 +287,7 @@ def parse_output(output: str) -> dict:
     <answer> (e.g., yes)
     ```
     """
-    # remove any empty lines and reverse output lines
+    # remove empty lines and process lines in reverse order
     output = [s for s in output.splitlines() if s][::-1]
 
     answer = output.pop(0).lower()

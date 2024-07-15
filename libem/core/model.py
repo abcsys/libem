@@ -1,51 +1,44 @@
-import asyncio
-import inspect
 import os
 import json
 import httpx
+import asyncio
 import importlib
 
-from openai import AsyncOpenAI, APITimeoutError
+from openai import (
+    AsyncOpenAI, APITimeoutError
+)
 
 import libem
 
 
 def call(*args, **kwargs) -> dict:
-    return openai(*args, **kwargs)
+    return asyncio.run(
+        async_call(*args, **kwargs)
+    )
+
 
 async def async_call(*args, **kwargs) -> dict:
     return await async_openai(*args, **kwargs)
 
+
 """ OpenAI """
 
-# use a single openai client to avoid memory leak
-openai_client = None
+os.environ.setdefault(
+    "OPENAI_API_KEY",
+    libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
+)
 
-# LLM call with multiple rounds of tool use
-def openai(*args, **kwargs) -> dict:
-    return asyncio.run(async_openai(*args, **kwargs))
+_openai_client = None
 
-async def async_openai(prompt: str | list | dict,
-           tools: list[str] = None,
-           context: list = None,
-           model: str = "gpt-4o",
-           temperature: float = 0.0,
-           seed: int = None,
-           max_model_call: int = 3,
-           ) -> dict:
-    
-    # retrieve api key and set up openai client
-    global openai_client
-    
+
+def get_openai_client():
+    global _openai_client
+
     if not os.environ.get("OPENAI_API_KEY"):
-        os.environ.setdefault(
-            "OPENAI_API_KEY",
-            libem.LIBEM_CONFIG.get("OPENAI_API_KEY", "")
-        )
-    
-    if not openai_client:
-        # set limits to prevent too many connections error
-        openai_client = AsyncOpenAI(
+        raise EnvironmentError(f"OPENAI_API_KEY is not set.")
+
+    if not _openai_client:
+        _openai_client = AsyncOpenAI(
             http_client=httpx.AsyncClient(
                 limits=httpx.Limits(
                     max_connections=1000,
@@ -53,22 +46,43 @@ async def async_openai(prompt: str | list | dict,
                 )
             )
         )
+    return _openai_client
+
+
+def openai(*args, **kwargs) -> dict:
+    return asyncio.run(
+        async_openai(*args, **kwargs)
+    )
+
+
+# Model call with multiple rounds of tool use
+async def async_openai(
+        prompt: str | list | dict,
+        tools: list[str] = None,
+        context: list = None,
+        model: str = "gpt-4o",
+        temperature: float = 0.0,
+        seed: int = None,
+        max_model_call: int = 3,
+) -> dict:
+    client = get_openai_client()
+
+    context = context or []
 
     # format the prompt to messages
     match prompt:
         case list():
             messages = prompt
         case dict():
-            messages = []
-            for role, content in prompt.items():
-                if content:
-                    messages.append({"role": role, "content": content})
+            messages = [{
+                "role": role,
+                "content": content
+            } for role, content in prompt.items()]
         case str():
             messages = [{"role": "user", "content": prompt}]
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
 
-    context = context or []
     messages = context + messages
 
     # trace variables
@@ -80,7 +94,7 @@ async def async_openai(prompt: str | list | dict,
 
     if not tools:
         try:
-            response = await openai_client.chat.completions.create(
+            response = await client.chat.completions.create(
                 messages=messages,
                 model=model,
                 temperature=temperature,
@@ -92,7 +106,8 @@ async def async_openai(prompt: str | list | dict,
         response_message = response.choices[0].message
 
         num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_input_tokens += response.usage.total_tokens - \
+                            response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
     else:
         # Load the tool modules
@@ -100,16 +115,15 @@ async def async_openai(prompt: str | list | dict,
 
         # Get the functions from the tools
         available_functions = {
-            tool.name: tool.async_func 
-                       if 'async_func' in dir(tool) else tool.func 
-                       for tool in tools
+            tool.name: tool.func for tool in tools
         }
+
         # Get the schema from the tools
         tools = [tool.schema for tool in tools]
 
         # Call model
         try:
-            response = await openai_client.chat.completions.create(
+            response = await client.chat.completions.create(
                 messages=messages,
                 tools=tools,
                 tool_choice="auto",
@@ -124,7 +138,8 @@ async def async_openai(prompt: str | list | dict,
         tool_calls = response_message.tool_calls
 
         num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
+        num_input_tokens += response.usage.total_tokens - \
+                            response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
 
         # Call tools
@@ -138,11 +153,7 @@ async def async_openai(prompt: str | list | dict,
 
                 libem.debug(f"[{function_name}] {function_args}")
 
-                # await if tool is async
-                if inspect.iscoroutinefunction(function_to_call):
-                    function_response = await function_to_call(**function_args)
-                else:
-                    function_response = function_to_call(**function_args)
+                function_response = function_to_call(**function_args)
 
                 messages.append(
                     {
@@ -169,7 +180,7 @@ async def async_openai(prompt: str | list | dict,
             if num_model_calls < max_model_call:
                 # Call the model again with the tool outcomes
                 try:
-                    response = await openai_client.chat.completions.create(
+                    response = await client.chat.completions.create(
                         messages=messages,
                         tools=tools,
                         tool_choice="auto",

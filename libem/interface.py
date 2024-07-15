@@ -37,13 +37,11 @@ def chat(message, context=None) -> dict:
 """Programmatic access"""
 
 
-def block(left: list[str | dict], 
-          right: list[str | dict]) -> Iterator[dict]:
+def block(left: list, right: list) -> Iterator[dict]:
     yield from block_func(left, right)
 
 
-def match(left: str | list[str], 
-          right: str | list[str]) -> dict | list[dict]:
+def match(left: str | list, right: str | list) -> dict | list[dict]:
     assert type(left) == type(right)
 
     if isinstance(left, list):
