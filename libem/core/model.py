@@ -21,8 +21,9 @@ def call(*args, **kwargs) -> dict:
 
 async def async_call(*args, **kwargs) -> dict:
     if kwargs.get("model", "") == "llama3":
-          return local(*args, **kwargs)
-    return await async_openai(*args, **kwargs)
+        return llama(*args, **kwargs)
+    else:
+        return await async_openai(*args, **kwargs)
 
 
 """ OpenAI """
@@ -108,7 +109,7 @@ async def async_openai(
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-        
+
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - \
                             response.usage.completion_tokens
@@ -230,12 +231,13 @@ async def async_openai(
         }
     }
 
-model_local_cache, tokenizer_cache = None, None
 
-""" Local Model """
+_llama_model, _llama_tokenizer = None, None
+
+""" Llama """
 
 
-def local(prompt: str | list | dict,
+def llama(prompt: str | list | dict,
           tools: list[str] = None,
           context: list = None,
           model: str = "llama3",
@@ -243,7 +245,7 @@ def local(prompt: str | list | dict,
           seed: int = None,
           max_model_call: int = 3,
           ) -> dict:
-    global model_local_cache, tokenizer_cache
+    global _llama_model, _llama_tokenizer
 
     # format the prompt to messages
     match prompt:
@@ -289,30 +291,35 @@ def local(prompt: str | list | dict,
         else:
             raise ValueError(f"{model} is not supported.")
 
-        if model_local_cache is None or tokenizer_cache is None:
+        if _llama_model is None or _llama_tokenizer is None:
             start = time.time()
-            model_local_cache, tokenizer_cache = load(model_path)
+            _llama_model, _llama_tokenizer = load(model_path)
             libem.debug(f"model loaded in {time.time() - start:.2f} seconds.")
         else:
             libem.debug("model loaded from cache")
-        model_local, tokenizer = model_local_cache, tokenizer_cache
+        model, tokenizer = _llama_model, _llama_tokenizer
 
         if tools:
             raise libem.ToolUseUnsupported("Tool use is not supported")
 
-        response = generate(model_local, tokenizer, prompt=messages[0], temp=temperature)
+        response = generate(model, tokenizer, prompt=messages[0], temp=temperature)
+    else:
+        raise ValueError(f"{platform.machine()} {platform.system()} is not supported.")
 
     return {
         "output": response,
         "messages": "messages is not supported",
         "tool_outputs": "Tool output is not supported",
         "stats": {
-            "num_model_calls": "dummy value",
-            "num_input_tokens": "dummy value",
-            "num_output_tokens": "dummy value",
+            "num_model_calls": 1,
+            "num_input_tokens": -1,
+            "num_output_tokens": -1,
         }
     }
+
 
 def reset():
     global _openai_client
     _openai_client = None
+    _llama_model = None
+    _llama_tokenizer = None

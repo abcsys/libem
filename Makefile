@@ -46,12 +46,13 @@ async_batch:
 	python examples/optimize/async_batch.py
 batch: async_batch
 
-# local model examples
-.PHONY: mlx_lm local
+# opensource model examples
+.PHONY: mlx_lm llama local
 mlx_lm:
 	pip install mlx_lm
-local:
-	python examples/local.py
+llama:
+	python examples/model/llama.py
+local: llama
 
 # benchmarks
 .PHONY: benchmark analyze plot
