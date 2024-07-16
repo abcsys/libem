@@ -1,5 +1,5 @@
 schema = {}
 
 
-def func():
-    pass
+def func(*args, **kwargs):
+    raise NotImplementedError

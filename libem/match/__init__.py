@@ -4,4 +4,4 @@ name = "match"
 func = function.func
 schema = function.schema
 
-from libem.match.function import digest
+from libem.match.interface import *
