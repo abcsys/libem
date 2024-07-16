@@ -217,12 +217,11 @@ def run_match(dataset, args):
 
     results = {}
     truth, predictions, = [], []
-    match_latencies = []
+    batch_latencies = []
 
     with libem.trace as t:
         libem.calibrate({
             "libem.match.parameter.batch_size": args.batch_size,
-            "libem.match.parameter.quiet": args.quiet,
             "libem.match.parameter.sync": args.sync,
         })
 
@@ -304,7 +303,7 @@ def run_match(dataset, args):
 
             match = span['match']
             left, right = match['left'], match['right']
-            match_latencies.append(match['latency'])
+            batch_latencies.append(match['latency'])
 
             # for batch matching, the trace are
             # shared between pairs in each batch
@@ -349,7 +348,8 @@ def run_match(dataset, args):
         'f1': round(metrics['f1'] * 100, 2),
         'latency': round(end_time - start_time, 2),
         'throughput': libem.round(num_pairs / (end_time - start_time), 2),
-        'avg_match_latency': libem.round(np.mean(match_latencies), 2),
+        'per_pair_latency': libem.round((end_time - start_time) / num_pairs, 2),
+        'avg_batch_latency': libem.round(np.mean(batch_latencies), 2),
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
@@ -372,6 +372,7 @@ def run_match(dataset, args):
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
+    print(f"Benchmark: Throughput\t {stats['throughput']} pps")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
 
     return stats, results

@@ -26,6 +26,3 @@ batch_size = query_per_prompt = Parameter(
 sync = Parameter(
     default=False,
 )
-quiet = Parameter(
-    default=True,
-)

@@ -1,6 +1,5 @@
 import re
 import time
-import asyncio
 import hashlib
 from tqdm import tqdm
 from itertools import chain
@@ -11,7 +10,9 @@ import libem
 from libem.match import prompt, parameter
 from libem.core import struct, model
 from libem.core.struct import Prompt
-from libem.core.util import async_run
+from libem.core.util import (
+    run_async_task, proc_async_tasks
+)
 
 schema = {
     "type": "function",
@@ -40,14 +41,14 @@ def func(left: str | list, right: str | list) -> dict | list[dict]:
     if parameter.sync():
         return sync_func(left, right)
     else:
-        return asyncio.run(
+        return run_async_task(
             async_func(left, right)
         )
 
 
 def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
     if isinstance(left, str):
-        return asyncio.run(
+        return run_async_task(
             once(left, right)
         )
 
@@ -59,7 +60,7 @@ def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
     output = []
     for task in tqdm(tasks):
         output.extend(
-            asyncio.run(task)
+            run_async_task(task)
         )
 
     return output
@@ -75,7 +76,7 @@ async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
         tasks = create_batch_tasks(left, right)
 
     return list(chain.from_iterable(
-        await async_run(tasks)
+        await proc_async_tasks(tasks)
     ))
 
 

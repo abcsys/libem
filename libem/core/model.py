@@ -1,7 +1,6 @@
 import os
 import json
 import httpx
-import asyncio
 import importlib
 
 from openai import (
@@ -9,10 +8,11 @@ from openai import (
 )
 
 import libem
+from libem.core.util import run_async_task
 
 
 def call(*args, **kwargs) -> dict:
-    return asyncio.run(
+    return run_async_task(
         async_call(*args, **kwargs)
     )
 
@@ -50,7 +50,7 @@ def get_openai_client():
 
 
 def openai(*args, **kwargs) -> dict:
-    return asyncio.run(
+    return run_async_task(
         async_openai(*args, **kwargs)
     )
 
@@ -225,3 +225,8 @@ async def async_openai(
             "num_output_tokens": num_output_tokens,
         }
     }
+
+
+def reset_client():
+    global _openai_client
+    _openai_client = None
