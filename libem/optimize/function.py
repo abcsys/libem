@@ -1,7 +1,8 @@
+import time
+
 import libem
 from libem.core import eval
 from libem.optimize.cost import openai
-from libem.match import parameter as match_param
 
 schema = {}
 
@@ -14,28 +15,18 @@ def profile(dataset, detailed=False):
     with libem.trace as t:
         preds, truths = [], []
 
-        # batch
-        if match_param.batch_size() > 1:
-            left, right = [], []
-            for i, record in enumerate(dataset):
-                left.append(record["left"])
-                right.append(record["right"])
-                truths.append(record["label"])
-            preds = [
-                1 if is_match["answer"].lower() == "yes" else 0
-                for is_match in libem.match(left, right)
-            ]
-        # no batch
-        else:
-            for i, record in enumerate(dataset):
-                print(f"[profile] pair #{i + 1}")
+        left, right = [], []
+        for _, record in enumerate(dataset):
+            left.append(str(record["left"]))
+            right.append(str(record["right"]))
+            truths.append(record["label"])
 
-                pred = libem.match(
-                    record["left"], record["right"]
-                )["answer"]
-                
-                preds.append(1 if pred.lower() == "yes" else 0)
-                truths.append(record["label"])
+        start = time.time()
+        preds = [
+            1 if is_match["answer"].lower() == "yes" else 0
+            for is_match in libem.match(left, right)
+        ]
+        latency = time.time() - start
 
         f1 = eval.f1(truths, preds)
         p = eval.precision(truths, preds)
@@ -54,9 +45,12 @@ def profile(dataset, detailed=False):
             "f1": f1,
             "precision": p,
             "recall": r,
+            "latency": latency,
+            "throughput": len(dataset) / latency,
             "fp": fp,
             "fn": fn,
             "tp": tp,
+            "tn": tn,
             **stats,
         }
     else:
@@ -64,9 +58,10 @@ def profile(dataset, detailed=False):
             "f1": round(f1, 2),
             "precision": round(p, 2),
             "recall": round(r, 2),
+            "latency": latency,
+            "throughput": round(len(dataset) / latency, 2),
             "num_model_calls": stats["model"]["num_model_calls"]["sum"],
             "num_input_tokens": stats["model"]["num_input_tokens"]["sum"],
             "num_output_tokens": stats["model"]["num_output_tokens"]["sum"],
-            "latency": round(stats["match"]["latency"]["sum"], 2),
             "cost": stats["model"]["cost"],
         }

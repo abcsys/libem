@@ -1,7 +1,6 @@
 import random
 import logging
 from typing import Iterator
-import decimal
 import pprint as pp
 
 import libem
