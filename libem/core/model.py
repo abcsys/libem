@@ -1,14 +1,25 @@
 import os
 import json
 import importlib
-
+import time
 from openai import OpenAI, APITimeoutError
-
 import libem
+import platform
 
+IS_APPLE_SILICON = platform.machine() == "arm64" and platform.system() == "Darwin"
+
+if IS_APPLE_SILICON:
+    from mlx_lm import load, generate
 
 def call(*args, **kwargs) -> dict:
-    return openai(*args, **kwargs)
+    if 'model' in kwargs:
+        model_type = kwargs['model']
+        if model_type in ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"]:
+            return openai(*args, **kwargs)
+        elif model_type in ["llama3"]:
+            return local(*args, **kwargs)
+        else:
+            raise ValueError(f"Invalid model: {model_type}")
 
 
 """ OpenAI """
@@ -69,7 +80,7 @@ def openai(prompt: str | list | dict,
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-
+        print(response_message)
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
@@ -185,5 +196,80 @@ def openai(prompt: str | list | dict,
             "num_model_calls": num_model_calls,
             "num_input_tokens": num_input_tokens,
             "num_output_tokens": num_output_tokens,
+        }
+    }
+
+model_local_cache, tokenizer_cache = None, None
+
+""" Local Model """
+def local(prompt: str | list | dict,
+           tools: list[str] = None,
+           context: list = None,
+           model: str = "null",
+           temperature: float = 0.0,
+           seed: int = None,
+           max_model_call: int = 3,
+           ) -> dict:
+    global model_local_cache, tokenizer_cache
+
+    # format the prompt to messages
+    match prompt:
+        case list():
+            messages = prompt
+        case dict():
+            messages = []
+            for role, content in prompt.items():
+                if content:
+                    messages.append({"role": role, "content": content})
+        case str():
+            messages = [{"role": "user", "content": prompt}]
+        case _:
+            raise ValueError(f"Invalid prompt type: {type(prompt)}")
+    
+    BOS = "<|begin_of_text|>"
+    SYS = "<|start_header_id|>system<|end_header_id|>"
+    USER = "<|start_header_id|>user<|end_header_id|>"
+    ASSIS = "<|start_header_id|>assistant<|end_header_id|>"
+    EOS = "<|eot_id|>"
+
+    input_text = BOS
+    for message in prompt:
+        if message['role'] == 'system':
+            input_text = input_text + SYS + message['content'] + EOS
+        elif message['role'] == 'user':
+            input_text = input_text + USER + message['content'] + EOS
+    input_text = input_text + ASSIS
+
+    context = context or []
+    messages = context + [input_text]
+
+    if IS_APPLE_SILICON:
+        # Load the model using MLX for apple silicon device
+        if model == "llama3":
+            model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
+        else:
+            raise ValueError(f"{model} is not supported.")
+        
+        if model_local_cache is None or tokenizer_cache is None:
+            start = time.time()
+            model_local_cache, tokenizer_cache = load(model_path)
+            print(f"Model loaded in {time.time() - start:.2f} seconds. No model is being cached")
+        else:
+            print("Model loaded from cache")
+        model_local, tokenizer = model_local_cache, tokenizer_cache
+
+        if tools:
+            raise libem.ToolUseUnsupported("Tool use is not supported")
+        else:
+            response = generate(model_local, tokenizer, prompt=messages[0], temp=temperature)
+
+    return {
+        "output": response,
+        "messages": "messages is not supported",
+        "tool_outputs": "Tool output is not supported",
+        "stats": {
+            "num_model_calls": "dummy value",
+            "num_input_tokens": "dummy value",
+            "num_output_tokens": "dummy value",
         }
     }

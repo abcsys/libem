@@ -19,7 +19,7 @@ chat:
 	python examples/tool/chat.py
 block:
 	python examples/block.py
-all: match browse chat
+all: match match-local browse chat
 
 # extract examples
 .PHONY: extract
@@ -76,3 +76,8 @@ serve:
 build:
 	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
 	docker push silveryfu/libem-serve:0.0.17
+
+# libem local examples
+.PHONY: local
+local:
+	python examples/local.py
