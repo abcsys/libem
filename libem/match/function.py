@@ -8,10 +8,9 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core import struct, model
 from libem.core.struct import Prompt
-from libem.core.util import (
-    run_async_task, proc_async_tasks
+from libem.core import (
+    exec, model, struct
 )
 
 schema = {
@@ -41,14 +40,14 @@ def func(left: str | list, right: str | list) -> dict | list[dict]:
     if parameter.sync():
         return sync_func(left, right)
     else:
-        return run_async_task(
+        return exec.run_async_task(
             async_func(left, right)
         )
 
 
 def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
     if isinstance(left, str):
-        return run_async_task(
+        return exec.run_async_task(
             once(left, right)
         )
 
@@ -60,7 +59,7 @@ def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
     output = []
     for task in tqdm(tasks):
         output.extend(
-            run_async_task(task)
+            exec.run_async_task(task)
         )
 
     return output
@@ -76,7 +75,7 @@ async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
         tasks = create_batch_tasks(left, right)
 
     return list(chain.from_iterable(
-        await proc_async_tasks(tasks)
+        await exec.proc_async_tasks(tasks)
     ))
 
 

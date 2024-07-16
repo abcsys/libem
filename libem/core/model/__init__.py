@@ -1,11 +1,11 @@
 from libem.core.model import (
     openai, llama
 )
-from libem.core.util import run_async_task
+from libem.core import exec
 
 
 def call(*args, **kwargs) -> dict:
-    return run_async_task(
+    return exec.run_async_task(
         async_call(*args, **kwargs)
     )
 
