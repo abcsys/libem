@@ -46,6 +46,13 @@ async_batch:
 	python examples/optimize/async_batch.py
 batch: async_batch
 
+# opensource model examples
+.PHONY: mlx_lm llama local
+mlx_lm:
+	pip install mlx_lm
+llama:
+	python examples/model/llama.py
+local: llama
 
 # benchmarks
 .PHONY: benchmark analyze plot
@@ -55,7 +62,6 @@ analyze:
 	python -m benchmark.analyze -m
 plot:
 	python -m benchmark.plot
-
 
 # tests clean
 .PHONY: test clean

@@ -10,9 +10,9 @@ from datetime import datetime
 import libem
 from libem.core import eval
 from libem.core.struct import Prompt
-from libem.optimize.cost import openai
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
+from libem.optimize import cost as cost_util
 
 
 def benchmark(dataset, args):
@@ -323,7 +323,7 @@ def run_match(dataset, args):
                         'tokens': {
                             'num_input_tokens': model_usage['num_input_tokens'],
                             'num_output_tokens': model_usage['num_output_tokens'],
-                            'cost': libem.round(openai.get_cost(
+                            'cost': libem.round(cost_util.get_cost(
                                 args.model,
                                 model_usage['num_input_tokens'],
                                 model_usage['num_output_tokens'],
@@ -353,7 +353,7 @@ def run_match(dataset, args):
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
-            'cost': libem.round(openai.get_cost(
+            'cost': libem.round(cost_util.get_cost(
                 args.model,
                 telemetry['model.num_input_tokens']['sum'],
                 telemetry['model.num_output_tokens']['sum'],
