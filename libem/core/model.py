@@ -320,6 +320,8 @@ def llama(prompt: str | list | dict,
 
 def reset():
     global _openai_client
+    global _llama_model
+    global _llama_tokenizer
     _openai_client = None
     _llama_model = None
     _llama_tokenizer = None

@@ -9,7 +9,7 @@ LIBEM_SOURCE = os.path.dirname(os.path.abspath(__file__))
 
 try:
     with open(LIBEM_CONFIG_FILE, "r") as f:
-        LIBEM_CONFIG = yaml.load(f, Loader=yaml.SafeLoader)
+        LIBEM_CONFIG = yaml.load(f, Loader=yaml.SafeLoader) or {}
 except FileNotFoundError:
     print(f"Config file not found at {LIBEM_CONFIG_FILE}")
     sys.exit(1)
