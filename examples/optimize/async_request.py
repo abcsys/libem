@@ -16,8 +16,8 @@ def main():
     libem.calibrate({
         "libem.match.parameter.sync": True,
     })
-    sync_results = profile(samples)
-    libem.pprint(sync_results)
+    before = profile(samples)
+    libem.pprint(before)
     print()
 
     libem.reset()
@@ -26,11 +26,11 @@ def main():
     libem.calibrate({
         "libem.match.parameter.sync": False,
     })
-    async_results = profile(samples)
-    libem.pprint(async_results)
-
+    after = profile(samples)
+    libem.pprint(after)
     print()
-    speedup = libem.round(sync_results["latency"] / async_results["latency"], 2)
+
+    speedup = libem.round(before["latency"] / after["latency"], 2)
 
     print(f"Speedup: {speedup}x")
 

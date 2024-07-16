@@ -12,13 +12,13 @@ def main():
     for _ in range(num_samples):
         samples.append(next(dataset))
 
-    print("Asynchronous execution with batch size 1:")
+    print("Synchronous execution with batch size 1:")
     libem.calibrate({
-        "libem.match.parameter.sync": False,
+        "libem.match.parameter.sync": True,
         "libem.match.parameter.batch_size": 1,
     })
-    sync_results = profile(samples)
-    libem.pprint(sync_results)
+    before = profile(samples)
+    libem.pprint(before)
     print()
 
     libem.reset()
@@ -28,13 +28,18 @@ def main():
         "libem.match.parameter.sync": False,
         "libem.match.parameter.batch_size": 5,
     })
-    async_results = profile(samples)
-    libem.pprint(async_results)
-
+    after = profile(samples)
+    libem.pprint(after)
     print()
-    speedup = libem.round(sync_results["latency"] / async_results["latency"], 2)
 
+    f1_loss = libem.round(before["f1"] - after["f1"], 2)
+    speedup = libem.round(before["latency"] / after["latency"], 2)
+    cost_savings = libem.round(before["cost"] - after["cost"], 2)
+
+    print(f"F1 loss: {f1_loss}")
     print(f"Speedup: {speedup}x")
+    print(f"Cost savings: ${cost_savings}")
+    print()
 
 
 if __name__ == "__main__":
