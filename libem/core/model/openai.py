@@ -8,7 +8,7 @@ from openai import (
 )
 
 import libem
-from libem.core.util import run_async_task
+from libem.core import exec
 
 os.environ.setdefault(
     "OPENAI_API_KEY",
@@ -37,7 +37,7 @@ def get_client():
 
 
 def call(*args, **kwargs) -> dict:
-    return run_async_task(
+    return exec.run_async_task(
         async_call(*args, **kwargs)
     )
 
