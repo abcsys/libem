@@ -15,3 +15,8 @@ async def async_call(*args, **kwargs) -> dict:
         return llama.call(*args, **kwargs)
     else:
         return await openai.async_call(*args, **kwargs)
+
+
+def reset():
+    openai.reset()
+    llama.reset()
