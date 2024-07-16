@@ -89,7 +89,7 @@ def main():
     predictions, actual = [], []
     start_time = time.time()
     for p in output:
-        res = libem.match(p['left'], p['right'])['answer']
+        res = libem.match(str(p['left']), str(p['right']))['answer']
         if res == 'yes':
             predictions.append(1)
         else:
