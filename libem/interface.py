@@ -97,6 +97,10 @@ def config():
     )
 
 
+def reset():
+    model.reset()
+
+
 def debug_on():
     libem.LIBEM_LOG_LEVEL = logging.DEBUG
 

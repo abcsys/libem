@@ -1,6 +1,5 @@
 import libem
 
-from libem.core import model
 from libem.optimize import profile
 from libem.prepare.datasets import abt_buy
 
@@ -22,7 +21,7 @@ def main():
     libem.pprint(sync_results)
     print()
 
-    model.reset_client()
+    libem.reset()
 
     print("Asynchronous execution with batch size 5:")
     libem.calibrate({

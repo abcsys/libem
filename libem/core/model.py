@@ -227,6 +227,6 @@ async def async_openai(
     }
 
 
-def reset_client():
+def reset():
     global _openai_client
     _openai_client = None
