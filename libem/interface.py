@@ -1,7 +1,6 @@
 import random
 import logging
 from typing import Iterator
-import decimal
 import pprint as pp
 
 import libem
@@ -96,6 +95,10 @@ def config():
         toolchain="libem",
         nest=True,
     )
+
+
+def reset():
+    model.reset()
 
 
 def debug_on():

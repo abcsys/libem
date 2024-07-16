@@ -13,13 +13,20 @@ def main():
         samples.append(next(dataset))
 
     print("Without batch:")
+    libem.calibrate({
+        "libem.match.parameter.sync": True,
+        "libem.match.parameter.batch_size": 1,
+    })
     no_batch_results = profile(samples)
     libem.pprint(no_batch_results)
     print()
 
+    libem.reset()
+
     print("With batch:")
     libem.calibrate({
-        "libem.match.parameter.batch_size": num_samples,
+        "libem.match.parameter.sync": True,
+        "libem.match.parameter.batch_size": 5,
     })
     batch_results = profile(samples)
     libem.pprint(batch_results)

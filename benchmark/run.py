@@ -119,13 +119,12 @@ def main():
                         action='store_false', default=True)
     parser.add_argument("--batch-size", dest='batch_size', nargs='?',
                         help="The batch size to use for matching.",
-                        type=int, default=match_param.batch_size())
+                        type=int, default=1)
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
-
     parser.add_argument("-q", "--quiet", dest='quiet',
-                        help="Suppress messages for matching each pair.",
+                        help="Suppress messages.",
                         action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
                         help="Additional args that apply to specific benchmark files, in JSON format.")
@@ -152,6 +151,9 @@ def main():
                         help="List of rules to add to match.",
                         type=str, default='')
 
+    parser.add_argument("--sync", dest='sync',
+                        help="Run Libem in synchronous mode.",
+                        action='store_true', default=False)
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
                         action='store_true', default=False)

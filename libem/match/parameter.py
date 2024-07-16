@@ -1,9 +1,9 @@
 import libem.parameter as libem
 from libem.core.struct import Parameter
 
+# model call configurations
 model = libem.model
 temperature = libem.temperature
-
 tools = Parameter(
     default=[],
     options=[],
@@ -22,6 +22,7 @@ batch_size = query_per_prompt = Parameter(
     default=1
 )
 
-quiet = Parameter(
-    default=True,
+# execution modes
+sync = Parameter(
+    default=False,
 )

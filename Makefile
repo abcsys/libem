@@ -35,24 +35,32 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile batch local
+.PHONY: profile prompt_batch async_request async_batch batch
 profile:
 	python examples/optimize/profile.py
-batch:
+prompt_batch:
 	python examples/optimize/prompt_batch.py
+async_request:
+	python examples/optimize/async_request.py
+async_batch:
+	python examples/optimize/async_batch.py
+batch: async_batch
+
+# local model examples
+.PHONY: mlx_lm local
+mlx_lm:
+	pip install mlx_lm
 local:
 	python examples/local.py
-
 
 # benchmarks
 .PHONY: benchmark analyze plot
 benchmark:
-	python -m benchmark.run -q
+	python -m benchmark.run
 analyze:
 	python -m benchmark.analyze -m
 plot:
 	python -m benchmark.plot
-
 
 # tests clean
 .PHONY: test clean
@@ -78,8 +86,3 @@ serve:
 build:
 	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
 	docker push silveryfu/libem-serve:0.0.17
-
-# additional dependencies
-.PHONY: mlx_lm
-mlx_lm:
-	pip install mlx_lm

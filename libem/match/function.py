@@ -1,13 +1,18 @@
 import re
 import time
-from pprint import pformat
 import hashlib
+from tqdm import tqdm
+from itertools import chain
+from pprint import pformat
+from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
+from libem.core import struct, model
 from libem.core.struct import Prompt
-from libem.core import struct
-from libem.core import model
+from libem.core.util import (
+    run_async_task, proc_async_tasks
+)
 
 schema = {
     "type": "function",
@@ -33,15 +38,90 @@ schema = {
 
 
 def func(left: str | list, right: str | list) -> dict | list[dict]:
-    assert type(left) == type(right)
-
-    if parameter.batch_size() > 1:
-        return batch(left, right)
+    if parameter.sync():
+        return sync_func(left, right)
     else:
-        return once(left, right)
+        return run_async_task(
+            async_func(left, right)
+        )
 
 
-def once(left: str, right: str) -> dict:
+def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
+    if isinstance(left, str):
+        return run_async_task(
+            once(left, right)
+        )
+
+    if parameter.batch_size() == 1:
+        tasks = create_once_tasks(left, right)
+    else:
+        tasks = create_batch_tasks(left, right)
+
+    output = []
+    for task in tqdm(tasks):
+        output.extend(
+            run_async_task(task)
+        )
+
+    return output
+
+
+async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
+    if isinstance(left, str):
+        return await once(left, right)
+
+    if parameter.batch_size() == 1:
+        tasks = create_once_tasks(left, right)
+    else:
+        tasks = create_batch_tasks(left, right)
+
+    return list(chain.from_iterable(
+        await proc_async_tasks(tasks)
+    ))
+
+
+def create_once_tasks(left: list, right: list) -> list[Coroutine]:
+    async def _once(left, right):
+        # wrap the result in a list to
+        # follow the batch output format
+
+        return [await once(left, right)]
+
+    return [
+        _once(left, right)
+        for left, right in zip(left, right)
+    ]
+
+
+def create_batch_tasks(left: list, right: list) -> list[Coroutine]:
+    assert len(left) == len(right)
+
+    num_pairs = len(left)
+    batch_size = parameter.batch_size()
+    left_batches, right_batches = [], []
+    batch_start = 0
+
+    # generate left and right batches
+    while batch_start < num_pairs:
+        batch_end = min(batch_start + batch_size, num_pairs)
+
+        left_batches.append(
+            left[batch_start:batch_end]
+        )
+        right_batches.append(
+            right[batch_start:batch_end]
+        )
+
+        batch_start += batch_size
+
+    # generate tasks for each batch
+    return [
+        batch(left, right)
+        for left, right in zip(left_batches, right_batches)
+    ]
+
+
+async def once(left: str, right: str) -> dict:
     start = time.time()
 
     system_prompt = Prompt.join(
@@ -68,7 +148,7 @@ def once(left: str, right: str) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
-    response = model.call(
+    response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
@@ -98,50 +178,10 @@ def once(left: str, right: str) -> dict:
     return output
 
 
-def batch(left: list, right: list) -> list[dict]:
-    assert len(left) == len(right)
-
-    num_pairs = len(left)
-    batch_size = parameter.batch_size()
-    left_batches, right_batches, pair_ids = [], [], []
-    batch_start = 0
-
-    # generate left and right batches
-    while batch_start < num_pairs:
-        batch_end = min(batch_start + batch_size, num_pairs)
-
-        left_batches.append(
-            left[batch_start:batch_end]
-        )
-        right_batches.append(
-            right[batch_start:batch_end]
-        )
-
-        batch_start += batch_size
-
-    num_batches = len(left_batches)
-
-    output = []
-    for i, (l, r) in enumerate(zip(left_batches, right_batches)):
-        if not parameter.quiet():
-            libem.info(f"[match] processing batch "
-                       f"{i + 1} / {num_batches} "
-                       f"of size {len(l)}.")
-        output.extend(_proc_batch(l, r))
-
-    return output
-
-
-def _proc_batch(left: list, right: list) -> list[dict]:
+async def batch(left: list, right: list) -> list[dict]:
     start = time.time()
 
     output, size = [], len(left)
-    digests = []
-
-    digests.append([
-        digest(l, r)
-        for l, r in zip(left, right)
-    ])
 
     system_prompt = Prompt.join(
         prompt.role(),
@@ -170,7 +210,7 @@ def _proc_batch(left: list, right: list) -> list[dict]:
         {"role": "user", "content": match_prompt},
     ]
 
-    response = model.call(
+    response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
@@ -207,9 +247,12 @@ def _proc_batch(left: list, right: list) -> list[dict]:
             output.append(
                 parse_output('\n'.join(answer_lines))
             )
+
+        assert len(output) <= size
     else:
         # if the model output does not follow the expected
-        # format, assume all answers are the same
+        # format, assume all answers are the same and only
+        # one answer is returned for all pairs
         answer = parse_output(response["output"])
         output = [answer for _ in range(size)]
 
@@ -231,7 +274,7 @@ def _proc_batch(left: list, right: list) -> list[dict]:
     return output
 
 
-def digest(left, right) -> str:
+def digest(left: str, right: str) -> str:
     return hashlib.md5(
         f"{left} {right}".encode()
     ).hexdigest()
@@ -245,7 +288,8 @@ def parse_output(output: str) -> dict:
     <answer> (e.g., yes)
     ```
     """
-    output = output.split("\n")[::-1]
+    # remove empty lines and process lines in reverse order
+    output = [s for s in output.splitlines() if s][::-1]
 
     answer = output.pop(0).lower()
     answer = "yes" if "yes" in answer else "no"
