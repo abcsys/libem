@@ -19,7 +19,7 @@ chat:
 	python examples/tool/chat.py
 block:
 	python examples/block.py
-all: match match-local browse chat
+all: match browse chat
 
 # extract examples
 .PHONY: extract
@@ -35,11 +35,13 @@ shot:
 tune: rule
 
 # optimize examples
-.PHONY: profile batch
+.PHONY: profile batch local
 profile:
 	python examples/optimize/profile.py
 batch:
 	python examples/optimize/prompt_batch.py
+local:
+	python examples/local.py
 
 
 # benchmarks
@@ -77,7 +79,7 @@ build:
 	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
 	docker push silveryfu/libem-serve:0.0.17
 
-# libem local examples
-.PHONY: local
-local:
-	python examples/local.py
+# additional dependencies
+.PHONY: mlx_lm
+mlx_lm:
+	pip install mlx_lm

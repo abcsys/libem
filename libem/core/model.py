@@ -6,10 +6,6 @@ from openai import OpenAI, APITimeoutError
 import libem
 import platform
 
-IS_APPLE_SILICON = platform.machine() == "arm64" and platform.system() == "Darwin"
-
-if IS_APPLE_SILICON:
-    from mlx_lm import load, generate
 
 def call(*args, **kwargs) -> dict:
     if 'model' in kwargs:
@@ -80,7 +76,7 @@ def openai(prompt: str | list | dict,
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-        print(response_message)
+        
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - response.usage.completion_tokens
         num_output_tokens += response.usage.completion_tokens
@@ -199,17 +195,20 @@ def openai(prompt: str | list | dict,
         }
     }
 
+
 model_local_cache, tokenizer_cache = None, None
 
 """ Local Model """
+
+
 def local(prompt: str | list | dict,
-           tools: list[str] = None,
-           context: list = None,
-           model: str = "null",
-           temperature: float = 0.0,
-           seed: int = None,
-           max_model_call: int = 3,
-           ) -> dict:
+          tools: list[str] = None,
+          context: list = None,
+          model: str = "llama3",
+          temperature: float = 0.0,
+          seed: int = None,
+          max_model_call: int = 3,
+          ) -> dict:
     global model_local_cache, tokenizer_cache
 
     # format the prompt to messages
@@ -225,7 +224,7 @@ def local(prompt: str | list | dict,
             messages = [{"role": "user", "content": prompt}]
         case _:
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
-    
+
     BOS = "<|begin_of_text|>"
     SYS = "<|start_header_id|>system<|end_header_id|>"
     USER = "<|start_header_id|>user<|end_header_id|>"
@@ -233,7 +232,7 @@ def local(prompt: str | list | dict,
     EOS = "<|eot_id|>"
 
     input_text = BOS
-    for message in prompt:
+    for message in messages:
         if message['role'] == 'system':
             input_text = input_text + SYS + message['content'] + EOS
         elif message['role'] == 'user':
@@ -243,25 +242,31 @@ def local(prompt: str | list | dict,
     context = context or []
     messages = context + [input_text]
 
-    if IS_APPLE_SILICON:
+    # apple silicon
+    if platform.machine() == "arm64" and platform.system() == "Darwin":
         # Load the model using MLX for apple silicon device
         if model == "llama3":
+            # first check whether mlx_lm is installed
+            try:
+                from mlx_lm import load, generate
+            except ImportError:
+                raise ImportError("mlx_lm is not installed.")
             model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
         else:
             raise ValueError(f"{model} is not supported.")
-        
+
         if model_local_cache is None or tokenizer_cache is None:
             start = time.time()
             model_local_cache, tokenizer_cache = load(model_path)
-            print(f"Model loaded in {time.time() - start:.2f} seconds. No model is being cached")
+            libem.debug(f"model loaded in {time.time() - start:.2f} seconds.")
         else:
-            print("Model loaded from cache")
+            libem.debug("model loaded from cache")
         model_local, tokenizer = model_local_cache, tokenizer_cache
 
         if tools:
             raise libem.ToolUseUnsupported("Tool use is not supported")
-        else:
-            response = generate(model_local, tokenizer, prompt=messages[0], temp=temperature)
+
+        response = generate(model_local, tokenizer, prompt=messages[0], temp=temperature)
 
     return {
         "output": response,
