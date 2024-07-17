@@ -56,6 +56,7 @@ def benchmark(dataset, args):
     # matching
     if args.match:
         stats['match'], results['match'] = run_match(dataset, args)
+
     stats['total_latency'] = round(time.time() - start_time, 2)
 
     if args.log:
@@ -216,8 +217,6 @@ def run_match(dataset, args):
     start_time = time.time()
 
     results = {}
-    truth, predictions, = [], []
-    batch_latencies = []
 
     with libem.trace as t:
         libem.calibrate({
@@ -252,11 +251,6 @@ def run_match(dataset, args):
                             'explanation': is_match['explanation'],
                         }
 
-                        predictions.append(
-                            1 if is_match['answer'] == 'yes' else 0
-                        )
-                        truth.append(label)
-
                         if not args.quiet:
                             print(f"Match: {is_match['answer']}; "
                                   f"Confidence: {is_match['confidence']}; "
@@ -279,10 +273,8 @@ def run_match(dataset, args):
 
             answers: list[dict] = libem.match(left, right)
 
-            results = {}
-            for l, r, label, is_match in \
-                    zip(left, right, labels, answers):
-                results[match_digest(l, r)] = {
+            results = {
+                match_digest(l, r): {
                     'left': l,
                     'right': r,
                     'label': label,
@@ -290,11 +282,8 @@ def run_match(dataset, args):
                     'confidence': is_match['confidence'],
                     'explanation': is_match['explanation'],
                 }
-
-                predictions.append(
-                    1 if is_match['answer'] == 'yes' else 0
-                )
-                truth.append(label)
+                for l, r, label, is_match in zip(left, right, labels, answers)
+            }
 
         # fill in additional info from the trace
         for span in t.get():
@@ -303,7 +292,6 @@ def run_match(dataset, args):
 
             match = span['match']
             left, right = match['left'], match['right']
-            batch_latencies.append(match['latency'])
 
             # for batch matching, the trace are
             # shared between pairs in each batch
@@ -336,6 +324,18 @@ def run_match(dataset, args):
         # ignore the digest key
         results = list(results.values())
 
+    truth, predictions = [], []
+    confidences, latencies = [], []
+
+    for result in results:
+        truth.append(result['label'])
+        predictions.append(1 if result['pred'] == 'yes' else 0)
+
+        if result['confidence']:
+            confidences.append(result['confidence'])
+
+        latencies.append(result['latency'])
+
     # generate stats
     metrics = eval.report(
         truth, predictions
@@ -349,7 +349,8 @@ def run_match(dataset, args):
         'latency': round(end_time - start_time, 2),
         'throughput': libem.round(num_pairs / (end_time - start_time), 2),
         'per_pair_latency': libem.round((end_time - start_time) / num_pairs, 2),
-        'avg_batch_latency': libem.round(np.mean(batch_latencies), 2),
+        'avg_batch_latency': libem.round(np.mean(latencies), 2),
+        'avg_confidence': libem.round(np.mean(confidences), 2) if confidences else -1,
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],

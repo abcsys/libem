@@ -2,7 +2,6 @@ import json
 import argparse
 
 import libem
-from libem.match import parameter as match_param
 import benchmark.util as util
 from benchmark.classic import (
     abt_buy,

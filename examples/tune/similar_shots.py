@@ -29,7 +29,7 @@ def run():
     truths, predictions = [], []
     for pair in test_set:
         with libem.trace as t:
-            left, right = pair["left"], pair["right"]
+            left, right = str(pair["left"]), str(pair["right"])
             label = pair["label"]
 
             is_match = libem.match(left, right)
@@ -51,7 +51,7 @@ def run():
             train_set, pair, num_shots,
         )
         with libem.trace as t:
-            left, right = pair["left"], pair["right"]
+            left, right = str(pair["left"]), str(pair["right"])
             label = pair["label"]
 
             libem.calibrate({
