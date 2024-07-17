@@ -1,15 +1,34 @@
 import random
+from typing import Union
 
 from libem import parameter
-from libem.match import func
+from libem.match import func, async_func
+
+input_type = Union[
+    str, list[str]
+]
+
+output_type = Union[
+    dict, list[dict]
+]
 
 
-def match(left: str | list, right: str | list) -> dict | list[dict]:
+def match(left: input_type, right: input_type) -> output_type:
+    # input validation
     assert type(left) == type(right)
 
-    if isinstance(left, list):
-        assert len(left) == len(right)
+    match left:
+        case str():
+            pass
+        case list():
+            assert len(left) == len(right)
+        case _:
+            raise ValueError(
+                f"unexpected input type: {type(left)},"
+                f"must be {input_type}."
+            )
 
+    # random guessing
     if parameter.always():
         if isinstance(left, list):
             return [{
@@ -39,6 +58,10 @@ def match(left: str | list, right: str | list) -> dict | list[dict]:
             }
 
     return func(left, right)
+
+
+async def async_match(left: input_type, right: input_type) -> output_type:
+    return await async_func(left, right)
 
 
 from libem.match.function import digest
