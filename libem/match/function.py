@@ -247,7 +247,9 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
                 parse_output('\n'.join(answer_lines))
             )
 
-        assert len(output) <= size
+        if len(output) > size:
+            libem.warn(f"[match] output size greater than batch size: "
+                       f"output: {output}; {len(output)} > {size}")
     else:
         # if the model output does not follow the expected
         # format, assume all answers are the same and only
