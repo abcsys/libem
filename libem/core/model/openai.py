@@ -2,6 +2,7 @@ import os
 import json
 import httpx
 import importlib
+import inspect
 
 from openai import (
     AsyncOpenAI, APITimeoutError
@@ -100,9 +101,11 @@ async def async_call(
         # Load the tool modules
         tools = [importlib.import_module(tool) for tool in tools]
 
-        # Get the functions from the tools
+        # Get the functions from the tools and
+        # prefer async functions if available
         available_functions = {
-            tool.name: tool.func for tool in tools
+            tool.name: getattr(tool, 'async_func', tool.func)
+            for tool in tools
         }
 
         # Get the schema from the tools
@@ -140,7 +143,10 @@ async def async_call(
 
                 libem.debug(f"[{function_name}] {function_args}")
 
-                function_response = function_to_call(**function_args)
+                if inspect.iscoroutinefunction(function_to_call):
+                    function_response = await function_to_call(**function_args)
+                else:
+                    function_response = function_to_call(**function_args)
 
                 messages.append(
                     {

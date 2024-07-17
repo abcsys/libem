@@ -36,7 +36,7 @@ schema = {
 }
 
 
-def func(left: str | list, right: str | list) -> dict | list[dict]:
+def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
     if parameter.sync():
         return sync_func(left, right)
     else:
@@ -45,7 +45,7 @@ def func(left: str | list, right: str | list) -> dict | list[dict]:
         )
 
 
-def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
+def sync_func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
     if isinstance(left, str):
         return exec.run_async_task(
             once(left, right)
@@ -65,7 +65,7 @@ def sync_func(left: str | list, right: str | list) -> dict | list[dict]:
     return output
 
 
-async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
+async def async_func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
     if isinstance(left, str):
         return await once(left, right)
 
@@ -79,7 +79,7 @@ async def async_func(left: str | list, right: str | list) -> dict | list[dict]:
     ))
 
 
-def create_once_tasks(left: list, right: list) -> list[Coroutine]:
+def create_once_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     async def _once(left, right):
         # wrap the result in a list to
         # follow the batch output format
@@ -92,7 +92,7 @@ def create_once_tasks(left: list, right: list) -> list[Coroutine]:
     ]
 
 
-def create_batch_tasks(left: list, right: list) -> list[Coroutine]:
+def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     assert len(left) == len(right)
 
     num_pairs = len(left)
@@ -177,7 +177,7 @@ async def once(left: str, right: str) -> dict:
     return output
 
 
-async def batch(left: list, right: list) -> list[dict]:
+async def batch(left: list[str], right: list[str]) -> list[dict]:
     start = time.time()
 
     output, size = [], len(left)
