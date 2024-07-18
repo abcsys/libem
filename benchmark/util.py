@@ -1,16 +1,18 @@
+import math
 import os
 import sys
 import time
 import json
+import numpy as np
 from pathlib import Path
 from datetime import datetime
 
 import libem
 from libem.core import eval
 from libem.core.struct import Prompt
-from libem.optimize.cost import get_cost
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
+from libem.optimize import cost as cost_util
 
 
 def benchmark(dataset, args):
@@ -46,10 +48,15 @@ def benchmark(dataset, args):
         })
 
     results, stats = {}, {}
+
+    # blocking
     if args.block:
         dataset, stats['block'], results['block'] = run_block(dataset, args)
+
+    # matching
     if args.match:
         stats['match'], results['match'] = run_match(dataset, args)
+
     stats['total_latency'] = round(time.time() - start_time, 2)
 
     if args.log:
@@ -196,26 +203,34 @@ def run_block(dataset, args):
 
 
 def run_match(dataset, args):
+    if args.num_pairs > 0:
+        num_pairs = min(args.num_pairs, len(dataset) - args.start_index)
+    else:
+        num_pairs = len(dataset) - args.start_index
+    num_batches = math.ceil(num_pairs / args.batch_size)
+
+    print(f"Benchmark: Matching {num_pairs} "
+          f"{'pair' if num_pairs == 1 else 'pairs'} "
+          f"{f'in {num_batches} batches ' if args.batch_size > 1 else ''}"
+          f"from the {args.name} benchmark.")
+
     start_time = time.time()
 
     results = {}
-    truth, predictions, = [], []
-
-    print(f"Benchmark: Matching {args.num_pairs if args.num_pairs > 0 else 'all'} "
-          f"{'pair' if args.num_pairs == 1 else 'pairs'} "
-          f"from the {args.name} benchmark:")
 
     with libem.trace as t:
-        start_index = max(args.start_index or 0, 0)
+        libem.calibrate({
+            "libem.match.parameter.batch_size": args.batch_size,
+            "libem.match.parameter.sync": args.sync,
+        })
 
-        if args.batch_size == 1:
-            # iterate over dataset
-            for i, data in enumerate(dataset[start_index:]):
+        if args.sync and args.batch_size == 1:
+            # iterate and match each pair
+            for i, data in enumerate(dataset[args.start_index:]):
                 if args.num_pairs > 0 and i + 1 > args.num_pairs:
                     break
 
-                left = data['left']
-                right = data['right']
+                left, right = str(data['left']), str(data['right'])
                 label = data['label']
 
                 if not args.quiet:
@@ -226,7 +241,7 @@ def run_match(dataset, args):
                 num_retries = 0
                 while True:
                     try:
-                        is_match = libem.match(left, right)
+                        is_match: dict = libem.match(left, right)
                         results[match_digest(left, right)] = {
                             'left': left,
                             'right': right,
@@ -235,11 +250,6 @@ def run_match(dataset, args):
                             'confidence': is_match['confidence'],
                             'explanation': is_match['explanation'],
                         }
-
-                        predictions.append(
-                            1 if is_match['answer'] == 'yes' else 0
-                        )
-                        truth.append(label)
 
                         if not args.quiet:
                             print(f"Match: {is_match['answer']}; "
@@ -251,38 +261,29 @@ def run_match(dataset, args):
                         print(f"Retrying {num_retries} time(s) "
                               f"due to model call timeout..")
         else:
-            # batch matching
-            libem.calibrate({
-                "libem.match.parameter.batch_size": args.batch_size,
-                "libem.match.parameter.quiet": args.quiet,
-            })
-
             # prepare datasets
             left, right, labels = [], [], []
-            for i, data in enumerate(dataset[start_index:]):
+            for i, data in enumerate(dataset[args.start_index:]):
                 if args.num_pairs > 0 and i + 1 > args.num_pairs:
                     break
 
-                left.append(data['left'])
-                right.append(data['right'])
+                left.append(str(data['left']))
+                right.append(str(data['right']))
                 labels.append(data['label'])
 
             answers: list[dict] = libem.match(left, right)
 
-            results = {}
-            for l, r, label, is_match in \
-                    zip(left, right, labels, answers):
-                results[match_digest(l, r)] = {
+            results = {
+                match_digest(l, r): {
                     'left': l,
                     'right': r,
                     'label': label,
                     'pred': is_match['answer'],
+                    'confidence': is_match['confidence'],
+                    'explanation': is_match['explanation'],
                 }
-
-                predictions.append(
-                    1 if is_match['answer'] == 'yes' else 0
-                )
-                truth.append(label)
+                for l, r, label, is_match in zip(left, right, labels, answers)
+            }
 
         # fill in additional info from the trace
         for span in t.get():
@@ -306,20 +307,34 @@ def run_match(dataset, args):
                     {
                         'model_output': match['model_output'],
                         'tool_outputs': match['tool_outputs'],
-                        'latency': round(match['latency'], 2),
+                        'latency': libem.round(match['latency'], 2),
                         'tokens': {
                             'num_input_tokens': model_usage['num_input_tokens'],
                             'num_output_tokens': model_usage['num_output_tokens'],
-                            'cost': get_cost.get_cost(
+                            'cost': libem.round(cost_util.get_cost(
                                 args.model,
                                 model_usage['num_input_tokens'],
                                 model_usage['num_output_tokens'],
-                            )
+                            ), 4)
                         }
                     }
                 )
+        end_time = time.time()
+
         # ignore the digest key
         results = list(results.values())
+
+    truth, predictions = [], []
+    confidences, latencies = [], []
+
+    for result in results:
+        truth.append(result['label'])
+        predictions.append(1 if result['pred'] == 'yes' else 0)
+
+        if result['confidence'] is not None:
+            confidences.append(result['confidence'])
+
+        latencies.append(result['latency'])
 
     # generate stats
     metrics = eval.report(
@@ -331,15 +346,19 @@ def run_match(dataset, args):
         'precision': round(metrics['precision'] * 100, 2),
         'recall': round(metrics['recall'] * 100, 2),
         'f1': round(metrics['f1'] * 100, 2),
-        'latency': round(time.time() - start_time, 2),
+        'latency': round(end_time - start_time, 2),
+        'throughput': libem.round(num_pairs / (end_time - start_time), 2),
+        'per_pair_latency': libem.round((end_time - start_time) / num_pairs, 2),
+        'avg_batch_latency': libem.round(np.mean(latencies), 2),
+        'avg_confidence': libem.round(np.mean(confidences), 2) if confidences else -1,
         'tokens': {
             'num_input_tokens': telemetry['model.num_input_tokens']['sum'],
             'num_output_tokens': telemetry['model.num_output_tokens']['sum'],
-            'cost': get_cost.get_cost(
+            'cost': libem.round(cost_util.get_cost(
                 args.model,
                 telemetry['model.num_input_tokens']['sum'],
                 telemetry['model.num_output_tokens']['sum'],
-            )
+            ), 4)
         },
         'confusion_matrix': {
             'tp': metrics['tp'],
@@ -354,6 +373,7 @@ def run_match(dataset, args):
     print(f"Benchmark: Precision\t {stats['precision']}")
     print(f"Benchmark: Recall\t {stats['recall']}")
     print(f"Benchmark: F1 score\t {stats['f1']}")
+    print(f"Benchmark: Throughput\t {stats['throughput']} pps")
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
 
     return stats, results

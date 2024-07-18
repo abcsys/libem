@@ -7,7 +7,7 @@ def predict(dataset) -> tuple[list, list, list, list]:
     mistakes, successes = [], []
 
     for i, record in enumerate(dataset):
-        left, right, truth = record["left"], record["right"], record["label"]
+        left, right, truth = str(record["left"]), str(record["right"]), record["label"]
 
         pred = libem.match(left, right)["answer"]
         libem.info("[predict] record:", i, "pred:", pred, "true:", truth)

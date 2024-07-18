@@ -89,7 +89,7 @@ def main():
     predictions, actual = [], []
     start_time = time.time()
     for p in output:
-        res = libem.match(p['left'], p['right'])['answer']
+        res = libem.match(str(p['left']), str(p['right']))['answer']
         if res == 'yes':
             predictions.append(1)
         else:
@@ -101,12 +101,14 @@ def main():
     match_time = time.time() - start_time
     print("Matching done.")
     print("Number of predicted matching pairs:", np.count_nonzero(predictions))
-    
+
+    # TBD (@daiwaid): calculate cost savings and speedup but use async exec
     print(f"\nF1 score\t\t{round(f1(actual, predictions) * 100, 2)}")
     print(f"Total time taken\t{round(block_time + match_time, 2)}s")
+
     time_needed = match_time / len(output) * potential_pairs
     time_saved = time_needed - block_time - match_time
-    print(f"Time saved by blocking"
+    print(f"Estimated time saving by blocking"
           f"\t{round(time_saved, 2)}s "
           f"({round(time_saved / time_needed * 100)}%)")
 

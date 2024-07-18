@@ -1,7 +1,5 @@
 import random
 import logging
-from typing import Iterator
-import decimal
 import pprint as pp
 
 import libem
@@ -9,14 +7,7 @@ import libem.core.model as model
 from libem.core.struct import Prompt
 from libem import prompt, parameter
 
-from libem.block import func as block_func
-from libem.match import func as match_func
-from libem.extract import func as extract_func
-from libem.tune.calibrate import func as calibrate_func
-from libem.tune.calibrate import export
-from libem.tune import func as tune_func
-
-"""Chat access"""
+""" Chat access to tools """
 
 
 def chat(message, context=None) -> dict:
@@ -35,60 +26,18 @@ def chat(message, context=None) -> dict:
     }
 
 
-"""Programmatic access"""
+""" Programmatic access to tools """
 
+from libem.match import match
+from libem.block import block
+from libem.extract import extract
+from libem.tune.calibrate import (
+    calibrate, export
+)
 
-def block(left: list, right: list) -> Iterator[dict]:
-    yield from block_func(left, right)
+_ = match, block, extract, calibrate, export
 
-
-def match(left: str | list, right: str | list) -> dict | list[dict]:
-    assert type(left) == type(right)
-
-    if isinstance(left, list):
-        assert len(left) == len(right)
-
-    if parameter.always():
-        if isinstance(left, list):
-            return [{
-                "answer": parameter.always(),
-                "confidence": None,
-                "explanation": "I'm guessing.",
-            } for _ in range(len(left))]
-        else:
-            return {
-                "answer": parameter.always(),
-                "confidence": None,
-                "explanation": "I'm guessing.",
-            }
-
-    if parameter.guess():
-        if isinstance(left, list):
-            return [{
-                "answer": random.choice(["yes", "no"]),
-                "confidence": None,
-                "explanation": "I'm guessing.",
-            } for _ in range(len(left))]
-        else:
-            return {
-                "answer": random.choice(["yes", "no"]),
-                "confidence": None,
-                "explanation": "I'm guessing.",
-            }
-
-    return match_func(left, right)
-
-
-def extract(desc: str) -> dict:
-    return extract_func(desc)
-
-
-def calibrate(*args, **kwargs):
-    return calibrate_func(*args, **kwargs)
-
-
-def tune(*args, **kwargs):
-    return tune_func(*args, **kwargs)
+""" Configurations """
 
 
 def config():
@@ -96,6 +45,10 @@ def config():
         toolchain="libem",
         nest=True,
     )
+
+
+def reset():
+    model.reset()
 
 
 def debug_on():
