@@ -348,6 +348,7 @@ def run_match(dataset, args):
         'f1': round(metrics['f1'] * 100, 2),
         'latency': round(end_time - start_time, 2),
         'throughput': libem.round(num_pairs / (end_time - start_time), 2),
+        'accuracy': round(metrics['accuracy'] * 100, 2),
         'per_pair_latency': libem.round((end_time - start_time) / num_pairs, 2),
         'avg_batch_latency': libem.round(np.mean(latencies), 2),
         'avg_confidence': libem.round(np.mean(confidences), 2) if confidences else -1,
