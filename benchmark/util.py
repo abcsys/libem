@@ -331,7 +331,7 @@ def run_match(dataset, args):
         truth.append(result['label'])
         predictions.append(1 if result['pred'] == 'yes' else 0)
 
-        if result['confidence']:
+        if result['confidence'] is not None:
             confidences.append(result['confidence'])
 
         latencies.append(result['latency'])

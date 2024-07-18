@@ -300,9 +300,9 @@ def parse_output(output: str) -> dict:
     if parameter.confidence():
         for i, line in enumerate(output):
             line = line.lower()
-            if 'confidence score' in line or str.isdigit(line):
-                confidence = ''.join(filter(str.isdigit, line))
-                confidence = int(confidence)
+            nums = re.findall(r"\d+\.\d+|\d+", line)
+            if nums:
+                confidence = float(''.join(nums))
                 output = output[i + 1:]
                 break
 
