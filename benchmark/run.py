@@ -2,45 +2,23 @@ import json
 import argparse
 
 import libem
+
+import benchmark
 import benchmark.util as util
-from benchmark.classic import (
-    abt_buy,
-    amazon_google,
-    beer,
-    dblp_acm,
-    dblp_scholar,
-    fodors_zagats,
-    itunes_amazon,
-    walmart_amazon,
-    challenging,
-)
-
-classic_benchmarks = {
-    'abt-buy': abt_buy.run,
-    'amazon-google': amazon_google.run,
-    'beer': beer.run,
-    'dblp-acm': dblp_acm.run,
-    'dblp-scholar': dblp_scholar.run,
-    'fodors-zagats': fodors_zagats.run,
-    'itunes-amazon': itunes_amazon.run,
-    'walmart-amazon': walmart_amazon.run,
-    'challenging': challenging.run,
-}
 
 
-def run(args):
+def run(args) -> dict:
     if args.input_file:
         args.name = args.input_file.split('/')[-1].split(".")[0]
         benchmark_func = run_from_file
     else:
         args.name = args.name.lower().replace('_', '-')
-        benchmark_func = classic_benchmarks[args.name]
+        benchmark_func = benchmark.benchmarks[args.name]
 
-    # classic benchmarks
-    benchmark_func(args)
+    return benchmark_func(args)
 
 
-def run_from_file(args):
+def run_from_file(args) -> dict:
     """
     Entity pairs should follow the Libem result format:
     [{
@@ -73,10 +51,10 @@ def run_from_file(args):
                              f"check the input format {run_from_file.__doc__}.")
 
     # ... other processing steps
-    util.benchmark(pairs, args)
+    return util.benchmark(pairs, args)
 
 
-def main():
+def args() -> argparse.Namespace:
     parser = argparse.ArgumentParser("benchmark")
 
     # benchmark configurations
@@ -160,8 +138,11 @@ def main():
                         help="Match by guessing.",
                         action='store_true', default=False)
 
-    args = parser.parse_args()
-    run(args)
+    return parser.parse_args()
+
+
+def main():
+    run(args())
 
 
 if __name__ == "__main__":

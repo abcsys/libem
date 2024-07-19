@@ -4,9 +4,13 @@ from sklearn.metrics import log_loss
 
 
 def temperature_scale(confidence_scores, labels) -> list[float]:
+    if len(confidence_scores) == 0:
+        return confidence_scores
+
     labels = np.array(labels)
     if len(np.unique(labels)) == 1:
         return confidence_scores
+
     confidence_scores = np.array(confidence_scores)
 
     epsilon = 1e-15
