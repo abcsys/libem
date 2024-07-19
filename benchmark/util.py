@@ -13,6 +13,7 @@ from libem.core.struct import Prompt
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
 from libem.optimize import cost as cost_util
+from libem.tune.learn.confidence.calibrate import temperature_scale
 
 
 def benchmark(dataset, args):
@@ -324,17 +325,13 @@ def run_match(dataset, args):
         # ignore the digest key
         results = list(results.values())
 
-    truth, predictions = [], []
-    confidences, latencies = [], []
+    truth = [result['label'] for result in results]
+    predictions = [1 if result['pred'] == 'yes' else 0 for result in results]
+    latencies = [result['latency'] for result in results]
+    confidences = [result['confidence'] for result in results if result['confidence'] is not None]
 
-    for result in results:
-        truth.append(result['label'])
-        predictions.append(1 if result['pred'] == 'yes' else 0)
-
-        if result['confidence'] is not None:
-            confidences.append(result['confidence'])
-
-        latencies.append(result['latency'])
+    calibrated_confidences = temperature_scale(confidences, truth)
+    results = patch_calibrated_confidence(results, calibrated_confidences)
 
     # generate stats
     metrics = eval.report(
@@ -396,3 +393,25 @@ def ordinal_suffix(num):
         else:
             suffix = 'th'
     return str(num) + suffix
+
+
+def place_to_next(d, key_next_to, key_to_place, value_to_place):
+    new_dict = dict()
+
+    for key, value in d.items():
+        new_dict[key] = value
+        if key == key_next_to:
+            new_dict[key_to_place] = value_to_place
+
+    return new_dict
+
+
+def patch_calibrated_confidence(results, calibrated_confidences):
+    for i, result in enumerate(results):
+        if result['confidence'] is not None:
+            results[i] = place_to_next(
+                result, 'confidence', 'calibrated_confidence',
+                round(calibrated_confidences[i], 2)
+                if result['confidence'] is not None else None
+            )
+    return results
