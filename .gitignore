@@ -1,7 +1,5 @@
-benchmark/results
-benchmark/analysis
-benchmark/plots
-logs/
+_logs/
+benchmark/_output/
 catalog.db*
 arena/node_modules
 arena/results

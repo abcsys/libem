@@ -55,7 +55,8 @@ llama:
 local: llama
 
 # benchmarks
-.PHONY: benchmark analyze plot
+
+.PHONY: benchmark analyze plot archive
 benchmark:
 	python -m benchmark.run
 analyze:
@@ -63,12 +64,24 @@ analyze:
 plot:
 	python -m benchmark.plot
 
+RESULT_DIRS = benchmark/_output/results \
+              benchmark/_output/figures \
+              benchmark/_output/tables \
+              benchmark/_output/analysis
+archive:
+	@zip -r "$$(date +%Y-%m-%d_%H-%M-%S)_benchmarks.zip" $(RESULT_DIRS) \
+	&& rm -rf $(RESULT_DIRS) || true
+
+.PHONY: gpt-4o-mini
+gpt-4o-mini:
+	python -m benchmark.suite.gpt-4o-mini
+
 # tests clean
 .PHONY: test clean
 test:
 	pytest -v test/*
 clean:
-	rm -r logs > /dev/null 2>&1 || true
+	rm -r _logs > /dev/null 2>&1 || true
 
 # refresh price
 .PHONY: price
