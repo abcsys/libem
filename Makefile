@@ -55,7 +55,6 @@ llama:
 local: llama
 
 # benchmarks
-
 .PHONY: benchmark analyze plot archive
 benchmark:
 	python -m benchmark.run

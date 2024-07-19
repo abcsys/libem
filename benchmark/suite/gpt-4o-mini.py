@@ -44,6 +44,7 @@ def report_to_dataframe(reports):
         match = report["match"]
         rows.append({
             "dataset": dataset,
+            "num_pairs": match["num_pairs"],
             "precision": match["precision"],
             "recall": match["recall"],
             "f1": match["f1"],
