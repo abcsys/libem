@@ -72,9 +72,17 @@ archive:
 	@zip -r "$$(date +%Y-%m-%d_%H-%M-%S)_benchmarks.zip" $(RESULT_DIRS) \
 	&& rm -rf $(RESULT_DIRS) || true
 
-.PHONY: gpt-4o-mini
+.PHONY: gpt-4o gpt-4o-mini gpt-4 gpt-4-turbo gpt-3.5-turbo
+gpt-4o:
+	python -m benchmark.suite.gpt-4o
 gpt-4o-mini:
 	python -m benchmark.suite.gpt-4o-mini
+gpt-4:
+	python -m benchmark.suite.gpt-4
+gpt-4-turbo:
+	python -m benchmark.suite.gpt-4-turbo
+gpt-3.5-turbo:
+	python -m benchmark.suite.gpt-35-turbo
 
 # tests clean
 .PHONY: test clean
