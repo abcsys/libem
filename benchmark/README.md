@@ -85,7 +85,18 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 | itunes-amazon  |    100    | 46.15  | 63.16 | 0.004256 |        34        |
 | walmart-amazon |   96.3    | 67.36  | 79.27 | 0.03037  |        82        |
 
+### GPT-3.5-turbo
 
+|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |
+|    abt-buy     |    100    | 15.05  | 26.16 |  0.3649  |        22        |
+| amazon-google  |   68.6    | 35.62  | 46.89 |  0.2209  |       160        |
+|      beer      |    100    | 35.71  | 52.63 | 0.02057  |        78        |
+|    dblp-acm    |   99.38   |   64   | 77.86 |  0.3106  |       140        |
+|  dblp-scholar  |   92.41   |  29.2  | 44.38 |  0.2834  |       150        |
+| fodors-zagats  |    100    | 40.91  | 58.06 | 0.04857  |        54        |
+| itunes-amazon  |    100    | 19.23  | 32.26 | 0.04254  |        87        |
+| walmart-amazon |   94.44   | 35.23  | 51.32 |  0.3007  |       150        |
 
 ### Prompt-level batching
 
