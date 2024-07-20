@@ -3,8 +3,9 @@ from libem.core import model
 import libem.core.util as libem_util
 from libem.core.struct import Prompt
 
-from libem.tune.learn import predict
-from libem.tune.learn import prompt, parameter
+from libem.tune.learn import (
+    predict, prompt, parameter
+)
 
 import pprint as pp
 

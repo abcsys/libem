@@ -37,4 +37,4 @@ def run(args):
     if args.shuffle:
         random.shuffle(dataset)
 
-    util.benchmark(dataset, args)
+    return util.benchmark(dataset, args)

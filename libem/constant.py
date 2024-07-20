@@ -16,7 +16,7 @@ except FileNotFoundError:
 
 LIBEM_LOG_DIR = os.path.join(
     os.path.dirname(__file__),
-    "..", "logs")
+    "..", "_logs")
 LIBEM_DO_LOG = bool(int(os.environ.get("LIBEM_DO_LOG", False)))
 # DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40
 LIBEM_LOG_LEVEL = \

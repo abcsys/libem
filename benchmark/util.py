@@ -4,7 +4,6 @@ import sys
 import time
 import json
 import numpy as np
-from pathlib import Path
 from datetime import datetime
 
 import libem
@@ -13,15 +12,19 @@ from libem.core.struct import Prompt
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
 from libem.optimize import cost as cost_util
+from libem.tune.learn.confidence.calibrate import temperature_scale
+
+import benchmark as bm
 
 
-def benchmark(dataset, args):
+def benchmark(dataset, args) -> dict:
     start_time = time.time()
 
     if args.quiet:
         libem.quiet()
     if args.debug:
         libem.debug_on()
+
     if args.guess:
         libem.calibrate({
             "libem.parameter.guess": True,
@@ -59,56 +62,33 @@ def benchmark(dataset, args):
 
     stats['total_latency'] = round(time.time() - start_time, 2)
 
+    report = {
+        'command': sys.argv[1:],
+        'stats': stats,
+        'results': results,
+        'configs': libem.config(),
+    }
+
     if args.log:
-        # save results to ./results
-        results_folder = os.path.join(
-            os.path.split(os.path.abspath(__file__))[0],
-            'results'
-        )
-        Path(results_folder).mkdir(parents=True, exist_ok=True)
+        signature = create_signature(args)
 
         if args.output_file:
             output_file = os.path.join(
-                results_folder,
+                bm.result_dir,
                 f'{args.output_file}.json'
             )
         else:
-            signature = [
-                datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-                args.name
-            ]
-            if args.block:
-                signature.append('block')
-            if args.batch_size > 1:
-                signature.append(f'batch-{args.batch_size}')
-            if args.match:
-                signature.append(args.model)
-                signature.append(
-                    str(args.num_pairs if args.num_pairs > 0 else 'all')
-                )
-            if args.train:
-                signature.append('train')
-            if not args.schema:
-                signature.append('no-schema')
-            if args.cot:
-                signature.append('cot')
-            if args.guess:
-                signature.append('guess')
-            if args.rules:
-                signature.append('rules')
             output_file = os.path.join(
-                results_folder, f'{"-".join(signature)}.json'
+                bm.result_dir,
+                f'{"-".join(signature)}.json'
             )
 
         with open(output_file, 'w') as f:
-            json.dump({
-                'command': sys.argv[1:],
-                'stats': stats,
-                'results': results,
-                'configs': libem.config(),
-            }, f, indent=4)
+            json.dump(report, f, indent=4)
 
         print(f"Benchmark: Results saved to: {output_file}")
+
+    return report
 
 
 def run_block(dataset, args):
@@ -324,17 +304,13 @@ def run_match(dataset, args):
         # ignore the digest key
         results = list(results.values())
 
-    truth, predictions = [], []
-    confidences, latencies = [], []
+    truth = [result['label'] for result in results]
+    predictions = [1 if result['pred'] == 'yes' else 0 for result in results]
+    latencies = [result['latency'] for result in results]
+    confidences = [result['confidence'] for result in results if result['confidence'] is not None]
 
-    for result in results:
-        truth.append(result['label'])
-        predictions.append(1 if result['pred'] == 'yes' else 0)
-
-        if result['confidence'] is not None:
-            confidences.append(result['confidence'])
-
-        latencies.append(result['latency'])
+    calibrated_confidences = temperature_scale(confidences, truth)
+    results = patch_calibrated_confidence(results, calibrated_confidences)
 
     # generate stats
     metrics = eval.report(
@@ -343,11 +319,13 @@ def run_match(dataset, args):
     telemetry = t.telemetry(flatten=True)
 
     stats = {
+        'num_pairs': num_pairs,
         'precision': round(metrics['precision'] * 100, 2),
         'recall': round(metrics['recall'] * 100, 2),
         'f1': round(metrics['f1'] * 100, 2),
         'latency': round(end_time - start_time, 2),
         'throughput': libem.round(num_pairs / (end_time - start_time), 2),
+        'accuracy': round(metrics['accuracy'] * 100, 2),
         'per_pair_latency': libem.round((end_time - start_time) / num_pairs, 2),
         'avg_batch_latency': libem.round(np.mean(latencies), 2),
         'avg_confidence': libem.round(np.mean(confidences), 2) if confidences else -1,
@@ -377,6 +355,56 @@ def run_match(dataset, args):
     print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
 
     return stats, results
+
+
+def create_signature(args):
+    signature = [
+        datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
+        args.name
+    ]
+    if args.block:
+        signature.append('block')
+    if args.batch_size > 1:
+        signature.append(f'batch-{args.batch_size}')
+    if args.match:
+        signature.append(args.model)
+        signature.append(
+            str(args.num_pairs if args.num_pairs > 0 else 'all')
+        )
+    if args.train:
+        signature.append('train')
+    if not args.schema:
+        signature.append('no-schema')
+    if args.cot:
+        signature.append('cot')
+    if args.guess:
+        signature.append('guess')
+    if args.rules:
+        signature.append('rules')
+
+    return signature
+
+
+def patch_calibrated_confidence(results, calibrated_confidences):
+    for i, result in enumerate(results):
+        if result['confidence'] is not None:
+            results[i] = place_to_next(
+                result, 'confidence', 'calibrated_confidence',
+                round(calibrated_confidences[i], 2)
+                if result['confidence'] is not None else None
+            )
+    return results
+
+
+def place_to_next(d, key_next_to, key_to_place, value_to_place):
+    new_dict = dict()
+
+    for key, value in d.items():
+        new_dict[key] = value
+        if key == key_next_to:
+            new_dict[key_to_place] = value_to_place
+
+    return new_dict
 
 
 def ordinal_suffix(num):
