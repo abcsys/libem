@@ -92,7 +92,6 @@ async def async_call(
             raise libem.ModelTimedoutException(e)
 
         response_message = response.choices[0].message
-        print(response_message)
         num_model_calls += 1
         num_input_tokens += response.usage.total_tokens - \
                             response.usage.completion_tokens

@@ -102,7 +102,7 @@ def call(prompt: str | list | dict,
         else:
             libem.debug("model loaded from cache")
         model = _model
-        print("model loaded", model)
+        
         if tools:
             raise libem.ToolUseUnsupported("Tool use is not supported")
         else:

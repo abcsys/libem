@@ -50,7 +50,7 @@ batch: async_batch
 .PHONY: mlx_lm llama local
 mlx_lm:
 	pip install mlx_lm
-llama.cpp:
+llama_cpp:
 	pip install llama-cpp-python 
 llama:
 	python examples/model/llama.py
