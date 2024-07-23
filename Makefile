@@ -19,7 +19,7 @@ chat:
 	python examples/tool/chat.py
 block:
 	python examples/block.py
-all: match match-local browse chat
+all: match browse chat
 
 # extract examples
 .PHONY: extract
