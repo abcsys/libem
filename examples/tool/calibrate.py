@@ -1,6 +1,6 @@
 import libem
 
-from libem.core.struct import Prompt
+from libem.core.struct import Prompt, Rules
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
 
     print("Calibrate the match to ignore colors")
     libem.calibrate({
-        "libem.match.prompt.rule": Prompt.Rules(["Ignore colors."]),
+        "libem.match.prompt.rules": Rules(["Ignore colors."]),
     }, verbose=True)
 
     is_match = libem.match(e1, e2)
@@ -26,7 +26,7 @@ def main():
     print("")
     print("Calibrate the match to consider colors")
     libem.calibrate({
-        "libem.match.prompt.rule": Prompt.Rules(["Color distinguishes entities."]),
+        "libem.match.prompt.rules": Rules(["Color distinguishes entities."]),
     }, verbose=True)
 
     is_match = libem.match(e1, e2)

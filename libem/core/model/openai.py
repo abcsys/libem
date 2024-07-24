@@ -98,7 +98,11 @@ async def async_call(
         num_output_tokens += response.usage.completion_tokens
     else:
         # Load the tool modules
-        tools = [importlib.import_module(tool) for tool in tools]
+        tools = [
+            importlib.import_module(tool)
+            if isinstance(tool, str) else tool
+            for tool in tools
+        ]
 
         # Get the functions from the tools and
         # prefer async functions if available

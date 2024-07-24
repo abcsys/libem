@@ -2,15 +2,20 @@ import libem
 from libem.core import model
 import libem.core.util as libem_util
 from libem.core.struct import Prompt
+from libem.core.struct.prompt import (
+    Rules, Experiences
+)
 
 from libem.tune.learn import (
-    predict, prompt, parameter
+    prompt, parameter
 )
 
 import pprint as pp
 
 
-def run(dataset, metric) -> tuple[float, Prompt.Rules, Prompt.Experiences]:
+def run(dataset, metric) -> tuple[float, Rules, Experiences]:
+    from libem.tune.learn import predict
+
     preds, truths, mistakes, successes = predict(dataset)
     metric_func = libem_util.get_func(metric)
     score = metric_func(preds, truths)
@@ -18,7 +23,7 @@ def run(dataset, metric) -> tuple[float, Prompt.Rules, Prompt.Experiences]:
     libem.info("[learn] metric:", metric, "score:", score)
 
     # if lots of mistakes, learn from rules
-    rules, experiences = Prompt.Rules(), Prompt.Experiences()
+    rules, experiences = Rules(), Experiences()
     if score < 0.25:
         rules = rule_from_success(mistakes)
     else:
@@ -26,7 +31,7 @@ def run(dataset, metric) -> tuple[float, Prompt.Rules, Prompt.Experiences]:
     return score, rules, experiences
 
 
-def rule_from_success(successes: list) -> Prompt.Rules:
+def rule_from_success(successes: list) -> Rules:
     libem.info("Successes: ", pp.pformat(successes))
     message = model.call(
         prompt=Prompt.join(
@@ -40,10 +45,10 @@ def rule_from_success(successes: list) -> Prompt.Rules:
     )["output"]
     libem.info("Learned: ", message)
     rules = message.split("\n")
-    return Prompt.Rules(rules)
+    return Rules(rules)
 
 
-def experience_from_mistake(mistakes: list) -> Prompt.Experiences:
+def experience_from_mistake(mistakes: list) -> Experiences:
     libem.info("Mistakes: ", pp.pformat(mistakes))
     message = model.call(
         prompt=Prompt.join(
@@ -57,4 +62,4 @@ def experience_from_mistake(mistakes: list) -> Prompt.Experiences:
     )["output"]
     libem.info("Learned: ", message)
     mistakes = message.split("\n")
-    return Prompt.Experiences(mistakes)
+    return Experiences(mistakes)
