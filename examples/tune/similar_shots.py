@@ -1,71 +1,59 @@
 import random
-import numpy as np
-import fuzzywuzzy as fuzz
 import pprint as pp
 
 import libem
-from libem.tune.learn.strategy import similar_shots
+from libem.prepare import datasets
+from libem.tune.learn.icl import similar_shots
 from libem.prepare.datasets import amazon_google as dataset
-from libem.core.eval import report
+from libem.core.struct import Shots, Shot
+from libem.match import prompt
+from libem.core import eval
 
 
 def run():
     random.seed(1)
+
     num_tests = 10
     num_shots = 3
 
-    test_set = random.sample(
-        list(dataset.read_test()),
-        num_tests
-    )
-    train_set = list(
-        dataset.read_train()
-    )
-
     libem.calibrate({"libem.match.parameter.model": "gpt-3.5-turbo"})
+
+    test_left, test_right, test_labels = \
+        datasets.load(dataset.read_test(), num_tests)
+    train_left, train_right, train_labels = \
+        datasets.load(dataset.read_train())
 
     print("Before few-shot:")
 
-    truths, predictions = [], []
-    for pair in test_set:
-        with libem.trace as t:
-            left, right = str(pair["left"]), str(pair["right"])
-            label = pair["label"]
-
-            is_match = libem.match(left, right)
-
-            pred = 1 if is_match["answer"] == "yes" else 0
-            truths.append(label)
-            predictions.append(pred)
-
+    answers: list[dict] = libem.match(test_left, test_right)
+    predictions = [1 if answer['answer'] == 'yes' else 0
+                   for answer in answers]
     pp.pprint(
-        report(truths, predictions),
+        eval.report(test_labels, predictions),
         sort_dicts=False,
     )
 
+    libem.reset()
     print("After few-shot:")
 
-    truths, predictions = [], []
-    for pair in test_set:
-        shots = similar_shots.run(
-            train_set, pair, num_shots,
-        )
-        with libem.trace as t:
-            left, right = str(pair["left"]), str(pair["right"])
-            label = pair["label"]
+    libem.calibrate({
+        "libem.match.parameter.icl_strategy": similar_shots,
+        "libem.match.parameter.num_shots": num_shots,
+        "libem.match.prompt.shots": Shots([
+            Shot(
+                question=prompt.query(left=left, right=right),
+                answer="yes" if label == 1 else "no"
+            ) for left, right, label in zip(
+                train_left, train_right, train_labels
+            )
+        ]),
+    })
 
-            libem.calibrate({
-                "libem.match.prompt.shots": shots,
-            })
-
-            is_match = libem.match(left, right)
-
-            pred = 1 if is_match["answer"] == "yes" else 0
-            truths.append(label)
-            predictions.append(pred)
-
+    answers: list[dict] = libem.match(test_left, test_right)
+    predictions = [1 if answer['answer'] == 'yes' else 0
+                   for answer in answers]
     pp.pprint(
-        report(truths, predictions),
+        eval.report(test_labels, predictions),
         sort_dicts=False,
     )
 

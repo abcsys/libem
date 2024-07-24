@@ -139,11 +139,15 @@ async def once(left: str, right: str) -> dict:
         ),
     )
 
-    shots: list[dict] = prompt.shots()
+    shots = parameter.icl_strategy().run(
+        shots=prompt.shots,
+        question=prompt.query(left=left, right=right),
+        num_shots=parameter.num_shots(),
+    )
 
     _prompt = [
         {"role": "system", "content": system_prompt},
-        *shots,
+        *shots(),
         {"role": "user", "content": match_prompt},
     ]
 

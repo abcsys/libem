@@ -26,6 +26,13 @@ all: match browse chat
 extract:
 	python examples/extract.py
 
+# utility examples
+.PHONY: calibrate trace
+calibrate:
+	python examples/tool/calibrate.py
+trace:
+	python examples/tool/trace.py
+
 # tuning examples
 .PHONY: rule shot tune
 rule:
