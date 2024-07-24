@@ -47,14 +47,14 @@ async_batch:
 batch: async_batch
 
 # opensource model examples
-.PHONY: mlx_lm llama local
+.PHONY: mlx_lm llama_cpp llama_ex local
 mlx_lm:
 	pip install mlx_lm
 llama_cpp:
 	pip install llama-cpp-python 
-llama:
+llama_ex:
 	python examples/model/llama.py
-local: llama
+local: llama_ex
 
 # benchmarks
 .PHONY: benchmark analyze plot archive
@@ -84,6 +84,10 @@ gpt-4-turbo:
 	python -m benchmark.suite.gpt-4-turbo
 gpt-3.5-turbo:
 	python -m benchmark.suite.gpt-35-turbo
+
+.PHONY: llama3
+llama3:
+	python -m benchmark.suite.llama3
 
 # tests clean
 .PHONY: test clean
