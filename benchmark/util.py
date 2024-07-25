@@ -37,6 +37,10 @@ def benchmark(dataset, args) -> dict:
         libem.calibrate({
             "libem.match.parameter.model": args.model,
         })
+    if args.temperature:
+        libem.calibrate({
+            "libem.match.parameter.temperature": args.temperature,
+        })
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.cot": True,

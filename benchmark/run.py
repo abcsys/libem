@@ -57,7 +57,7 @@ def run_from_file(args) -> dict:
 def args() -> argparse.Namespace:
     parser = argparse.ArgumentParser("benchmark")
 
-    # benchmark configurations
+    # intput configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
                         type=str, default='abt-buy')
@@ -71,32 +71,28 @@ def args() -> argparse.Namespace:
                         help="Number of pairs to run through. "
                              "Set as <= 0 to run through the entire dataset.",
                         type=int, default=5)
-    parser.add_argument("--no-log", dest='log',
-                        help="Don't log the results.",
-                        action='store_false', default=True)
 
+    # dataset configurations
     parser.add_argument("--train", dest='train',
                         help="Use the training set.",
                         action='store_true', default=False)
     parser.add_argument("--start-index", dest='start_index', nargs='?',
                         help="The index of the dataset to start from.",
                         type=int, default=0)
-
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
     parser.add_argument("--no-schema", dest='schema',
                         help="Turn off the dataset schema.",
                         action='store_false', default=True)
+
+    # benchmark configurations
     parser.add_argument("--block", dest='block',
                         help="Perform blocking.",
                         action='store_true', default=False)
     parser.add_argument("--no-match", dest='match',
                         help="Skip the matching phase.",
                         action='store_false', default=True)
-    parser.add_argument("--batch-size", dest='batch_size', nargs='?',
-                        help="The batch size to use for matching.",
-                        type=int, default=1)
     parser.add_argument("--seed", dest='seed', nargs='?',
                         help="Random seed to use.",
                         type=int, default=libem.LIBEM_SEED)
@@ -104,13 +100,22 @@ def args() -> argparse.Namespace:
                         help="Suppress messages.",
                         action='store_true', default=False)
     parser.add_argument("-k", "--kwargs", dest='kwargs', type=json.loads,
-                        help="Additional args that apply to specific benchmark files, in JSON format.")
+                        help="Additional args that apply to specific "
+                             "benchmark files, in JSON format.")
+    parser.add_argument("--no-log", dest='log',
+                        help="Don't log the results.",
+                        action='store_false', default=True)
 
     # libem configurations
     parser.add_argument("-m", "--model", dest='model', nargs='?',
                         help="The OpenAI model to use.",
                         type=str, default=libem.parameter.model())
-
+    parser.add_argument("--temperature", dest='temperature', nargs='?',
+                        help="The temperature to use for sampling.",
+                        type=float, default=libem.parameter.temperature())
+    parser.add_argument("--batch-size", dest='batch_size', nargs='?',
+                        help="The batch size to use for matching.",
+                        type=int, default=1)
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
@@ -123,7 +128,6 @@ def args() -> argparse.Namespace:
     parser.add_argument("--similarity", dest='similarity', nargs='?',
                         help="The similarity score cutoff for block, between 0-100.",
                         type=int, default=-1)
-
     parser.add_argument("-r", "--rules", dest='rules', nargs='*',
                         help="List of rules to add to match.",
                         type=str, default='')
