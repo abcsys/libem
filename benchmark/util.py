@@ -8,11 +8,12 @@ from datetime import datetime
 
 import libem
 from libem.core import eval
-from libem.core.struct import Prompt
+from libem.core.struct import Rules
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
 from libem.optimize import cost as cost_util
 from libem.tune.learn.confidence.calibrate import temperature_scale
+from libem.tune.learn import icl_strategies
 
 import benchmark as bm
 
@@ -51,7 +52,15 @@ def benchmark(dataset, args) -> dict:
         })
     if args.rules:
         libem.calibrate({
-            "libem.match.prompt.rules": Prompt.Rules(args.rules),
+            "libem.match.prompt.rules": Rules(args.rules),
+        })
+    if args.icl_strategy:
+        libem.calibrate({
+            "libem.match.parameter.icl_strategy": icl_strategies[args.icl_strategy],
+        })
+    if args.num_shots:
+        libem.calibrate({
+            "libem.match.parameter.num_shots": args.num_shots,
         })
 
     results, stats = {}, {}
@@ -197,6 +206,10 @@ def run_match(dataset, args):
           f"{'pair' if num_pairs == 1 else 'pairs'} "
           f"{f'in {num_batches} batches ' if args.batch_size > 1 else ''}"
           f"from the {args.name} benchmark.")
+
+    if args.num_shots > 0:
+        print(f"Benchmark: Using {args.num_shots} shots for in-context learning.")
+
 
     start_time = time.time()
 

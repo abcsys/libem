@@ -10,10 +10,10 @@ Attentive Shots
 """
 
 from typing import Iterable
-from libem.core.struct import Prompt, Shot
+from libem.core.struct import Shots
 
 
-def run(shots: Iterable[Shot],
+def run(shots: Shots,
         question: str,
-        num_shots: int) -> Prompt.Shots:
+        num_shots: int) -> Shots:
     raise NotImplementedError

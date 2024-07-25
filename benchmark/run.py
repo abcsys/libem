@@ -105,6 +105,12 @@ def args() -> argparse.Namespace:
     parser.add_argument("--no-log", dest='log',
                         help="Don't log the results.",
                         action='store_false', default=True)
+    parser.add_argument("--icl", dest='icl', nargs='?',
+                        help="The strategy to use for in-context learning.",
+                        type=str, default="given-shots")
+    parser.add_argument("--num-shots", dest='num_shots', nargs='?',
+                        help="The number of shots to use for in-context learning.",
+                        type=int, default=0)
 
     # libem configurations
     parser.add_argument("-m", "--model", dest='model', nargs='?',
