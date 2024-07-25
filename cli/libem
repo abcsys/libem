@@ -19,8 +19,11 @@ def add_common_arguments(parser):
 
     # shortcuts for calibration
     parser.add_argument("-m", "--model", dest='model', nargs='?',
-                        help="The LLM to use.",
+                        help="The LLM to use for model call.",
                         type=str, default=libem.parameter.model())
+    parser.add_argument("--temperature", dest='temperature', nargs='?',
+                        help="The temperature to use for model call.",
+                        type=float, default=libem.parameter.temperature())
     parser.add_argument("-b", "--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
@@ -137,6 +140,8 @@ def match(args):
     configs = args.calibrate or []
     if args.model:
         configs.append(('libem.match.parameter.model', args.model))
+    if args.temperature:
+        configs.append(('libem.match.parameter.temperature', args.temperature))
     if args.cot:
         configs.append(('libem.match.parameter.cot', True))
     if args.confidence:

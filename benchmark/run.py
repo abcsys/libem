@@ -111,7 +111,7 @@ def args() -> argparse.Namespace:
                         help="The OpenAI model to use.",
                         type=str, default=libem.parameter.model())
     parser.add_argument("--temperature", dest='temperature', nargs='?',
-                        help="The temperature to use for sampling.",
+                        help="The temperature to use for model call.",
                         type=float, default=libem.parameter.temperature())
     parser.add_argument("--batch-size", dest='batch_size', nargs='?',
                         help="The batch size to use for matching.",
