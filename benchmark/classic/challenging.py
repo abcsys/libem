@@ -30,11 +30,8 @@ def run(args):
         raise NotImplementedError("Blocking is not supported for this dataset.")
 
     # get dataset with kwargs
-    if args.train:
-        raise NotImplementedError("Training data not available for this dataset.")
-    else:
-        dataset = list(challenging.read_test(**kwargs))
+    test_set = list(challenging.read_test(**kwargs))
     if args.shuffle:
-        random.shuffle(dataset)
+        random.shuffle(test_set)
 
-    return util.benchmark(dataset, args)
+    return util.benchmark({'train': [], 'test': test_set}, args)
