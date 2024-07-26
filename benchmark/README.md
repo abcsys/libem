@@ -98,18 +98,44 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 | itunes-amazon  |    100    | 19.23  | 32.26 | 0.04254  |        87        |
 | walmart-amazon |   94.44   | 35.23  | 51.32 |  0.3007  |       150        |
 
-### Meta-Llama3-8B-Instruct-8bit
+### Meta-Llama3-8B-Instruct-4bit
 
-|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Latency (s) |
+|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Total Latency (s) |
 | :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
 |    abt-buy     |    50.25    | 97.09  | 66.23 |  0.0  |        0.92        | 1312.29  |
 | amazon-google  |   31.11    | 96.14  | 47.01 |  0.0  |       1.4        | 912.32  |
-|      beer      |    80.0    | 85.71  | 82.76 | 0.0  |        1.1        |   81.18
+|      beer      |    80.0    | 85.71  | 82.76 | 0.0  |        1.1        |   81.18 |
 |    dblp-acm    |   76.47   |   98.8   | 86.21 |  0.0  |       1.1        |    1161.97 |
 |  dblp-scholar  |   65.56   |  95.2  | 77.65 |  0.0  |       0.62        | 2020.08 |
 | fodors-zagats  |    50.0    | 100.0  | 66.67 | 0.0  |        1.0        | 187.98  |
 | itunes-amazon  |    36.23    | 96.15  | 52.63 | 0.0  |        0.72        |   151.76  |
 | walmart-amazon |   32.92   | 96.37  | 49.08 |  0.0  |       0.25        | 4805.38 |
+
+### Meta-Llama3-8B-Instruct-8bit
+
+|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Total Latency (s) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
+|    abt-buy     |    70.36    | 95.63  | 81.07 |  0.0  |        0.74        | 1631.3  |
+| amazon-google  |   51.46    | 75.54  | 61.22 |  0.0  |       1.2        | 1000.8  |
+|      beer      |    90.0    | 64.29  | 75.0 | 0.0  |        0.89        |   102.82 |
+|    dblp-acm    |   76.47   |   98.8   | 86.21 |  0.0  |       1.1        |    1161.97 |
+|  dblp-scholar  |   65.56   |  95.2  | 77.65 |  0.0  |       0.62        | 2020.08 |
+| fodors-zagats  |    50.0    | 100.0  | 66.67 | 0.0  |        1.0        | 187.98  |
+| itunes-amazon  |    36.23    | 96.15  | 52.63 | 0.0  |        0.72        |   151.76  |
+| walmart-amazon |   32.92   | 96.37  | 49.08 |  0.0  |       0.25        | 4805.38 |
+
+### Meta-Llama-3.1-8B-Instruct-8bit
+
+|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Total Latency (s) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
+|    abt-buy     |    86.9    | 70.87  | 78.07 |  0.0  |        0.86        | 1405.47  |
+| amazon-google  |   61.54    | 13.73  | 22.46 |  0.0  |       1.4        | 1024.32  |
+|      beer      |    100.0    | 21.43  | 35.29 | 0.0  |        1.0        |   90.64   |
+|    dblp-acm    |   93.1   |   32.4   | 48.07 |  0.0  |       0.99        |    1260.59 |
+|  dblp-scholar  |   98.18   |  21.6  | 35.41 |  0.0  |       0.24        | 5224.66 |
+| fodors-zagats  |    100.0    | 50.0  | 66.67 | 0.0  |        0.92        | 205.88  |
+| itunes-amazon  |    66.67    | 30.77  | 42.11 | 0.0  |        0.63        |   172.86  |
+| walmart-amazon |   73.81   | 48.19  | 58.31 |  0.0  |       0.97        | 1224.9 |
 
 ### Prompt-level batching
 
