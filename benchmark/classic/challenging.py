@@ -34,4 +34,4 @@ def run(args):
     if args.shuffle:
         random.shuffle(test_set)
 
-    return util.benchmark({'train': [], 'test': test_set}, args)
+    return util.benchmark([], test_set, args)

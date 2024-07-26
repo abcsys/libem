@@ -68,4 +68,4 @@ def run(args):
                      for d in test_set if d['label'] == 1]
         }
 
-    return util.benchmark({'train': train_set, 'test': test_set}, args)
+    return util.benchmark(train_set, test_set, args)

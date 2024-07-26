@@ -18,7 +18,7 @@ from libem.tune.learn import icl_strategies
 import benchmark as bm
 
 
-def benchmark(dataset, args) -> dict:
+def benchmark(train_set, test_set, args) -> dict:
     start_time = time.time()
 
     if args.quiet:
@@ -54,6 +54,7 @@ def benchmark(dataset, args) -> dict:
         libem.calibrate({
             "libem.match.prompt.rules": Rules(args.rules),
         })
+    # TODO: add args.icl_strategy to benchmark.run
     # if args.icl_strategy:
     #     libem.calibrate({
     #         "libem.match.parameter.icl_strategy": icl_strategies[args.icl_strategy],
@@ -67,12 +68,11 @@ def benchmark(dataset, args) -> dict:
 
     # blocking
     if args.block:
-        ds, stats['block'], results['block'] = run_block(dataset['test'], args)
-        dataset['test'] = ds
+        test_set, stats['block'], results['block'] = run_block(test_set, args)
 
     # matching
     if args.match:
-        stats['match'], results['match'] = run_match(dataset, args)
+        stats['match'], results['match'] = run_match(train_set, test_set, args)
 
     stats['total_latency'] = round(time.time() - start_time, 2)
 
@@ -196,9 +196,7 @@ def run_block(dataset, args):
     return out, stats, results
 
 
-def run_match(dataset, args):
-    train_set, test_set = dataset['train'], dataset['test']
-    
+def run_match(train_set, test_set, args):
     if args.num_pairs > 0:
         num_pairs = min(args.num_pairs, len(test_set) - args.start_index)
     else:
