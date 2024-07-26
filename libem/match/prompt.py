@@ -19,7 +19,7 @@ experiences = Prompt(
 
 output = Prompt(
     default="At the end, give your answer in the form of a single 'yes' or 'no'.",
-    options=[],
+    options=["Do not provide explanation. Please only give your answer in the form of a single 'yes' or 'no'."],
 )
 
 """Assistant prompts"""
