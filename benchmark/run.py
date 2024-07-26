@@ -73,9 +73,6 @@ def args() -> argparse.Namespace:
                         type=int, default=5)
 
     # dataset configurations
-    parser.add_argument("--train", dest='train',
-                        help="Use the training set.",
-                        action='store_true', default=False)
     parser.add_argument("--start-index", dest='start_index', nargs='?',
                         help="The index of the dataset to start from.",
                         type=int, default=0)

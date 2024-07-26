@@ -35,12 +35,10 @@ def run(args):
     kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
-    if args.train:
-        dataset = list(abt_buy.read_train(**kwargs))
-    else:
-        dataset = list(abt_buy.read_test(**kwargs))
+    train_set = abt_buy.read_train(**kwargs)
+    test_set = list(abt_buy.read_test(**kwargs))
     if args.shuffle:
-        random.shuffle(dataset)
+        random.shuffle(test_set)
 
     # set domain prompt
     if 'domain_prompt' in kwargs and kwargs['domain_prompt'] is True:
@@ -60,13 +58,13 @@ def run(args):
             else block_similarities['abt-buy']
         })
 
-        left = set(json.dumps(d['left']) for d in dataset)
-        right = set(json.dumps(d['right']) for d in dataset)
-        dataset = {
+        left = set(json.dumps(d['left']) for d in test_set)
+        right = set(json.dumps(d['right']) for d in test_set)
+        test_set = {
             'left': [json.loads(i) for i in left],
             'right': [json.loads(i) for i in right],
             'true': [{'left': d['left'], 'right': d['right']}
-                     for d in dataset if d['label'] == 1]
+                     for d in test_set if d['label'] == 1]
         }
 
-    return util.benchmark(dataset, args)
+    return util.benchmark(train_set, test_set, args)

@@ -18,7 +18,7 @@ from libem.tune.learn import icl_strategies
 import benchmark as bm
 
 
-def benchmark(dataset, args) -> dict:
+def benchmark(train_set, test_set, args) -> dict:
     start_time = time.time()
 
     if args.quiet:
@@ -54,10 +54,11 @@ def benchmark(dataset, args) -> dict:
         libem.calibrate({
             "libem.match.prompt.rules": Rules(args.rules),
         })
-    if args.icl_strategy:
-        libem.calibrate({
-            "libem.match.parameter.icl_strategy": icl_strategies[args.icl_strategy],
-        })
+    # TODO: add args.icl_strategy to benchmark.run
+    # if args.icl_strategy:
+    #     libem.calibrate({
+    #         "libem.match.parameter.icl_strategy": icl_strategies[args.icl_strategy],
+    #     })
     if args.num_shots:
         libem.calibrate({
             "libem.match.parameter.num_shots": args.num_shots,
@@ -67,11 +68,11 @@ def benchmark(dataset, args) -> dict:
 
     # blocking
     if args.block:
-        dataset, stats['block'], results['block'] = run_block(dataset, args)
+        test_set, stats['block'], results['block'] = run_block(test_set, args)
 
     # matching
     if args.match:
-        stats['match'], results['match'] = run_match(dataset, args)
+        stats['match'], results['match'] = run_match(train_set, test_set, args)
 
     stats['total_latency'] = round(time.time() - start_time, 2)
 
@@ -195,11 +196,13 @@ def run_block(dataset, args):
     return out, stats, results
 
 
-def run_match(dataset, args):
+def run_match(train_set, test_set, args):
+    test_set = list(test_set)
+    
     if args.num_pairs > 0:
-        num_pairs = min(args.num_pairs, len(dataset) - args.start_index)
+        num_pairs = min(args.num_pairs, len(test_set) - args.start_index)
     else:
-        num_pairs = len(dataset) - args.start_index
+        num_pairs = len(test_set) - args.start_index
     num_batches = math.ceil(num_pairs / args.batch_size)
 
     print(f"Benchmark: Matching {num_pairs} "
@@ -223,7 +226,7 @@ def run_match(dataset, args):
 
         if args.sync and args.batch_size == 1:
             # iterate and match each pair
-            for i, data in enumerate(dataset[args.start_index:]):
+            for i, data in enumerate(test_set[args.start_index:]):
                 if args.num_pairs > 0 and i + 1 > args.num_pairs:
                     break
 
@@ -260,7 +263,7 @@ def run_match(dataset, args):
         else:
             # prepare datasets
             left, right, labels = [], [], []
-            for i, data in enumerate(dataset[args.start_index:]):
+            for i, data in enumerate(test_set[args.start_index:]):
                 if args.num_pairs > 0 and i + 1 > args.num_pairs:
                     break
 
@@ -388,8 +391,6 @@ def create_signature(args):
         signature.append(
             str(args.num_pairs if args.num_pairs > 0 else 'all')
         )
-    if args.train:
-        signature.append('train')
     if not args.schema:
         signature.append('no-schema')
     if args.cot:
