@@ -1,10 +1,12 @@
-import math
 import os
 import sys
+import math
 import time
 import json
+import argparse
 import numpy as np
 from datetime import datetime
+from typing import Iterable
 
 import libem
 from libem.core import eval
@@ -15,10 +17,13 @@ from libem.optimize import cost as cost_util
 from libem.tune.learn.confidence.calibrate import temperature_scale
 from libem.tune.learn import icl_strategies
 
+from benchmark.classic import block_similarities
 import benchmark as bm
 
 
-def benchmark(train_set, test_set, args) -> dict:
+def benchmark(train_set: Iterable,
+              test_set: Iterable,
+              args: argparse.Namespace) -> dict:
     start_time = time.time()
 
     if args.quiet:
@@ -54,11 +59,10 @@ def benchmark(train_set, test_set, args) -> dict:
         libem.calibrate({
             "libem.match.prompt.rules": Rules(args.rules),
         })
-    # TODO: add args.icl_strategy to benchmark.run
-    # if args.icl_strategy:
-    #     libem.calibrate({
-    #         "libem.match.parameter.icl_strategy": icl_strategies[args.icl_strategy],
-    #     })
+    if args.icl:
+        libem.calibrate({
+            "libem.match.parameter.icl_strategy": icl_strategies[args.icl],
+        })
     if args.num_shots:
         libem.calibrate({
             "libem.match.parameter.num_shots": args.num_shots,
@@ -105,8 +109,21 @@ def benchmark(train_set, test_set, args) -> dict:
     return report
 
 
-def run_block(dataset, args):
-    total_pairs = len(dataset['left']) * len(dataset['right'])
+def run_block(test_set: Iterable, args: argparse.Namespace):
+    libem.calibrate({
+        "libem.block.parameter.similarity": args.similarity
+        if 0 <= args.similarity <= 100
+        else block_similarities[args.name]
+    })
+
+    # prepare the blocking dataset
+    # deduplicate left and right descriptions
+    left = [json.loads(i) for i in set(json.dumps(d['left']) for d in test_set)]
+    right = [json.loads(i) for i in set(json.dumps(d['right']) for d in test_set)]
+    true = [{'left': d['left'], 'right': d['right']}
+            for d in test_set if d['label'] == 1]
+
+    total_pairs = len(left) * len(right)
 
     print(f"Benchmark: Blocking {total_pairs} potential pairs "
           f"from the {args.name} benchmark", end='')
@@ -119,23 +136,18 @@ def run_block(dataset, args):
 
     blocked = []
     start_time = time.time()
-    block_iter = libem.block(dataset['left'], dataset['right'])
-    block_next = next(block_iter, None)
-    while block_next:
-        blocked.append(block_next)
+    for pair in libem.block(left, right):
+        blocked.append(pair)
 
         # check num_pairs stop condition
-        if args.num_pairs > 0 and len(blocked) - args.start_index >= args.num_pairs:
+        if 0 < args.num_pairs <= len(blocked) - args.start_index:
             break
-
-        block_next = next(block_iter, None)
     total_time = time.time() - start_time
-
     # generate output and stats
     out = []
     tp, fp, fn, num_tn = [], [], [], 0
     for pair in blocked:
-        if pair in dataset['true']:
+        if pair in true:
             tp.append(pair)
             out.append({
                 'left': pair['left'],
@@ -150,7 +162,7 @@ def run_block(dataset, args):
                 'label': 0
             })
 
-    for pair in dataset['true']:
+    for pair in true:
         if pair not in tp:
             fn.append(pair)
 
@@ -198,7 +210,7 @@ def run_block(dataset, args):
 
 def run_match(train_set, test_set, args):
     test_set = list(test_set)
-    
+
     if args.num_pairs > 0:
         num_pairs = min(args.num_pairs, len(test_set) - args.start_index)
     else:
@@ -212,7 +224,6 @@ def run_match(train_set, test_set, args):
 
     if args.num_shots > 0:
         print(f"Benchmark: Using {args.num_shots} shots for in-context learning.")
-
 
     start_time = time.time()
 

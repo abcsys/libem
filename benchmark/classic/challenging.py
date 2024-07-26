@@ -25,9 +25,12 @@ def run(args):
     }
 
     kwargs.update(args.kwargs or {})
-    
+
     if args.block:
         raise NotImplementedError("Blocking is not supported for this dataset.")
+
+    if args.num_shots:
+        raise NotImplementedError("In-context learning is not supported for this dataset.")
 
     # get dataset with kwargs
     test_set = challenging.read_test(**kwargs)

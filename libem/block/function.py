@@ -28,7 +28,7 @@ schema = {
 
 def func(left: list[str | dict], right: list[str | dict]) -> Iterator[dict]:
     right_strs = []
-
+    similarity = parameter.similarity()
     for l in left:
         if type(l) is dict:
             left_vals = []
@@ -51,5 +51,5 @@ def func(left: list[str | dict], right: list[str | dict]) -> Iterator[dict]:
                     right_str = l
                 right_strs.append(right_str)
 
-            if fuzz.token_set_ratio(left_str, right_str) >= parameter.similarity():
+            if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                 yield {'left': l, 'right': r}

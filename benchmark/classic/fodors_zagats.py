@@ -1,12 +1,10 @@
-import json
 import random
 
 import libem
-from libem.core.struct import Prompt
+from libem.core.struct import Rules, Experiences
 from libem.prepare.datasets import fodors_zagats
 
 from benchmark import util
-from benchmark.classic import block_similarities
 
 
 def run(args):
@@ -32,8 +30,9 @@ def run(args):
 
     # get dataset with kwargs
     train_set = fodors_zagats.read_train(**kwargs)
-    test_set = list(fodors_zagats.read_test(**kwargs))
+    test_set = fodors_zagats.read_test(**kwargs)
     if args.shuffle:
+        test_set = list(test_set)
         random.shuffle(test_set)
 
     # set domain prompt
@@ -42,26 +41,9 @@ def run(args):
             "libem.match.prompt.query": "Do the two restaurant descriptions refer to the same real-world restaurant? "
                                         "Answer with 'Yes' if they do and 'No' if they do not.\n"
                                         "Restaurant 1: '{left}'\nRestaurant 2: '{right}'",
-            "libem.match.prompt.rules": Prompt.Rules(),
-            "libem.match.prompt.experiences": Prompt.Experiences(),
+            "libem.match.prompt.rules": Rules(),
+            "libem.match.prompt.experiences": Experiences(),
             "libem.match.prompt.output": ""
         })
-
-    if args.block:
-        libem.calibrate({
-            "libem.block.parameter.similarity":
-                args.similarity
-                if 0 <= args.similarity <= 100
-                else block_similarities['fodors-zagats']
-        })
-
-        left = set(json.dumps(d['left']) for d in test_set)
-        right = set(json.dumps(d['right']) for d in test_set)
-        test_set = {
-            'left': [json.loads(i) for i in left],
-            'right': [json.loads(i) for i in right],
-            'true': [{'left': d['left'], 'right': d['right']}
-                     for d in test_set if d['label'] == 1]
-        }
 
     return util.benchmark(train_set, test_set, args)
