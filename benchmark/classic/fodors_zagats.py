@@ -31,7 +31,7 @@ def run(args):
     kwargs.update(args.kwargs or {})
 
     # get dataset with kwargs
-    train_set = list(fodors_zagats.read_train(**kwargs))
+    train_set = fodors_zagats.read_train(**kwargs)
     test_set = list(fodors_zagats.read_test(**kwargs))
     if args.shuffle:
         random.shuffle(test_set)

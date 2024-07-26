@@ -30,8 +30,9 @@ def run(args):
         raise NotImplementedError("Blocking is not supported for this dataset.")
 
     # get dataset with kwargs
-    test_set = list(challenging.read_test(**kwargs))
+    test_set = challenging.read_test(**kwargs)
     if args.shuffle:
+        test_set = list(test_set)
         random.shuffle(test_set)
 
     return util.benchmark([], test_set, args)

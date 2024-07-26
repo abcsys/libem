@@ -197,6 +197,8 @@ def run_block(dataset, args):
 
 
 def run_match(train_set, test_set, args):
+    test_set = list(test_set)
+    
     if args.num_pairs > 0:
         num_pairs = min(args.num_pairs, len(test_set) - args.start_index)
     else:
