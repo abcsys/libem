@@ -9,5 +9,11 @@ Attentive Shots
    improving model training and generalization.
 """
 
-def run(dataset, metric):
-    raise NotImplementedError("This function is not implemented yet.")
+from typing import Iterable
+from libem.core.struct import Shots
+
+
+def run(shots: Shots,
+        question: str,
+        num_shots: int) -> Shots:
+    raise NotImplementedError

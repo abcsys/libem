@@ -3,7 +3,10 @@ import importlib
 import pkgutil
 
 import libem
-from libem.core.struct import Parameter, Prompt
+from libem.core.struct import (
+    Parameter, Prompt,
+    Shots, Shot, Rules, Experiences
+)
 
 schema = {}
 
@@ -57,7 +60,7 @@ def collect(tool: str, depth=sys.maxsize,
     # get all prompts in the tool
     if mod_prompt is not None and not tool_only:
         for p, v in mod_prompt.__dict__.items():
-            if isinstance(v, (Prompt, Prompt.Rules, Prompt.Experiences)):
+            if isinstance(v, (Parameter)):
                 if "prompt" not in parameters:
                     parameters["prompt"] = {}
                 parameters["prompt"][p] = str(v.export(full_attr))

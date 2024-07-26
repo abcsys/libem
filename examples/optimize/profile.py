@@ -1,18 +1,10 @@
 import pprint
 
 from libem.optimize import profile
-from libem.prepare.datasets.abt_buy import read_train
+from libem.prepare.datasets import abt_buy as dataset
 
 if __name__ == "__main__":
-    num_samples = 10
-
-    dataset = []
-    for i, sample in enumerate(read_train()):
-        dataset.append(sample)
-        if i == num_samples - 1:
-            break
-
     pprint.pprint(
-        profile(dataset),
+        profile(dataset.read_train(), num_samples=10),
         sort_dicts=False,
     )

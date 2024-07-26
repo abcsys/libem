@@ -1,7 +1,8 @@
 import random
 
 import libem
-from libem.tune import learn, check
+from libem.tune.learn import check
+from libem.tune.learn.refine.rule_from_mistakes import run as learn
 from libem.prepare.datasets import amazon_google
 from libem.core.log import header
 

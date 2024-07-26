@@ -1,4 +1,7 @@
-from libem.core.struct import Prompt, Shot
+from libem.core.struct import Prompt, Shots
+from libem.core.struct.prompt import (
+    Shot, Rules, Experiences
+)
 
 """System prompts"""
 role = Prompt(
@@ -8,12 +11,12 @@ role = Prompt(
 )
 
 rules = Prompt(
-    default=Prompt.Rules(),
+    default=Rules(),
     options=[],
 )
 
 experiences = Prompt(
-    default=Prompt.Experiences(),
+    default=Experiences(),
     options=[],
 )
 
@@ -23,8 +26,8 @@ output = Prompt(
 )
 
 """Assistant prompts"""
-shots = Prompt(
-    default=Prompt.Shots([Shot(), ]),
+shots = Shots(
+    default=[Shot()]
 )
 
 """User prompts"""

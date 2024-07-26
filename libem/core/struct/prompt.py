@@ -29,109 +29,132 @@ class Shot:
         return self.__str__()
 
 
+class Rules:
+    def __init__(self, rules: list[str] = None,
+                 intro: str = "Rules to follow:",
+                 sep="\n", bullet="-"):
+        self.rules = rules or []
+        self.intro = intro
+        self.sep = sep
+        self.bullet = bullet
+
+    def __call__(self, *args, **kwargs):
+        if len(self.rules) == 0:
+            return ""
+        rules = [f"{self.bullet} {rule}" for rule in self.rules
+                 if len(rule.strip()) != ""]
+        return f"{self.intro}\n" \
+               f"{self.sep.join(rules)}"
+
+    def __str__(self):
+        return str(self.__call__())
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.rules)
+
+    def __add__(self, other):
+        return self.add(other).copy()
+
+    def add(self, *rules):
+        """rule.add(rule1, rule2, ...)"""
+        for rule in rules:
+            match rule:
+                case str():
+                    self.rules.append(rule)
+                case list():
+                    self.rules.extend(rule)
+                case Rules():
+                    self.rules.extend(rule.rules)
+                case _:
+                    raise ValueError(f"Invalid rule type to add:"
+                                     f"{type(rule)} for {rule}")
+        return self
+
+    def export(self):
+        return self.__call__()
+
+    def copy(self):
+        return copy.deepcopy(self)
+
+
+class Experiences(Rules):
+    def __init__(self, mistakes: list[str] = None,
+                 intro: str = "Mistakes to avoid:",
+                 sep="\n", bullet="*"):
+        super().__init__(rules=mistakes,
+                         intro=intro,
+                         sep=sep,
+                         bullet=bullet)
+
+
+class Shots(Parameter):
+    def __init__(self, default: list[Shot] = None,
+                 options: list[list[Shot]] = None):
+        super().__init__(default, options)
+
+    def __call__(self):
+        _shots = []
+        for shot in self.value:
+            _shots.extend(shot())
+        return _shots
+
+    def __str__(self):
+        return str(self.__call__())
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.value)
+
+    def __add__(self, other):
+        return self.add(other).copy()
+
+    def __iter__(self):
+        return iter(self.value)
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return Shots(self.value[index])
+        elif isinstance(index, int):
+            return self.value[index]
+        else:
+            raise TypeError(f"Invalid argument type: {type(index)}")
+
+    def export(self, include_all=False):
+        if include_all:
+            return {
+                'default': self.default,
+                'value': self.value,
+                'options': self.options,
+                'optimal': self.optimal
+            }
+        else:
+            return f"{len(self.value)} shots"
+
+    def add(self, *shots):
+        """shots.add(shot1, shot2, ...)"""
+        for shot in shots:
+            match shot:
+                case Shot():
+                    self.value.append(shot)
+                case list():
+                    self.value.extend(shot)
+                case Shots():
+                    self.value.extend(shot.shots)
+                case _:
+                    raise ValueError(f"Invalid shot type "
+                                     f"{type(shot)} for {shot}")
+        return self
+
+    def copy(self):
+        return copy.deepcopy(self)
+
+
 class Prompt(Parameter):
-    class Shots:
-        def __init__(self, shots: list[Shot] = None):
-            self.shots = shots or []
-
-        def __call__(self):
-            _shots = []
-            for shot in self.shots:
-                _shots.extend(shot())
-            return _shots
-
-        def __str__(self):
-            return str(self.__call__())
-
-        def __repr__(self):
-            return self.__str__()
-
-        def __len__(self):
-            return len(self.shots)
-
-        def __add__(self, other):
-            return self.add(other).copy()
-
-        def add(self, *shots):
-            """shots.add(shot1, shot2, ...)"""
-            for shot in shots:
-                match shot:
-                    case Shot():
-                        self.shots.append(shot)
-                    case list():
-                        self.shots.extend(shot)
-                    case Prompt.Shots():
-                        self.shots.extend(shot.shots)
-                    case _:
-                        raise ValueError(f"Invalid shot type "
-                                         f"{type(shot)} for {shot}")
-            return self
-
-        def export(self):
-            return self.__call__()
-
-        def copy(self):
-            return copy.deepcopy(self)
-
-    class Rules:
-        def __init__(self, rules: list[str] = None,
-                     intro: str = "Rules to follow:",
-                     sep="\n", bullet="-"):
-            self.rules = rules or []
-            self.intro = intro
-            self.sep = sep
-            self.bullet = bullet
-
-        def __call__(self, *args, **kwargs):
-            if len(self.rules) == 0:
-                return ""
-            rules = [f"{self.bullet} {rule}" for rule in self.rules
-                     if len(rule.strip()) != ""]
-            return f"{self.intro}\n" \
-                   f"{self.sep.join(rules)}"
-
-        def __str__(self):
-            return str(self.__call__())
-
-        def __repr__(self):
-            return self.__str__()
-
-        def __len__(self):
-            return len(self.rules)
-
-        def __add__(self, other):
-            return self.add(other).copy()
-
-        def add(self, *rules):
-            """rule.add(rule1, rule2, ...)"""
-            for rule in rules:
-                match rule:
-                    case str():
-                        self.rules.append(rule)
-                    case list():
-                        self.rules.extend(rule)
-                    case Prompt.Rules():
-                        self.rules.extend(rule.rules)
-                    case _:
-                        raise ValueError(f"Invalid rule type to add:"
-                                         f"{type(rule)} for {rule}")
-            return self
-
-        def export(self):
-            return self.__call__()
-
-        def copy(self):
-            return copy.deepcopy(self)
-
-    class Experiences(Rules):
-        def __init__(self, mistakes: list[str] = None,
-                     intro: str = "Mistakes to avoid:",
-                     sep="\n", bullet="*"):
-            super().__init__(rules=mistakes,
-                             intro=intro,
-                             sep=sep,
-                             bullet=bullet)
-
     @classmethod
     def join(cls, *prompts, sep="\n"):
         to_join = []
@@ -140,12 +163,10 @@ class Prompt(Parameter):
             match prompt:
                 case str():
                     _prompt = prompt
-                case cls.Rules():
+                case Rules():
                     _prompt = prompt()
-                case cls.Experiences():
+                case Experiences():
                     _prompt = prompt()
-                case cls.Shots():
-                    _prompt = str(prompt())
                 case _:
                     raise ValueError(f"Invalid prompt type to join:"
                                      f"{type(prompt)} for {prompt}")

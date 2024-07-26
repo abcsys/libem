@@ -25,16 +25,17 @@ def run(args):
     }
 
     kwargs.update(args.kwargs or {})
-    
+
     if args.block:
         raise NotImplementedError("Blocking is not supported for this dataset.")
 
-    # get dataset with kwargs
-    if args.train:
-        raise NotImplementedError("Training data not available for this dataset.")
-    else:
-        dataset = list(challenging.read_test(**kwargs))
-    if args.shuffle:
-        random.shuffle(dataset)
+    if args.num_shots:
+        raise NotImplementedError("In-context learning is not supported for this dataset.")
 
-    return util.benchmark(dataset, args)
+    # get dataset with kwargs
+    test_set = challenging.read_test(**kwargs)
+    if args.shuffle:
+        test_set = list(test_set)
+        random.shuffle(test_set)
+
+    return util.benchmark([], test_set, args)
