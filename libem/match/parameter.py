@@ -26,7 +26,7 @@ icl_strategy = Parameter(
     options=[random_shots, similar_shots],
 )
 num_shots = Parameter(
-    default=3,
+    default=0,
 )
 
 # prompt-level batching

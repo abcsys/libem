@@ -13,9 +13,11 @@ from libem.core import eval
 from libem.core.struct import Rules
 from libem.match.parameter import tools
 from libem.match import digest as match_digest
+from libem.match import prompt as match_prompt
 from libem.optimize import cost as cost_util
 from libem.tune.learn.confidence.calibrate import temperature_scale
 from libem.tune.learn import icl_strategies
+from libem.core.struct import Shots, Shot
 
 from benchmark.classic import block_similarities
 import benchmark as bm
@@ -223,7 +225,16 @@ def run_match(train_set, test_set, args):
           f"from the {args.name} benchmark.")
 
     if args.num_shots > 0:
-        print(f"Benchmark: Using {args.num_shots} shots for in-context learning.")
+        shots = Shots([
+            Shot(
+                question=match_prompt.query(left=d['left'], right=d['right']),
+                answer="yes" if d['label'] == 1 else "no"
+            ) for d in train_set
+        ])
+        print(f"Benchmark: Using {args.num_shots} shots with {args.icl} strategy "
+              f"for in-context learning.")
+    else:
+        shots = []
 
     start_time = time.time()
 
@@ -233,12 +244,13 @@ def run_match(train_set, test_set, args):
         libem.calibrate({
             "libem.match.parameter.batch_size": args.batch_size,
             "libem.match.parameter.sync": args.sync,
+            "libem.match.prompt.shots": shots,
         })
 
         if args.sync and args.batch_size == 1:
             # iterate and match each pair
             for i, data in enumerate(test_set[args.start_index:]):
-                if args.num_pairs > 0 and i + 1 > args.num_pairs:
+                if 0 < args.num_pairs < i + 1:
                     break
 
                 left, right = str(data['left']), str(data['right'])
@@ -275,7 +287,7 @@ def run_match(train_set, test_set, args):
             # prepare datasets
             left, right, labels = [], [], []
             for i, data in enumerate(test_set[args.start_index:]):
-                if args.num_pairs > 0 and i + 1 > args.num_pairs:
+                if 0 < args.num_pairs < i + 1:
                     break
 
                 left.append(str(data['left']))
@@ -298,7 +310,7 @@ def run_match(train_set, test_set, args):
 
         # fill in additional info from the trace
         for span in t.get():
-            if not 'match' in span:
+            if 'match' not in span:
                 continue
 
             match = span['match']

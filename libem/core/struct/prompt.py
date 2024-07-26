@@ -124,6 +124,17 @@ class Shots(Parameter):
         else:
             raise TypeError(f"Invalid argument type: {type(index)}")
 
+    def export(self, include_all=False):
+        if include_all:
+            return {
+                'default': self.default,
+                'value': self.value,
+                'options': self.options,
+                'optimal': self.optimal
+            }
+        else:
+            return f"{len(self.value)} shots"
+
     def add(self, *shots):
         """shots.add(shot1, shot2, ...)"""
         for shot in shots:
