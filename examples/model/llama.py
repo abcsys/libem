@@ -24,7 +24,8 @@ def negative():
 
 def main():
     libem.calibrate({
-        "libem.match.parameter.model": "llama3",
+        "libem.match.parameter.model": "llama3.1",
+        
     }, verbose=True)
     positive()
     negative()

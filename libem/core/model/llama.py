@@ -11,7 +11,7 @@ _model, _tokenizer = None, None
 def call(prompt: str | list | dict,
          tools: list[str] = None,
          context: list = None,
-         model: str = "llama3_1",
+         model: str = "llama3.1",
          temperature: float = 0.0,
          seed: int = None,
          max_model_call: int = 3,
@@ -33,7 +33,7 @@ def call(prompt: str | list | dict,
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
     message_openai = (messages or []) + (context or [])
 
-    if model == "llama3" or model == "llama3_1":
+    if model == "llama3" or model == "llama3.1":
         BOS = "<|begin_of_text|>"
         SYS = "<|start_header_id|>system<|end_header_id|>"
         USER = "<|start_header_id|>user<|end_header_id|>"
@@ -62,7 +62,7 @@ def call(prompt: str | list | dict,
         # Load the model using MLX for apple silicon device
         if model == "llama3":
             model_path = "mlx-community/Meta-Llama-3-8B-Instruct-8bit"
-        elif model == "llama3_1":
+        elif model == "llama3.1":
             model_path = "mlx-community/Meta-Llama-3.1-8B-Instruct-8bit"
         else:
             raise ValueError(f"{model} is not supported.")
