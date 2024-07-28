@@ -17,12 +17,19 @@ browse:
 	python examples/tool/browse.py
 chat:
 	python examples/tool/chat.py
-block:
-	python examples/block.py
 all: match browse chat
 
-# extract examples
-.PHONY: extract
+# tool output examples
+.PHONY: confidence likelihood
+confidence:
+	python examples/tool/confidence.py
+likelihood:
+	python examples/tool/likelihood.py
+
+# tool examples
+.PHONY: block extract
+block:
+	python examples/block.py
 extract:
 	python examples/extract.py
 
@@ -34,11 +41,11 @@ trace:
 	python examples/tool/trace.py
 
 # tuning examples
-.PHONY: rule shot tune
-rule:
-	python examples/tune/rule_from_mistakes.py
-shot:
-	python examples/tune/similar_shots.py
+.PHONY: rules shots tune
+rules:
+	python examples/tune/rules.py
+shots:
+	python examples/tune/shots.py
 tune: rule
 
 # optimize examples
@@ -118,5 +125,10 @@ data:
 serve:
 	python -m serve.run
 build:
-	docker build -t silveryfu/libem-serve:0.0.17 -f serve/deploy/Dockerfile . && \
-	docker push silveryfu/libem-serve:0.0.17
+	docker build -t silveryfu/libem-serve:0.0.21 -f serve/deploy/Dockerfile . && \
+	docker push silveryfu/libem-serve:0.0.21
+
+# libem apps
+.PHONY: cluster
+cluster:
+	python examples/apps/cluster.py

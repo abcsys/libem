@@ -1,4 +1,4 @@
-from libem.core.struct import Prompt, Shots
+from libem.core.struct import Prompt, Shots, Index
 from libem.core.struct.prompt import (
     Shot, Rules, Experiences
 )
@@ -21,8 +21,15 @@ experiences = Prompt(
 )
 
 output = Prompt(
-    default="At the end, give your answer in the form of a single 'yes' or 'no'.",
-    options=[],
+    default=Index("plain"),
+    options={
+        "plain": "At the end, give your answer in the form of a "
+                 "single 'yes' or 'no'.",
+        "likelihood": "At the end, give your answer strictly in the "
+                      "format of a single number between 0.0 and 1.0, "
+                      "estimating the likelihood that the two entities "
+                      "are the same."
+    },
 )
 
 """Assistant prompts"""
