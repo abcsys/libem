@@ -91,9 +91,8 @@ class Experiences(Rules):
 
 
 class Shots(Parameter):
-    def __init__(self, default: list[Shot] = None,
-                 options: list[list[Shot]] = None):
-        super().__init__(default, options)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def __call__(self):
         _shots = []
@@ -174,6 +173,5 @@ class Prompt(Parameter):
                 to_join.append(_prompt)
         return sep.join(to_join)
 
-    def __init__(self, default: str | Shots | Rules | Experiences,
-                 options: list[str | Shots | Rules | Experiences] = None):
-        super().__init__(default, options)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
