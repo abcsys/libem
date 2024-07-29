@@ -152,7 +152,7 @@ const Match = () => {
 
     const fetchNext = () => {
         if (index >= 0) {
-            fetch(`${baseURL}/match_one?uuid=${uuid.current}&benchmark=${dataset}&`)
+            fetch(`${baseURL}/matchone?uuid=${uuid.current}&benchmark=${dataset}&`)
             .then(r => {
                 if (r.status === 204) {
                     throw Error("No content")
@@ -183,7 +183,7 @@ const Match = () => {
     }
 
     const match = (answer) => {
-        fetch(`${baseURL}/submit_one/`, {
+        fetch(`${baseURL}/submitone/`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
