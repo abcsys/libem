@@ -1,11 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
-
 const baseURL = "http://127.0.0.1:8000"
 
-const getUUID = () => {
+const init = async () => {
     const name = "uuid="
     let uuid = ""
 
+    // get saved uuid from cookies
     const decodedCookie = decodeURIComponent(document.cookie)
     const ca = decodedCookie.split(';')
     for(let i = 0; i <ca.length; i++) {
@@ -18,16 +17,20 @@ const getUUID = () => {
         }
     }
 
-    if (uuid === "") {
-        uuid = uuidv4()
+    const res = await fetch(baseURL + `/init/?uuid=${uuid}`)
+    if (res.ok) {
+        const body = await res.json()
+
+        // add uuid to cookies, set to expire in 40 days
+        const d = new Date()
+        d.setTime(d.getTime() + 40*24*60*60*1000)
+        const expires = "expires=" + d.toUTCString()
+        document.cookie = name + body['uuid'] + ";" + expires + ";path=/"
+
+        return body
     }
 
-    const d = new Date()
-    d.setTime(d.getTime() + 40*24*60*60*1000)
-    const expires = "expires=" + d.toUTCString()
-    document.cookie = name + uuid + ";" + expires + ";path=/"
-
-    return uuid
+    return {uuid: 0, benchmarks: []}
 }
 
-export { baseURL, getUUID }
+export { baseURL, init }

@@ -3,6 +3,7 @@ benchmark/_output/
 catalog.db*
 arena/node_modules
 arena/results
+arena/secrets
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

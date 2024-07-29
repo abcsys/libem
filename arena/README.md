@@ -7,6 +7,10 @@ Two entities are given, and the user has to decide if they are the same or not b
 - User selections are logged anonymously using a session UUID
 - User performance is compared to Libem and aggregate stats of all other users
 
+## API
+
+Libem arena supports interactions from both users (through the frontend) and EM models (through the API).
+
 ## Set up
 
 Libem arena is available to try out at https://arena.libem.org.
