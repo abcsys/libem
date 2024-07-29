@@ -17,7 +17,7 @@ const init = async () => {
         }
     }
 
-    const res = await fetch(baseURL + `/init/?uuid=${uuid}`)
+    const res = await fetch(baseURL + `/init/?token=user&uuid=${uuid}`)
     if (res.ok) {
         const body = await res.json()
 

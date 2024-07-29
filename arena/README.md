@@ -1,19 +1,24 @@
 # Libem Arena
 
-Libem-arena is a simple web "game" which allows crowd-sourcing entity matching over a web page.
+Libem Arena is a simple web "game" which allows crowd-sourcing entity matching over a web page.
 
 Two entities are given, and the user has to decide if they are the same or not by clicking yes or no button.
 - Pairs of entities are sampled from the datasets on different categories
 - User selections are logged anonymously using a session UUID
 - User performance is compared to Libem and aggregate stats of all other users
 
-## API
+## Frontend
 
-Libem arena supports interactions from both users (through the frontend) and EM models (through the API).
+Libem Arena is available to try out at https://arena.libem.org. See the [screenshots](#screenshots) section for more details.
 
-## Set up
+## API - [Docs](https://arena.libem.org/api/docs)
 
-Libem arena is available to try out at https://arena.libem.org.
+A benchmarking tool for EM.
+Libem Arena supports benchmarking both users (preferably through the frontend) and EM models (through the API).
+
+The API is available to try out at https://arena.libem.org/api/.
+
+## Local setup
 
 To host your own version: 
 
@@ -36,7 +41,14 @@ libem/arena> npm run build
 
 ## Screenshots
 
+### Home
 ![Libem Arena Homescreen](./demo/arena_home.png)
+
+### Match
 ![Libem Arena Homescreen](./demo/arena_select.png)
+
+## Results
 ![Libem Arena Homescreen](./demo/arena_result.png)
+
+## Leaderboard
 ![Libem Arena Homescreen](./demo/arena_leaderboard.png)

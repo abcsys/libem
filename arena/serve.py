@@ -16,19 +16,31 @@ from libem.prepare.datasets import (abt_buy, amazon_google, beer, dblp_acm,
                                     dblp_scholar, fodors_zagats, itunes_amazon, 
                                     walmart_amazon, challenging)
 
+
+#####################
 # POST structs
+#####################
+
 class Submit(BaseModel):
     uuid: str
-    answers: list
+    answers: list[bool | int]
     display_name: str
 class SubmitOne(BaseModel):
     uuid: str
     benchmark: str
     answer: bool
-    time: int | float = -1
+    time: float | None = None
+class DeleteUser(BaseModel):
+    uuid: str
+    password: str | None = None
 class RunSql(BaseModel):
     query: str
     password: str
+
+
+#####################
+# Benchmarks
+#####################
 
 def read_demo(ds_name):
     ds_name = ds_name.lower()
@@ -47,7 +59,6 @@ def read_result(ds_name):
     with open(file, 'r') as f:
         return json.load(f)
 
-# benchmarks
 benchmark_list = {
     'Abt-Buy': abt_buy,
     'Amazon-Google': amazon_google,
@@ -73,11 +84,21 @@ metadata = {
     }
     for name, v in benchmarks.items()
 }
+
 libem_results = {
     name: read_result(name) for name in benchmark_list.keys()
 }
 
-# sql dbs 
+# read in secrets
+home_dir = os.path.dirname(os.path.realpath(__file__))
+with open(os.path.join(os.path.join(home_dir, 'secrets'), 'secrets.json'), 'r') as f:
+    secrets = json.load(f)
+
+
+#####################
+# SQL DB
+#####################
+
 con = sqlite3.connect("results.db")
 con.row_factory = sqlite3.Row
 cur = con.cursor()
@@ -90,6 +111,7 @@ cur.execute("CREATE TABLE IF NOT EXISTS sessions("
             "timestamp float)")
 cur.execute("CREATE TABLE IF NOT EXISTS matches("
             "uuid char(36) NOT null, "
+            "type varchar(20) Not null, "
             "entity_1 varchar(5000), "
             "entity_2 varchar(5000), "
             "pred int NOT null, "
@@ -122,15 +144,83 @@ if res.fetchone() is None:
     con.commit()
 cur.close()
 
-# read in secrets
-home_dir = os.path.dirname(os.path.realpath(__file__))
-with open(os.path.join(os.path.join(home_dir, 'secrets'), 'secrets.json'), 'r') as f:
-    secrets = json.load(f)
+
+#####################
+# Helper methods
+#####################
 
 def compare(a, b):
+    ''' Compare function for ordering leaderboard entries. '''
     return a['score'] - b['score']
 
-app = FastAPI()
+def validate(uuid: str, benchmark: str = None):
+    ''' Check validity of uuid and optionally benchmark. '''
+    
+    try:
+        uuid = str(uuidlib.UUID(uuid))
+    except ValueError:
+        raise HTTPException(status_code=422, 
+                            detail='UUID is not valid. '
+                                   'Call /init to get a valid UUID first.')
+    
+    if benchmark is not None and benchmark not in benchmark_list.keys():
+        raise HTTPException(status_code=422, detail='Benchmark not found.')
+    
+    return uuid
+
+def get_session(uuid: str):
+    ''' Get session info for uuid. '''
+    
+    cur = con.cursor()
+    session = cur.execute("SELECT * FROM sessions WHERE uuid = ?",
+              (uuid,)).fetchall()
+    cur.close()
+    
+    if len(session) == 0:
+        raise HTTPException(status_code=400, 
+                            detail='UUID does not exist. '
+                                   'Call /init with your UUID first.')
+    
+    return dict(session[0])
+
+
+#####################
+# FastAPI
+#####################
+
+description = '''
+A benchmarking tool for EM.
+Libem Arena supports benchmarking both users (preferably through the frontend) and EM models (through the API).
+'''
+
+tags_metadata = [
+    {
+        "name": "Init",
+        "description": "The entry point to the API. Returns a UUID and a list of available benchmarks."
+    },
+    {
+        "name": "Model",
+        "description": "The API for benchmarking EM models. "
+                       "All entries of a benchmark will be provided in a single call to /match "
+                       "and all answers need to be submitted in the same call to /submit."
+    },
+    {
+        "name": "User",
+        "description": "The API for benchmarking users and is integrated with the Libem Arena frontend. "
+                       "Each entry of a benchmark will be provided one at a time with each call to /matchone "
+                       "and answers are submitted one at a time to /submitone."
+    },
+    {
+        "name": "Misc",
+        "description": "Miscellaneous calls that interact with the database."
+    },
+]
+
+app = FastAPI(
+    title="Libem Arena API",
+    description=description,
+    openapi_tags=tags_metadata
+)
 
 # handle CORS
 app.add_middleware(
@@ -141,23 +231,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get('/init/')
+@app.get("/init/", tags=["Init"])
 async def init(request: Request, token: str = '', uuid: str = ''):
-    ''' Return benchmark info and generates an UUID if not given. '''
+    ''' Return benchmark info and generates a UUID if not given. '''
 
     # check if provided uuid and token are valid
     try:
         uuid = str(uuidlib.UUID(uuid))
     except ValueError:
         # if not, generate a new uuid from the incoming IP address
-        ip_hex = hashlib.md5(request.client.host.encode("UTF-8")).hexdigest()
+        if request.client:
+            ip = request.client.host
+        elif 'x-real-ip' in request.headers:
+            ip = request.headers['x-real-ip']
+        else:
+            ip = str(uuidlib.uuid4())
+        ip_hex = hashlib.md5(ip.encode("UTF-8")).hexdigest()
         uuid = str(uuidlib.UUID(hex=ip_hex))
     if token not in secrets['tokens'].keys():
         raise HTTPException(status_code=422, detail='Bad token.')
 
     # add to sessions db if not exists, or update token
     cur = con.cursor()
-    session = cur.execute("SELECT type FROM sessions WHERE uuid = ?",
+    session = cur.execute("SELECT seed FROM sessions WHERE uuid = ?",
               (uuid,)).fetchall()
     if len(session) == 0:
         cur.execute("INSERT INTO sessions(uuid, type, seed) VALUES(?, ?, ?)", 
@@ -165,7 +261,7 @@ async def init(request: Request, token: str = '', uuid: str = ''):
     else:
         cur.execute("UPDATE sessions SET type = ?, seed = ?, matching = ? "
                     "WHERE uuid = ?", 
-                    (secrets['tokens'][token], random.randint(0, 0xffffffff), 0, uuid))
+                    (secrets['tokens'][token], dict(session[0])['seed'], 0, uuid))
     con.commit()
     cur.close()
     
@@ -174,30 +270,12 @@ async def init(request: Request, token: str = '', uuid: str = ''):
         'benchmarks': metadata
     }
 
-@app.get('/match/')
+@app.get("/match/", tags=["Model"])
 async def match(uuid: str, benchmark: str):
     ''' Return all pairs from a benchmark. '''
     
-    # check validity of uuid and benchmark
-    try:
-        uuid = str(uuidlib.UUID(uuid))
-    except ValueError:
-        raise HTTPException(status_code=422, 
-                            detail='UUID is not valid. '
-                                   'Call /init to get a valid UUID first.')
-    if benchmark not in benchmark_list.keys():
-        raise HTTPException(status_code=422, detail='Benchmark not found.')
-    
-    cur = con.cursor()
-    
-    # get user type, seed, and matching from session
-    session = cur.execute("SELECT type, seed, matching FROM sessions WHERE uuid = ?",
-              (uuid,)).fetchall()
-    if len(session) == 0:
-        raise HTTPException(status_code=400, 
-                            detail='UUID does not exist.'
-                                   'Call /init with your UUID first.')
-    session = dict(session[0])
+    uuid = validate(uuid, benchmark)
+    session = get_session(uuid)
     
     if session['type'] in secrets['user_types']:
         raise HTTPException(status_code=403, 
@@ -208,8 +286,6 @@ async def match(uuid: str, benchmark: str):
         raise HTTPException(status_code=403, 
                             detail="Sumbit the previous matching request first "
                                    "or call /init again to reset.")
-    
-    cur.close()
     
     # shuffle all pairs
     random.seed(session['seed'])
@@ -226,33 +302,19 @@ async def match(uuid: str, benchmark: str):
     cur.close()
     
     return {
+        'uuid': uuid,
+        'benchmark': metadata[benchmark],
         'pairs': pairs
     }
 
-@app.post('/submit/')
+@app.post("/submit/", tags=["Model"])
 async def submit(data: Submit):
     ''' Save all answers and return stats. '''
     
     submit_time = time.time()
     
-    # check validity of uuid
-    try:
-        uuid = str(uuidlib.UUID(data.uuid))
-    except ValueError:
-        raise HTTPException(status_code=422, 
-                            detail='UUID is not valid. '
-                                   'Call /init to get a valid UUID first.')
-    
-    cur = con.cursor()
-    
-    # get user info from session
-    session = cur.execute("SELECT * FROM sessions WHERE uuid = ?",
-              (uuid,)).fetchall()
-    if len(session) == 0:
-        raise HTTPException(status_code=400, 
-                            detail='UUID does not exist.'
-                                   'Call /init with your UUID first.')
-    session = dict(session[0])
+    uuid = validate(data.uuid)
+    session = get_session(uuid)
     benchmark = session['benchmark']
     
     if session['type'] in secrets['user_types']:
@@ -265,10 +327,10 @@ async def submit(data: Submit):
                             detail="Request a new benchmark with /match first.")
     
     # set matching to false
+    cur = con.cursor()
     cur.execute("UPDATE sessions SET matching = ? "
                 "WHERE uuid = ?", 
                 (0, uuid))
-    
     con.commit()
     cur.close()
     
@@ -297,15 +359,16 @@ async def submit(data: Submit):
                 tn += 1
     
     f1 = 100 if tp + fp + fn == 0 else tp / (tp + .5 * (fp + fn)) * 100
-    print(tp, tn, fp, fn)
-    avg_time = (submit_time - session['timestamp']) / len(data.answers)
+
+    time_taken = submit_time - session['timestamp']
+    avg_time = time_taken / len(data.answers)
     
     cur = con.cursor()
     
     # get current leaderboard entry
     lb_entry = cur.execute("SELECT * FROM leaderboard "
-                      "WHERE benchmark = ? AND uuid = ? AND name = ?",
-                      (benchmark, uuid, data.display_name)).fetchall()
+                      "WHERE benchmark = ? AND uuid = ? AND type = ? AND name = ?",
+                      (benchmark, uuid, session['type'], data.display_name)).fetchall()
     
     # if leaderboard entry does not exist, create entry, otherwise update entry
     if len(lb_entry) == 0:
@@ -323,34 +386,18 @@ async def submit(data: Submit):
     cur.close()
     
     return {
-        "score": f1,
-        "avg_time": avg_time
+        'uuid': uuid,
+        'benchmark': metadata[benchmark],
+        'score': f1,
+        'time': time_taken
     }
 
-@app.get('/match_one/')
+@app.get("/matchone/", tags=["User"])
 async def match_one(uuid: str, benchmark: str):
     ''' Return the next pair from a benchmark. '''
     
-    # check validity of uuid and benchmark
-    try:
-        uuid = str(uuidlib.UUID(uuid))
-    except ValueError:
-        raise HTTPException(status_code=422, 
-                            detail='UUID is not valid. '
-                                   'Call /init to get a valid UUID first.')
-    if benchmark not in benchmark_list.keys():
-        raise HTTPException(status_code=422, detail='Benchmark not found.')
-    
-    cur = con.cursor()
-    
-    # get user type and seed from session
-    session = cur.execute("SELECT type, seed FROM sessions WHERE uuid = ?",
-              (uuid,)).fetchall()
-    if len(session) == 0:
-        raise HTTPException(status_code=400, 
-                            detail='UUID does not exist.'
-                                   'Call /init with your UUID first.')
-    session = dict(session[0])
+    uuid = validate(uuid, benchmark)
+    session = get_session(uuid)
     
     if session['type'] not in secrets['user_types']:
         raise HTTPException(status_code=403, 
@@ -358,17 +405,18 @@ async def match_one(uuid: str, benchmark: str):
                                    "or call /init again with a different token.")
     
     # get current number of pairs matched from leaderboard
-    lb_entry = cur.execute("SELECT pairs FROM leaderboard "
-                      "WHERE benchmark = ? AND uuid = ?",
-                      (benchmark, uuid)).fetchall()
+    cur = con.cursor()
+    lb_entry = cur.execute("SELECT * FROM leaderboard "
+                      "WHERE benchmark = ? AND uuid = ? AND type = ?",
+                      (benchmark, uuid, session['type'])).fetchall()
+    cur.close()
+    
     # get the last matched pair
     if len(lb_entry) == 0:
         lb_entry = {}
     else:
         lb_entry = dict(lb_entry[0])
     pairs = lb_entry.get('pairs', 0)
-        
-    cur.close()
     
     # if no more pairs, return error
     if pairs >= metadata[benchmark]['size']:
@@ -379,46 +427,43 @@ async def match_one(uuid: str, benchmark: str):
     index = random.sample(range(0, metadata[benchmark]['size']), pairs + 1)[-1]
     pair = benchmarks[benchmark]['benchmark'][index]
     
+    # update session info
+    cur = con.cursor()
+    cur.execute("UPDATE sessions SET matching = ?, benchmark = ?, timestamp = ? "
+                "WHERE uuid = ?", 
+                (1, benchmark, time.time(), uuid))
+    con.commit()
+    cur.close()
+    
     return {
         'index': pairs,
         'left': pair['left'],
         'right': pair['right']
     }
 
-@app.post('/submit_one/')
+@app.post("/submitone/", tags=["User"])
 async def submit_one(data: SubmitOne):
     ''' Save the answer and return the label. '''
     
-    # check validity of uuid and benchmark
-    try:
-        uuid = str(uuidlib.UUID(data.uuid))
-    except ValueError:
-        raise HTTPException(status_code=422, 
-                            detail='UUID is not valid. '
-                                   'Call /init to get a valid UUID first.')
-    if data.benchmark not in benchmark_list.keys():
-        raise HTTPException(status_code=422, detail='Benchmark not found.')
+    submit_time = time.time()
     
-    cur = con.cursor()
-    
-    # get user type and seed from session
-    session = cur.execute("SELECT type, seed FROM sessions WHERE uuid = ?",
-              (uuid,)).fetchall()
-    if len(session) == 0:
-        raise HTTPException(status_code=400, 
-                            detail='UUID does not exist.'
-                                   'Call /init with your UUID first.')
-    session = dict(session[0])
+    uuid = validate(data.uuid)
+    session = get_session(uuid)
     
     if session['type'] not in secrets['user_types']:
         raise HTTPException(status_code=403, 
                             detail="User type not allowed. Use /submit instead "
                                    "or call /init again with a different token.")
     
+    if session['matching'] == 0:
+        raise HTTPException(status_code=403, 
+                            detail="Request a new pair with /matchone first.")
+    
     # get current leaderboard entry
+    cur = con.cursor()
     lb_entry = cur.execute("SELECT * FROM leaderboard "
-                      "WHERE benchmark = ? AND uuid = ?",
-                      (data.benchmark, uuid)).fetchall()
+                      "WHERE benchmark = ? AND uuid = ? AND type = ?",
+                      (data.benchmark, uuid, session['type'])).fetchall()
     cur.close()
     
     # get the last matched pair
@@ -432,11 +477,14 @@ async def submit_one(data: SubmitOne):
     index = random.sample(range(0, metadata[data.benchmark]['size']), pairs + 1)[-1]
     pair = benchmarks[data.benchmark]['benchmark'][index]
     
-    # add submission to matches db
+    # add submission to matches db and update session info
     cur = con.cursor()
-    cur.execute("INSERT INTO matches VALUES(?, ?, ?, ?, ?)", (
-        data.uuid, json.dumps(pair['left']), json.dumps(pair['right']), 
+    cur.execute("INSERT INTO matches VALUES(?, ?, ?, ?, ?, ?)", (
+        data.uuid, session['type'], json.dumps(pair['left']), json.dumps(pair['right']), 
         data.answer, pair['label']))
+    cur.execute("UPDATE sessions SET matching = ? "
+                "WHERE uuid = ?", 
+                (0, uuid))
     
     # verify answer
     tp, fp = lb_entry.get('tp', 0), lb_entry.get('fp', 0), 
@@ -453,13 +501,18 @@ async def submit_one(data: SubmitOne):
             tn += 1
     f1 = 100 if tp + fp + fn == 0 else tp / (tp + .5 * (fp + fn)) * 100
     
+    # verify reported time is close to server-tracked time
+    time_taken = submit_time - session['timestamp']
+    if data.time is not None and time_taken - 2 <= data.time <= time_taken:
+        time_taken = data.time
+    
     # if leaderboard entry does not exist, create entry, otherwise update entry
     if len(lb_entry) == 0:
         cur.execute("INSERT INTO leaderboard(uuid, type, benchmark, pairs, tp, fp, tn, fn, score, avg_time) "
                     "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                    (uuid, 'user', data.benchmark, 1, tp, fp, tn, fn, f1, data.time))
+                    (uuid, session['type'], data.benchmark, 1, tp, fp, tn, fn, f1, time_taken))
     else:
-        avg_time = (lb_entry['avg_time'] * pairs + data.time) / (pairs + 1)
+        avg_time = (lb_entry['avg_time'] * pairs + time_taken) / (pairs + 1)
         cur.execute("UPDATE leaderboard "
                     "SET pairs = ?, tp = ?, fp = ?, tn = ?, fn = ?, score = ?, avg_time = ? "
                     "WHERE uuid = ? AND benchmark = ?", 
@@ -476,10 +529,16 @@ async def submit_one(data: SubmitOne):
         'libem_pred': libem_res['pred'] == 'yes'
     }
 
-@app.get('/leaderboard/')
-async def get_leaderboard(benchmark: str, uuid: str):
-    ''' Get the leaderboard for a benchmark. '''
+@app.get("/leaderboard/", tags=["Misc"])
+async def get_leaderboard(benchmark: str, uuid: str | None = None):
+    ''' Get the leaderboard for a benchmark, optionally pass in a UUID to get its entries. '''
+    
+    if uuid is not None:
+        uuid = validate(uuid)
+        session = get_session(uuid)
+    
     cur = con.cursor()
+    
     libem = cur.execute("SELECT * FROM leaderboard WHERE benchmark = ? AND uuid = ? LIMIT 1", 
                         (benchmark, "0")).fetchall()
     best = cur.execute(f"SELECT '1' as uuid, 'Users Best' as name, '{benchmark}' as benchmark, "
@@ -492,16 +551,44 @@ async def get_leaderboard(benchmark: str, uuid: str):
                       "COALESCE(AVG(avg_time), 0) as avg_time "
                       "FROM leaderboard WHERE benchmark = ? AND type = ?",
                       (benchmark, "user")).fetchall()
-    user = cur.execute("SELECT * FROM leaderboard WHERE benchmark = ? AND uuid = ?",
-                       (benchmark, uuid)).fetchall()
+    if uuid is not None:
+        user = cur.execute("SELECT * FROM leaderboard WHERE benchmark = ? AND uuid = ? AND type = ?",
+                           (benchmark, uuid, session['type'])).fetchall()
+    
     cur.close()
     
-    filtered_lb = [dict(libem[0]), dict(best[0]), dict(avg[0])] + [dict(u) for u in user]
+    filtered_lb = [dict(libem[0]), dict(best[0]), dict(avg[0])]
+    if uuid is not None:
+        filtered_lb.extend([dict(u) for u in user])
     return sorted(filtered_lb, key=cmp_to_key(compare), reverse=True)
 
-@app.post('/run_sql/')
-async def rul_sql(data: RunSql):
-    if data.password != secrets['sql_password']:
+@app.post('/deleteuser/', tags=["Misc"])
+async def delete_user(data: DeleteUser):
+    ''' Delete a user from the database. Requires a password if the user is not a demo type. '''
+    
+    uuid = validate(data.uuid)
+    session = get_session(uuid)
+    
+    if session['type'] not in secrets['demo_types']:
+        if data.password is None:
+            raise HTTPException(status_code=403, 
+                                detail="Password required to delete this user.")
+        elif data.password != secrets['password']:
+            raise HTTPException(status_code=422, 
+                                detail='Password is not correct. Your attempt has been logged.')
+    
+    cur = con.cursor()
+    for table in ['sessions', 'matches', 'leaderboard']:
+        cur.execute(f"DELETE FROM {table} WHERE uuid = ? AND type = ?",
+                    (uuid, session['type']))
+    con.commit()
+    cur.close()
+
+@app.post('/runsql/', include_in_schema=False)
+async def run_sql(data: RunSql):
+    ''' Run a SQL query. Requires a password. '''
+    
+    if data.password != secrets['password']:
         raise HTTPException(status_code=422, 
                             detail='Password is not correct. Your attempt has been logged.')
     
