@@ -50,30 +50,14 @@ const EndScreen = ({ uuid, dataset, userAns, libemAns, userTime,
     useEffect(() => {
         // scroll to top
         window.scrollTo(0, 0)
-        
-        fetch(`${baseURL}/leaderboard/`, {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                uuid: uuid,
-                name: "A",
-                dataset: dataset,
-                pairs: userAns.length,
-                score: userF1 * 100,
-                avg_time: userTime / userAns.length
-            })
-        })}
-    , [])
+    }, [])
 
     return (
         <div className="vstack">
             <div className="pad"></div>
-            <h1 className="text-color fade-in-top">Final Results</h1>
+            <h1 className="text-color fade-in-top">Session Results</h1>
             <div className="textbox fade-in-top">
-                You attempted {userAns.length} pair{userAns.length === 1 ? "" : "s"}.
+                You attempted {userAns.length} pair{userAns.length === 1 ? "" : "s"} in this session.
             </div>
             <div className="adaptive-stack">
                 <div className="stats-box fade-in-left">
