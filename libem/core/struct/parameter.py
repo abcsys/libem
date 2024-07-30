@@ -40,11 +40,7 @@ class Parameter(Tunable):
     def __call__(self, *args, **kwargs):
         """
         When called, the instance evaluates and returns its current value. If the
-        value is a string, it formats the string with supplied args and kwargs. If
-        the value is callable, it calls the function with supplied args and kwargs.
-        If the value contains other `Parameter` instances or similarly
-        dynamically-resolvable structures, it will recursively resolve these
-        before returning.
+        value is a string, it formats the string with supplied args and kwargs.
         """
         value = self.value
         if isinstance(value, Index):
@@ -57,8 +53,6 @@ class Parameter(Tunable):
 
         if isinstance(value, str):
             return value.format(*args, **kwargs)
-        if callable(value):
-            return value(*args, **kwargs)
         else:
             return value
 
