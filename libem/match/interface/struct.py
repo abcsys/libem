@@ -70,11 +70,11 @@ def parse_input(left: Left, right: Right) -> (_Left, _Right):
             encode = parameter.dict_desc_encoding()
             left = [
                 encode(e) if isinstance(e, dict)
-                else e for e in left
+                else str(e) for e in left
             ]
             right = [
                 encode(e) if isinstance(e, dict)
-                else e for e in right
+                else str(e) for e in right
             ]
         case _:
             raise ValueError(

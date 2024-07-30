@@ -1,5 +1,6 @@
 from typing import Iterator
 from fuzzywuzzy import fuzz
+from tqdm import tqdm
 
 from libem.block import parameter
 
@@ -28,38 +29,41 @@ schema = {
 
 def func(left, right=None):
     if right is None:
-        block(left)
+        return block(left)
     else:
         return block_left_right(left, right)
 
 
-def block(records: Iterator[str] | Iterator[dict]) -> Iterator[dict]:
+def block(records: Iterator[str | dict]) -> Iterator[dict]:
     similarity = parameter.similarity()
 
-    left, right = records, records
-
-    for i, l in enumerate(left):
+    for i, l in enumerate(
+            tqdm(records, desc='Blocking')):
         left_str = convert_to_str(l)
-        for j, r in enumerate(right):
-            if i == j:
-                continue
-            right_str = convert_to_str(r)
-            if fuzz.token_set_ratio(left_str, right_str) >= similarity:
-                yield {'left': l, 'right': r}
+        for j, r in enumerate(
+                tqdm(records, desc='Comparing', leave=False)):
+            if i != j:
+                right_str = convert_to_str(r)
+                if fuzz.token_set_ratio(left_str, right_str) >= similarity:
+                    yield {'left': l, 'right': r}
 
 
 def block_left_right(left: Iterator[str | dict], right: Iterator[str | dict]) -> Iterator[dict]:
     similarity = parameter.similarity()
 
-    for l in left:
+    for l in tqdm(left, desc='Blocking'):
         left_str = convert_to_str(l)
-        for r in right:
+        for r in tqdm(right, desc='Comparing', leave=False):
             right_str = convert_to_str(r)
             if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                 yield {'left': l, 'right': r}
 
 
-def convert_to_str(record):
-    if isinstance(record, dict):
-        return ' '.join(map(str, record.values()))
-    return str(record)
+def convert_to_str(record: str | dict):
+    match record:
+        case str():
+            return record
+        case dict():
+            return ' '.join(map(str, record.values()))
+        case _:
+            return str(record)

@@ -1,10 +1,23 @@
-from typing import Iterator
+from typing import (
+    Iterator, Union, Optional,
+    TypedDict,
+)
 
-from libem.block import func
+from libem.block.function import func
+
+EntityDesc = Union[str, dict]
+
+Left = Iterator[EntityDesc]
+Right = Optional[Iterator[EntityDesc]]
 
 
-def block(
-        left: Iterator[str | dict],
-        right: Iterator[str | dict] | None = None
-) -> Iterator[dict]:
+class Pair(TypedDict):
+    left: Union[EntityDesc, list[EntityDesc]]
+    right: Union[EntityDesc, list[EntityDesc]]
+
+
+Output = Iterator[Pair]
+
+
+def block(left: Left, right: Right = None) -> Output:
     yield from func(left, right)

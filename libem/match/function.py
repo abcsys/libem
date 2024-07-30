@@ -75,7 +75,7 @@ async def async_func(left: str | list[str], right: str | list[str]) -> dict | li
         tasks = create_batch_tasks(left, right)
 
     return list(chain.from_iterable(
-        await exec.proc_async_tasks(tasks)
+        await exec.proc_async_tasks(tasks, desc="Matching")
     ))
 
 
