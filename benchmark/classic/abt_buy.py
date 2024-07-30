@@ -25,12 +25,17 @@ def run(args):
         'keep_null': args.schema,
         'price_diff': False
     }
-    if args.schema:
+    
+    if args.block:
+        # description field not helpful for blocking
+        kwargs['fields'] = ["name", "price"]
+    elif args.schema:
         kwargs['fields'] = ["name", "description", "price"]
     else:
         kwargs['fields'] = ["name", "price"]
 
     kwargs.update(args.kwargs or {})
+    args.kwargs = kwargs
 
     # get dataset with kwargs
     train_set = abt_buy.read_train(**kwargs)
@@ -49,5 +54,6 @@ def run(args):
             "libem.match.prompt.experiences": Experiences(),
             "libem.match.prompt.output": ""
         })
+        
 
     return util.benchmark(train_set, test_set, args)

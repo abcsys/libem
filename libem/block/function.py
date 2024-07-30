@@ -40,8 +40,7 @@ def block(records: Iterator[str | dict]) -> Iterator[dict]:
     for i, l in enumerate(
             tqdm(records, desc='Blocking')):
         left_str = convert_to_str(l)
-        for j, r in enumerate(
-                tqdm(records, desc='Comparing', leave=False)):
+        for j, r in enumerate(records):
             if i != j:
                 right_str = convert_to_str(r)
                 if fuzz.token_set_ratio(left_str, right_str) >= similarity:
@@ -53,7 +52,7 @@ def block_left_right(left: Iterator[str | dict], right: Iterator[str | dict]) ->
 
     for l in tqdm(left, desc='Blocking'):
         left_str = convert_to_str(l)
-        for r in tqdm(right, desc='Comparing', leave=False):
+        for r in right:
             right_str = convert_to_str(r)
             if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                 yield {'left': l, 'right': r}

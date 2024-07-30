@@ -152,7 +152,7 @@ const Match = () => {
 
     const fetchNext = () => {
         if (index >= 0) {
-            fetch(`${baseURL}/matchone?uuid=${uuid.current}&benchmark=${dataset}&`)
+            fetch(`${baseURL}/matchone/?uuid=${uuid.current}&benchmark=${dataset}&`)
             .then(r => {
                 if (r.status === 204) {
                     throw Error("No content")

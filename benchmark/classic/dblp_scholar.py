@@ -23,6 +23,7 @@ def run(args):
         'schema': args.schema,
         'version': 1
     }
+    
     if args.schema:
         kwargs['keep_null'] = True
         kwargs['fields'] = ["title", "authors", "venue", "year"]

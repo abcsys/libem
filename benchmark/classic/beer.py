@@ -23,6 +23,7 @@ def run(args):
         'schema': args.schema,
         'version': 0
     }
+    
     if args.schema:
         kwargs['keep_null'] = True
         kwargs['fields'] = ["beer_name", "brew_factory_name", "style", "abv"]
