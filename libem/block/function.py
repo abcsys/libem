@@ -1,6 +1,6 @@
-from typing import Iterator
-from fuzzywuzzy import fuzz
 from tqdm import tqdm
+from fuzzywuzzy import fuzz
+from collections.abc import Iterator
 
 from libem.block import parameter
 
