@@ -1,37 +1,32 @@
 from libem.match import parameter
-from typing import Union, Optional, TypedDict
+from typing import TypedDict
 
 # input types
-EntityDesc = Union[str, dict]
+EntityDesc = str | dict
 
 
 class Pair(TypedDict):
-    left: Union[EntityDesc, list[EntityDesc]]
-    right: Union[EntityDesc, list[EntityDesc]]
+    left: EntityDesc | list[EntityDesc]
+    right: EntityDesc | list[EntityDesc]
 
 
-Left = Union[
-    EntityDesc, list[EntityDesc],
-    Pair, list[Pair],
-]
-Right = Optional[
-    Union[EntityDesc, list[EntityDesc]]
-]
+Left = EntityDesc | list[EntityDesc] | Pair | list[Pair]
+Right = EntityDesc | list[EntityDesc] | None
 
 
 # output types
 class Answer(TypedDict):
-    answer: Union[str, float]
-    confidence: Optional[float]
-    explanation: Optional[str]
+    answer: str | float
+    confidence: float | None
+    explanation: str | None
 
 
-Output = Union[Answer, list[Answer]]
+Output = Answer | list[Answer]
 
 # internal types
 _EntityDesc = str
-_Left = Union[_EntityDesc, list[_EntityDesc]]
-_Right = Union[_EntityDesc, list[_EntityDesc]]
+_Left = _EntityDesc | list[_EntityDesc]
+_Right = _EntityDesc | list[_EntityDesc]
 
 
 def parse_input(left: Left, right: Right) -> (_Left, _Right):

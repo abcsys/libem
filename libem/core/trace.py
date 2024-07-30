@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Union, List
 from itertools import chain
 
 
@@ -73,7 +72,7 @@ class Telemetry:
         }
 
 
-TelemetrySpec = Union[str, 'Telemetry', List[str], List['Telemetry']]
+TelemetrySpec = str | list[str] | Telemetry | list[Telemetry]
 
 
 class Trace:
@@ -103,9 +102,9 @@ class Trace:
     def reset(self):
         # At any point in time, self.trace and self.history
         # together should contain the complete traces.
-        trace = self.trace.copy()
-        if trace:
-            self.history.append(trace)
+        _trace = self.trace.copy()
+        if _trace:
+            self.history.append(_trace)
         self.trace = []
 
         for telemetry in self._telemetry:
@@ -138,10 +137,10 @@ class Trace:
               flatten=False,
               include_history=False,
               include_readings=False):
-        trace = self.get(include_history=include_history)
+        _trace = self.get(include_history=include_history)
 
         stats = {}
-        for span in trace:
+        for span in _trace:
             for telemetry in self._telemetry:
                 telemetry.add(span)
 

@@ -1,19 +1,17 @@
-from typing import (
-    Iterator, Union, Optional,
-    TypedDict,
-)
+from typing import TypedDict
+from collections.abc import Iterator
 
 from libem.block.function import func
 
-EntityDesc = Union[str, dict]
+EntityDesc = str | dict
 
 Left = Iterator[EntityDesc]
-Right = Optional[Iterator[EntityDesc]]
+Right = Iterator[EntityDesc] | None
 
 
 class Pair(TypedDict):
-    left: Union[EntityDesc, list[EntityDesc]]
-    right: Union[EntityDesc, list[EntityDesc]]
+    left: EntityDesc | list[EntityDesc]
+    right: EntityDesc | list[EntityDesc]
 
 
 Output = Iterator[Pair]
