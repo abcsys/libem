@@ -24,7 +24,9 @@ def main():
         _ = libem.match(e1, e2)
         pp.pprint(t.get())
 
-    pp.pprint(t.stats(all=True, readings=True))
+    pp.pprint(t.stats(
+        include_history=True, include_readings=True
+    ))
 
 
 if __name__ == '__main__':

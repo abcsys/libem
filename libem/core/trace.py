@@ -121,8 +121,8 @@ class Trace:
         self.trace.append(span)
         return self
 
-    def get(self, all=False):
-        if all:
+    def get(self, include_history=False):
+        if include_history:
             return list(
                 chain.from_iterable(
                     self.history + [self.trace]
@@ -134,10 +134,11 @@ class Trace:
     def telemetry(self, *args, **kwargs):
         return self.stats(*args, **kwargs)
 
-    def stats(self, all=False,
+    def stats(self,
               flatten=False,
-              readings=False):
-        trace = self.get(all=all)
+              include_history=False,
+              include_readings=False):
+        trace = self.get(include_history=include_history)
 
         stats = {}
         for span in trace:
@@ -146,7 +147,7 @@ class Trace:
 
         for telemetry in self._telemetry:
             stats[telemetry.name] = telemetry.report()
-            if readings:
+            if include_readings:
                 stats[telemetry.name]["readings"] = telemetry.readings
 
         if flatten:
