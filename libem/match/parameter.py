@@ -1,5 +1,5 @@
 import libem
-from libem.core.struct import Parameter
+from libem.core.struct import Parameter, Index
 from libem.tune.learn.icl import (
     similar_shots, random_shots, given_shots
 )
@@ -37,4 +37,25 @@ batch_size = query_per_prompt = Parameter(
 # execution modes
 sync = Parameter(
     default=False,
+)
+
+# input parsing
+import json
+
+dict_desc_encoding = Parameter(
+    default=Index("str"),
+    options={
+        "str": str,
+        "json": json.dumps,
+    },
+)
+
+# debugging
+guess = Parameter(
+    default=False,
+    options=[True, False]
+)
+always = Parameter(
+    default=None,
+    options=["yes", "no"]
 )

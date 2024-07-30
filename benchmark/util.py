@@ -253,7 +253,7 @@ def run_match(train_set, test_set, args):
                 if 0 < args.num_pairs < i + 1:
                     break
 
-                left, right = str(data['left']), str(data['right'])
+                left, right = data['left'], data['right']
                 label = data['label']
 
                 if not args.quiet:
@@ -290,8 +290,8 @@ def run_match(train_set, test_set, args):
                 if 0 < args.num_pairs < i + 1:
                     break
 
-                left.append(str(data['left']))
-                right.append(str(data['right']))
+                left.append(data['left'])
+                right.append(data['right'])
                 labels.append(data['label'])
 
             answers: list[dict] = libem.match(left, right)
