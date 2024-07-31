@@ -8,6 +8,13 @@ LIBEM_SAMPLE_DATA_PATH = os.path.join(
     '..', '..', '..', '..',
     'libem-sample-data')
 
+from libem.prepare.datasets.clustering import febrl
+
+datasets = {
+    'febrl': febrl.load_raw,
+    'febrl_test': febrl.load_test,
+}
+
 
 def load(dataset: Iterable[dict], num_samples=-1, stringify=True) \
         -> ([str], [str], [int]):

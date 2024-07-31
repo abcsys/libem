@@ -4,7 +4,7 @@ import libem
 from libem.prepare.datasets.clustering import febrl
 from libem.optimize import cost
 
-from libem.cluster import eval
+from libem.resolve.cluster import eval
 
 
 def main():

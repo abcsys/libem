@@ -1,6 +1,6 @@
 import pandas as pd
 
-from libem.cluster.function import func as cluster_func
+from libem.resolve.cluster.function import func as cluster_func
 
 schema = {
     "type": "function",

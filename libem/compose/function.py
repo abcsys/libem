@@ -1,3 +1,6 @@
+"""
+Generate tool chains for a given task.
+"""
 schema = {}
 
 
