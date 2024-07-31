@@ -33,7 +33,7 @@ similarity score cutoff between 1-100.
 
 | Dataset       | Total Pairs | Similarity Cutoff | Percentage Blocked |    F1    |
 | :------------ |:-----------:|:-----------------:|:------------------:|:--------:|
-| abt-buy       |   367136    |        29         |        27.2        |   1.2    |
+| abt-buy*      |   367136    |        50         |        95.6        |   2.54   |
 | amazon-google |   460106    |        54         |        96.4        |   3.28   |
 | beer          |    6308     |        79         |        98.8        |   30.4   |
 | dblp-acm      |   678927    |        79         |        99.9        |   50.3   |
@@ -41,6 +41,8 @@ similarity score cutoff between 1-100.
 | fodors-zagats |    13224    |        83         |        99.8        |   80.0   |
 | itunes-amazon |    7488     |        63         |        95.8        |   15.2   |
 | walmart-amazon|   716846    |        50         |        96.7        |   1.6    |
+
+\* abt-buy dataset is blocked without the `description` field.
 
 ## Entity Matching
 

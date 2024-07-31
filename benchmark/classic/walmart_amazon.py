@@ -28,6 +28,7 @@ def run(args):
         'keep_null': args.schema,
         'price_diff': False
     }
+    
     if args.schema:
         kwargs['fields'] = ["title", "category", "brand", "modelno", "price"]
     else:

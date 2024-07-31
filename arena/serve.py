@@ -239,15 +239,13 @@ async def init(request: Request, token: str = '', uuid: str = ''):
     try:
         uuid = str(uuidlib.UUID(uuid))
     except ValueError:
-        # if not, generate a new uuid from the incoming IP address
-        if request.client:
-            ip = request.client.host
-        elif 'x-real-ip' in request.headers:
-            ip = request.headers['x-real-ip']
+        # if not, try to generate a new uuid from the request header
+        if request.headers:
+            hash_str = str(request.headers)
         else:
-            ip = str(uuidlib.uuid4())
-        ip_hex = hashlib.md5(ip.encode("UTF-8")).hexdigest()
-        uuid = str(uuidlib.UUID(hex=ip_hex))
+            hash_str = str(uuidlib.uuid4())
+        hex = hashlib.md5(hash_str.encode("UTF-8")).hexdigest()
+        uuid = str(uuidlib.UUID(hex=hex))
     if token not in secrets['tokens'].keys():
         raise HTTPException(status_code=422, detail='Bad token.')
 
