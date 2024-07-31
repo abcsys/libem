@@ -3,7 +3,7 @@ from typing import Iterable
 
 import libem
 from libem.core import eval
-from libem.optimize.cost import openai
+from libem.optimize import cost
 
 schema = {}
 
@@ -38,7 +38,7 @@ def profile(dataset: Iterable, num_samples=-1, detailed=False):
         tp, fp, tn, fn = eval.confusion_matrix(truths, preds)
 
     stats = t.stats()
-    stats["model"]["cost"] = openai.get_cost(
+    stats["model"]["cost"] = cost.get_cost(
         libem.parameter.model(),
         num_input_tokens=stats["model"]["num_input_tokens"]["sum"],
         num_output_tokens=stats["model"]["num_output_tokens"]["sum"],

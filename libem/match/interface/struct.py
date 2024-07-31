@@ -1,5 +1,8 @@
 from libem.match import parameter
 from typing import TypedDict
+from collections.abc import (
+    Iterable, Generator, Iterator
+)
 
 # input types
 EntityDesc = str | dict
@@ -37,7 +40,9 @@ def parse_input(left: Left, right: Right) -> (_Left, _Right):
         match pair:
             case dict():
                 left, right = pair["left"], pair["right"]
-            case list():
+            case _ if isinstance(pair, Iterable):
+                if isinstance(pair, Generator) or isinstance(pair, Iterator):
+                    pair = list(pair)
                 try:
                     left = [p["left"] for p in pair]
                     right = [p["right"] for p in pair]

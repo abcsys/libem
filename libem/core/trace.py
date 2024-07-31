@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from itertools import chain
 
@@ -85,6 +86,9 @@ class Trace:
         self._telemetry = []
         self.add_telemetry(telemetry)
 
+        self._trace_start = 0
+        self._trace_duration = 0
+
     def __enter__(self):
         """Enter the tracing context."""
         self.start()
@@ -109,10 +113,14 @@ class Trace:
 
         for telemetry in self._telemetry:
             telemetry.reset()
+
+        self._trace_duration = 0
+        self._trace_start = time.time()
         return self
 
     def stop(self):
         """Stops tracing."""
+        self._trace_duration = time.time() - self._trace_start
         return self
 
     def add(self, span):
@@ -153,6 +161,9 @@ class Trace:
             return stats
         else:
             return nest(stats)
+
+    def duration(self):
+        return self._trace_duration
 
     def add_telemetry(self, telemetry: TelemetrySpec):
         match telemetry:

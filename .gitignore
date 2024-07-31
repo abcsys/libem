@@ -1,9 +1,11 @@
 _logs/
-benchmark/_output/
-catalog.db*
+_output/
+
 arena/node_modules
 arena/results
 arena/secrets
+
+libem/tune/catalog.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
