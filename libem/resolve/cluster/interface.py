@@ -2,8 +2,8 @@ import pandas as pd
 from typing import Union, Iterator
 import sklearn.metrics as metrics
 
-from libem.cluster.function import func
-from libem.cluster.integrations.pandas import func as pandas_func
+from libem.resolve.cluster.function import func
+from libem.resolve.cluster.integrations.pandas import func as pandas_func
 
 InputType = Union[
     Iterator[str],
@@ -18,14 +18,20 @@ OutputType = Union[
 ]
 
 
-def cluster(records: InputType) -> OutputType:
+def cluster(records: InputType, sort=False) -> OutputType:
     match records:
         case pd.DataFrame():
             # add a column of 'cluster_id' to the DataFrame
-            return pandas_func(records)
+            if sort:
+                return pandas_func(records).sort_values(by="cluster_id")
+            else:
+                return pandas_func(records)
         case _:
             # return a list of clusters
-            return func(records)
+            if sort:
+                return sorted(func(records), key=lambda x: x[0])
+            else:
+                return func(records)
 
 
 def eval(truths: list[int], preds: list[int]) -> dict:

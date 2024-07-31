@@ -31,7 +31,7 @@ def chat(message, context=None) -> dict:
 from libem.match.interface import match
 from libem.block.interface import block
 from libem.extract.interface import extract
-from libem.cluster.interface import cluster
+from libem.resolve.cluster.interface import cluster
 
 _ = match, block, extract, cluster
 
@@ -69,6 +69,14 @@ def seed(seed=42):
 
 
 """ Utilities """
+from libem.prepare.datasets import datasets
+
+
+def load(name, num_samples=-1):
+    if name not in datasets:
+        raise ValueError(f"Dataset '{name}' not found.")
+    _load = datasets[name]
+    return _load(num_samples=num_samples)
 
 
 def pprint(*args, **kwargs):
@@ -83,6 +91,11 @@ def pformat(*args, **kwargs):
         *args, **kwargs,
         sort_dicts=False
     )
+
+
+def display_mode():
+    import pandas as pd
+    pd.set_option('display.max_rows', None)
 
 
 def round(number, n=3):

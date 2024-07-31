@@ -4,7 +4,7 @@ from tqdm import tqdm
 from typing import Iterable
 
 import libem
-from libem.cluster import parameter
+from libem.resolve.cluster import parameter
 
 ClusterID = int
 Record = str | dict
