@@ -1,6 +1,6 @@
 from tqdm import tqdm
 from fuzzywuzzy import fuzz
-from collections.abc import Iterator
+from collections.abc import Iterable
 
 from libem.block import parameter
 
@@ -34,25 +34,26 @@ def func(left, right=None):
         return block_left_right(left, right)
 
 
-def block(records: Iterator[str | dict]) -> Iterator[dict]:
+def block(records: Iterable[str | dict]) -> Iterable[dict]:
     similarity = parameter.similarity()
 
     for i, l in enumerate(
             tqdm(records, desc='Blocking')):
         left_str = convert_to_str(l)
-        for j, r in enumerate(records):
+        for j, r in enumerate(
+                tqdm(records, desc='Comparing', mininterval=0.01, leave=False)):
             if i != j:
                 right_str = convert_to_str(r)
                 if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                     yield {'left': l, 'right': r}
 
 
-def block_left_right(left: Iterator[str | dict], right: Iterator[str | dict]) -> Iterator[dict]:
+def block_left_right(left: Iterable[str | dict], right: Iterable[str | dict]) -> Iterable[dict]:
     similarity = parameter.similarity()
 
     for l in tqdm(left, desc='Blocking'):
         left_str = convert_to_str(l)
-        for r in right:
+        for r in tqdm(right, desc='Comparing', mininterval=0.01, leave=False):
             right_str = convert_to_str(r)
             if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                 yield {'left': l, 'right': r}

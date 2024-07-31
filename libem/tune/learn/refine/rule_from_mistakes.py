@@ -32,7 +32,7 @@ def run(dataset, metric) -> tuple[float, Rules, Experiences]:
 
 
 def rule_from_success(successes: list) -> Rules:
-    libem.info("Successes: ", pp.pformat(successes))
+    libem.info("[refine] successes: ", pp.pformat(successes))
     message = model.call(
         prompt=Prompt.join(
             prompt.recap_success(successes=successes),
@@ -43,13 +43,13 @@ def rule_from_success(successes: list) -> Rules:
         seed=libem.LIBEM_SEED,
         tools=[],
     )["output"]
-    libem.info("Learned: ", message)
+    libem.info(f"[refine] from successes:\n{message}")
     rules = message.split("\n")
     return Rules(rules)
 
 
 def experience_from_mistake(mistakes: list) -> Experiences:
-    libem.info("Mistakes: ", pp.pformat(mistakes))
+    libem.info("[refine] mistakes: ", pp.pformat(mistakes))
     message = model.call(
         prompt=Prompt.join(
             prompt.recap_mistake(mistakes=mistakes),
@@ -60,6 +60,6 @@ def experience_from_mistake(mistakes: list) -> Experiences:
         seed=libem.LIBEM_SEED,
         tools=[],
     )["output"]
-    libem.info("Learned: ", message)
+    libem.info(f"[refine] from mistakes:\n{message}")
     mistakes = message.split("\n")
     return Experiences(mistakes)
