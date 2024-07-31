@@ -26,6 +26,9 @@ def func(config, verbose=False):
             raise Exception(f"unable to find parameter {path}")
         assert isinstance(parameter, Parameter), f"invalid parameter {path}"
 
+        if isinstance(value, Parameter):
+            value = value()
+
         parameter.update(value)
 
     if verbose:
