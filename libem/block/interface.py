@@ -1,12 +1,12 @@
 from typing import TypedDict
-from collections.abc import Iterator
+from collections.abc import Iterable
 
 from libem.block.function import func
 
 EntityDesc = str | dict
 
-Left = Iterator[EntityDesc]
-Right = Iterator[EntityDesc] | None
+Left = Iterable[EntityDesc]
+Right = Iterable[EntityDesc] | None
 
 
 class Pair(TypedDict):
@@ -14,7 +14,7 @@ class Pair(TypedDict):
     right: EntityDesc | list[EntityDesc]
 
 
-Output = Iterator[Pair]
+Output = Iterable[Pair]
 
 
 def block(left: Left, right: Right = None) -> Output:
