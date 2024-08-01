@@ -11,7 +11,7 @@ _model, _tokenizer = None, None
 def call(prompt: str | list | dict,
          tools: list[str] = None,
          context: list = None,
-         model: str = "llama3.1",
+         model: str = "llama3",
          temperature: float = 0.0,
          seed: int = None,
          max_model_call: int = 3,

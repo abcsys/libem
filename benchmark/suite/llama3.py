@@ -13,12 +13,12 @@ name = os.path.basename(__file__).replace(".py", "")
 
 def run_benchmark():
     datasets = bm.classic_benchmarks.keys()
+    
     args = run.args()
-    args.schema = True
-    args.model = "llama3.1"
+    args.model = "llama3"
     args.num_pairs = -1
     args.log = False
-    args.debug = True
+
     start = time.time()
 
     reports = {}
