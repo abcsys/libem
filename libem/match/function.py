@@ -8,7 +8,7 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core.struct import Prompt
+from libem.core.struct import Prompt, Index
 from libem.core import (
     exec, model, struct
 )
@@ -75,7 +75,7 @@ async def async_func(left: str | list[str], right: str | list[str]) -> dict | li
         tasks = create_batch_tasks(left, right)
 
     return list(chain.from_iterable(
-        await exec.proc_async_tasks(tasks)
+        await exec.proc_async_tasks(tasks, desc="Matching")
     ))
 
 
@@ -297,7 +297,10 @@ def parse_output(output: str) -> dict:
     output = [s for s in output.splitlines() if s][::-1]
 
     answer = output.pop(0).lower()
-    answer = "yes" if "yes" in answer else "no"
+    if prompt.output.value == Index("likelihood"):
+        answer = float(answer)
+    else:
+        answer = "yes" if "yes" in answer else "no"
 
     confidence, explanation = None, None
 

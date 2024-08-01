@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react"
-import EndScreen from "./EndScreen"
-import Timer from "./Timer"
-import { baseURL, getUUID } from "../Common"
+import EndScreen from "../components/EndScreen"
+import Timer from "../components/Timer"
+import { baseURL, init } from "../Common"
 import "./Match.css"
 import { useNavigate, useParams } from "react-router-dom"
+import ErrorPopup from "../components/ErrorPopup"
 
 const EntityBox = ({ entity, className }) => {
     return (
@@ -24,25 +25,45 @@ const EntityBox = ({ entity, className }) => {
     )
 }
 
+const BackToHome = ({ show, message, returnHome, openLB }) => {
+    if (show) {
+        return (
+            <>
+                <div className={"background"}></div>
+                <div className={"popup zoom-fade"}>
+                    <h2>Finished</h2>
+                    <p>{message}</p>
+                    <p className="value">Click <b>Home</b> to try something else or <b>Leaderboard</b> to see your results.</p>
+                    <div className="adaptive-stack">
+                        <div className="button rect red" onClick={() => returnHome()}>Home</div>
+                        <div className="button rect green" onClick={() => openLB()}>Leaderboard</div>
+                    </div>
+                </div>
+            </>
+        )
+    }
+    return (<></>)
+}
+
 const ResultScreen = ({ userAns, libemAns, label, index, final, inactive, closeResultScreen, setEndScreen }) => {
 
     const [hide, setHide] = useState(false)
     const resultDiv = useRef(null)
 
     const collapse = () => {
-        resultDiv.current.className = "result to-bottom select"
+        resultDiv.current.className = "popup to-bottom select"
         setHide(true)
     }
     const expand = () => {
-        resultDiv.current.className = "result"
+        resultDiv.current.className = "popup"
         setHide(false)
     }
 
     const resultClasses = inactive 
-                            ? "result hidden" 
+                            ? "popup hidden" 
                             : userAns === label 
-                                ? "result zoom-fade"
-                                : "result shake-fade"
+                                ? "popup zoom-fade"
+                                : "popup shake-fade"
 
     return (
         <>
@@ -50,7 +71,7 @@ const ResultScreen = ({ userAns, libemAns, label, index, final, inactive, closeR
             
             <div className={resultClasses} ref={resultDiv} onClick={expand}>
                 { !hide && !inactive 
-                    ? <div className="result-message">
+                    ? <div>
                         {userAns === label
                             ? <>
                                 <h2>Correct!</h2>
@@ -63,19 +84,19 @@ const ResultScreen = ({ userAns, libemAns, label, index, final, inactive, closeR
                         }
                         <div>Libem chose <b>{libemAns ? "Match" : "No Match"}</b>.</div>
                         
-                        {index >= 4
-                            ? final
-                                ? <p className="value">That was the final pair. Click <b>End</b> to see your final results.</p>
+                        {!final
+                            ? index < 5
+                                ? <p className="value">Click <b>Next</b> to try another pair, you may end any time after 5 pairs.</p>
                                 : <p className="value">Click <b>Next</b> to try another pair, 
                                     or <b>End</b> to see your final results.</p>
-                            : <p className="value">Click <b>Next</b> to try another pair, you may end any time after 5 pairs.</p>
+                            : <p className="value">You have finished matching all pairs. Click <b>End</b> to see your final results.</p>
                         }
                     </div>
                     : <></>
                 }
                 
                 <div className="hstack">
-                    {index >= 4
+                    {index >= 4 || final
                         ? <div className="button rect red" onClick={() => setEndScreen(true)}>End</div>
                         : <></>
                     }
@@ -92,13 +113,15 @@ const ResultScreen = ({ userAns, libemAns, label, index, final, inactive, closeR
 }
 
 const Match = () => {
+    const [error, setError] = useState(false)
     const { dataset } = useParams()
     const uuid = useRef()
-    const order = useRef([])
     const [pair, setPair] = useState(null)
-    const [index, setIndex] = useState(-1)
+    const [numPairs, setnumPairs] = useState(null)
+    const [index, setIndex] = useState(0)
     const [resultScreen, setResultScreen] = useState(false)
     const [endScreen, setEndScreen] = useState(false)
+    const [noContent, setNoContent] = useState(false)
 
     const userAns = useRef([])
     const libemAns = useRef([])
@@ -107,6 +130,7 @@ const Match = () => {
 
     const [timer, setTimer] = useState(false)
     const timeElapsed = useRef(0)
+    const startTime = useRef(0)
     const navigate = useNavigate()
 
     const ex =  <svg viewBox='0 0 50 50' className={'icon'}>
@@ -128,24 +152,38 @@ const Match = () => {
 
     const fetchNext = () => {
         if (index >= 0) {
-            fetch(`${baseURL}/fetch?dataset=${dataset}&index=${order.current[index]}`)
-            .then(r => r.json())
+            fetch(`${baseURL}/matchone/?uuid=${uuid.current}&benchmark=${dataset}&`)
+            .then(r => {
+                if (r.status === 204) {
+                    throw Error("No content")
+                }
+                return r.json()
+            })
             .then(r => {
                 // scroll to top
                 window.scrollTo(0, 0)
-                setPair(r)
+
+                startTime.current = Date.now()
+                setIndex(r['index'])
+                setPair({left: r['left'], right: r['right']})
                 setTimer(true)
+            })
+            .catch(r => {
+                if (r.message === "No content")
+                    setNoContent(true)
+                else
+                    setError(true)
             })
         }
     }
 
     const closeResultScreen = () => {
+        fetchNext()
         setResultScreen(false)
-        setIndex(index + 1)
     }
 
     const match = (answer) => {
-        fetch(`${baseURL}/submit/`, {
+        fetch(`${baseURL}/submitone/`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -153,46 +191,46 @@ const Match = () => {
             },
             body: JSON.stringify({
                 uuid: uuid.current,
-                dataset: dataset,
-                index: index,
-                answer: answer
+                benchmark: dataset,
+                answer: answer,
+                time: (Date.now() - startTime.current) / 1000
             })
         })
         .then(r => r.json())
         .then(r => {
             userAns.current.push(answer)
             libemAns.current.push(r['libem_pred'])
-            libemTime.current += pair['libem_time']
+            libemTime.current += r['libem_time']
             labels.current.push(r['label'] === 1)
             setTimer(false)
             setResultScreen(true)
         })
+        .catch(r => setError(true))
     }
 
-    useEffect(fetchNext, [index])
-
     useEffect(() => {
-        uuid.current = getUUID()
-
-        fetch(baseURL + "/init/")
-        .then(r => r.json())
+        init()
         .then(r => {
-            const newOrder = [...Array(r[dataset]['size']).keys()]
-            order.current = newOrder.sort((a, b) => 0.5 - Math.random())
-            setIndex(0)
+            uuid.current = r['uuid']
+            setnumPairs(r['benchmarks'][dataset]['size'])
+            fetchNext()
         })
-        .catch(e => setIndex(-1))
+        .catch(r => setError(true))
     }, [])
 
     return (
         <>
+            <ErrorPopup show={error} message={"Network error encountered."} />
+            <BackToHome show={noContent} message={`You have already matched all the pairs in the ${dataset} dataset.`} 
+                        returnHome={returnHome} openLB={openLB} />
+
             {endScreen
                 ? <EndScreen uuid={uuid.current} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
                              userTime={timeElapsed.current / 1000} libemTime={libemTime.current} 
                              labels={labels.current} returnHome={returnHome} openLB={openLB} />
                 : <div className="selection">
                     {pair === null 
-                        ? <div className="text-color">Loading...</div>
+                        ? <></>
                         : <div className="vstack-wide">
                             <div className="vstack fade-in-top">
                                 <div className="title-bar">
@@ -220,7 +258,7 @@ const Match = () => {
                             <div className="pad"></div>
                           </div>}
                     <ResultScreen userAns={userAns.current.at(-1)} libemAns={libemAns.current.at(-1)} 
-                                label={labels.current.at(-1)} index={index} final={index+1 === order.length} 
+                                label={labels.current.at(-1)} index={index} final={index+1 >= numPairs} 
                                 inactive={!resultScreen} closeResultScreen={closeResultScreen} setEndScreen={setEndScreen} />
                   </div>
             }

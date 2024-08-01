@@ -1,7 +1,7 @@
 # similarity thresholds for blocking to
 # achieve 100% recall
 block_similarities = {
-    'abt-buy': 29,
+    'abt-buy': 50,
     'amazon-google': 54,
     'beer': 79,
     'dblp-acm': 79,

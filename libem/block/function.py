@@ -1,5 +1,6 @@
-from typing import Iterator
+from tqdm import tqdm
 from fuzzywuzzy import fuzz
+from collections.abc import Iterable
 
 from libem.block import parameter
 
@@ -20,36 +21,49 @@ schema = {
                     "description": "A list containing the second dataset.",
                 },
             },
-            "required": ["left", "right"],
+            "required": ["left"],
         },
     }
 }
 
 
-def func(left: list[str | dict], right: list[str | dict]) -> Iterator[dict]:
-    right_strs = []
+def func(left, right=None):
+    if right is None:
+        return block(left)
+    else:
+        return block_left_right(left, right)
+
+
+def block(records: Iterable[str | dict]) -> Iterable[dict]:
     similarity = parameter.similarity()
-    for l in left:
-        if type(l) is dict:
-            left_vals = []
-            for v in l.values():
-                left_vals.append(str(v))
-            left_str = ' '.join(i for i in left_vals)
-        else:
-            left_str = l
 
-        for i, r in enumerate(right):
-            if len(right_strs) > i:
-                right_str = right_strs[i]
-            else:
-                if type(r) is dict:
-                    right_vals = []
-                    for v in r.values():
-                        right_vals.append(str(v))
-                    right_str = ' '.join(i for i in right_vals)
-                else:
-                    right_str = l
-                right_strs.append(right_str)
+    for i, l in enumerate(
+            tqdm(records, desc='Blocking')):
+        left_str = convert_to_str(l)
+        for j, r in enumerate(
+                tqdm(records, desc='Comparing', mininterval=0.01, leave=False)):
+            if i != j:
+                right_str = convert_to_str(r)
+                if fuzz.token_set_ratio(left_str, right_str) >= similarity:
+                    yield {'left': l, 'right': r}
 
+
+def block_left_right(left: Iterable[str | dict], right: Iterable[str | dict]) -> Iterable[dict]:
+    similarity = parameter.similarity()
+
+    for l in tqdm(left, desc='Blocking'):
+        left_str = convert_to_str(l)
+        for r in tqdm(right, desc='Comparing', mininterval=0.01, leave=False):
+            right_str = convert_to_str(r)
             if fuzz.token_set_ratio(left_str, right_str) >= similarity:
                 yield {'left': l, 'right': r}
+
+
+def convert_to_str(record: str | dict):
+    match record:
+        case str():
+            return record
+        case dict():
+            return ' '.join(map(str, record.values()))
+        case _:
+            return str(record)

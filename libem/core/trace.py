@@ -1,5 +1,5 @@
+import time
 import numpy as np
-from typing import Union, List
 from itertools import chain
 
 
@@ -73,7 +73,7 @@ class Telemetry:
         }
 
 
-TelemetrySpec = Union[str, 'Telemetry', List[str], List['Telemetry']]
+TelemetrySpec = str | list[str] | Telemetry | list[Telemetry]
 
 
 class Trace:
@@ -85,6 +85,9 @@ class Trace:
 
         self._telemetry = []
         self.add_telemetry(telemetry)
+
+        self._trace_start = 0
+        self._trace_duration = 0
 
     def __enter__(self):
         """Enter the tracing context."""
@@ -103,17 +106,21 @@ class Trace:
     def reset(self):
         # At any point in time, self.trace and self.history
         # together should contain the complete traces.
-        trace = self.trace.copy()
-        if trace:
-            self.history.append(trace)
+        _trace = self.trace.copy()
+        if _trace:
+            self.history.append(_trace)
         self.trace = []
 
         for telemetry in self._telemetry:
             telemetry.reset()
+
+        self._trace_duration = 0
+        self._trace_start = time.time()
         return self
 
     def stop(self):
         """Stops tracing."""
+        self._trace_duration = time.time() - self._trace_start
         return self
 
     def add(self, span):
@@ -121,8 +128,8 @@ class Trace:
         self.trace.append(span)
         return self
 
-    def get(self, all=False):
-        if all:
+    def get(self, include_history=False):
+        if include_history:
             return list(
                 chain.from_iterable(
                     self.history + [self.trace]
@@ -134,25 +141,29 @@ class Trace:
     def telemetry(self, *args, **kwargs):
         return self.stats(*args, **kwargs)
 
-    def stats(self, all=False,
+    def stats(self,
               flatten=False,
-              readings=False):
-        trace = self.get(all=all)
+              include_history=False,
+              include_readings=False):
+        _trace = self.get(include_history=include_history)
 
         stats = {}
-        for span in trace:
+        for span in _trace:
             for telemetry in self._telemetry:
                 telemetry.add(span)
 
         for telemetry in self._telemetry:
             stats[telemetry.name] = telemetry.report()
-            if readings:
+            if include_readings:
                 stats[telemetry.name]["readings"] = telemetry.readings
 
         if flatten:
             return stats
         else:
             return nest(stats)
+
+    def duration(self):
+        return self._trace_duration
 
     def add_telemetry(self, telemetry: TelemetrySpec):
         match telemetry:

@@ -13,32 +13,48 @@ class Tunable(abc.ABC):
         pass
 
 
+class Index:
+    def __init__(self, key: str | int):
+        self.key = key
+
+    def __eq__(self, other):
+        if isinstance(other, Index):
+            return self.key == other.key
+        else:
+            return self.key == other
+
+
 class Parameter(Tunable):
     def __init__(self,
-                 default: typing.Any,
-                 options: list[typing.Any] = None
+                 default: Index | typing.Any,
+                 options: dict[typing.Any] | list[typing.Any] = None
                  ):
         self.value = self.v = default
         self.default = default
-        self.options = options or []
         self.optimal = self.v
+        self.options = options or {}
+        if isinstance(self.options, list):
+            self.options = {i: o for i, o in enumerate(self.options)}
         super().__init__()
 
     def __call__(self, *args, **kwargs):
         """
         When called, the instance evaluates and returns its current value. If the
-        value is a string, it formats the string with supplied args and kwargs. If
-        the value is callable, it calls the function with supplied args and kwargs.
-        If the value contains other `Parameter` instances or similarly
-        dynamically-resolvable structures, it will recursively resolve these
-        before returning.
+        value is a string, it formats the string with supplied args and kwargs.
         """
-        if isinstance(self.value, str):
-            return self.value.format(*args, **kwargs)
-        if callable(self.value):
-            return self.value(*args, **kwargs)
+        value = self.value
+        if isinstance(value, Index):
+            try:
+                value = self.options[self.value.key]
+            except KeyError:
+                raise KeyError(f"Index {self.value.key} "
+                               f"not found in options "
+                               f"{list(self.options.keys())}.")
+
+        if isinstance(value, str):
+            return value.format(*args, **kwargs)
         else:
-            return self.value
+            return value
 
     def __str__(self):
         return str(self.__call__())

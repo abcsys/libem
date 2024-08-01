@@ -28,14 +28,18 @@ def chat(message, context=None) -> dict:
 
 """ Programmatic access to tools """
 
-from libem.match import match
-from libem.block import block
-from libem.extract import extract
-from libem.tune.calibrate import (
+from libem.match.interface import match
+from libem.block.interface import block
+from libem.extract.interface import extract
+from libem.resolve.cluster.interface import cluster
+
+_ = match, block, extract, cluster
+
+from libem.tune.calibrate.interface import (
     calibrate, export
 )
 
-_ = match, block, extract, calibrate, export
+_ = calibrate, export
 
 """ Configurations """
 
@@ -65,12 +69,34 @@ def seed(seed=42):
 
 
 """ Utilities """
+from libem.prepare.datasets import datasets
+
+
+def load(name, num_samples=-1):
+    if name not in datasets:
+        raise ValueError(f"Dataset '{name}' not found.")
+    _load = datasets[name]
+    return _load(num_samples=num_samples)
 
 
 def pprint(*args, **kwargs):
-    pp.pprint(*args, **kwargs,
-              sort_dicts=False)
+    pp.pprint(
+        *args, **kwargs,
+        sort_dicts=False
+    )
 
 
-def round(number, n):
+def pformat(*args, **kwargs):
+    return pp.pformat(
+        *args, **kwargs,
+        sort_dicts=False
+    )
+
+
+def display_mode():
+    import pandas as pd
+    pd.set_option('display.max_rows', None)
+
+
+def round(number, n=3):
     return float(f"{number:.{n}g}")
