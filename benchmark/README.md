@@ -139,6 +139,19 @@ python -m benchmark.run --name <benchmark-name> --num-pairs -1
 | itunes-amazon  |    66.67    | 30.77  | 42.11 | 0.0  |        0.63        |   172.86  |
 | walmart-amazon |   73.81   | 48.19  | 58.31 |  0.0  |       0.97        | 1224.9 |
 
+### Meta-Llama-3.1-8B-Instruct-8bit --no-schema
+
+|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Total Latency (s) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
+|    abt-buy     |    48.79    | 98.06  | 65.16 |  0.0  |        1.2        | 1004.75  |
+| amazon-google  |   37.54    | 93.13  | 53.51 |  0.0  |       1.4        | 858.52  |
+|      beer      |    66.67    | 100.0  | 80.0 | 0.0  |        1.2        |   76.04   |
+|    dblp-acm    |   71.84   |   100.0   | 83.61 |  0.0  |       1.2        |    1060.67 |
+|  dblp-scholar  |   70.35   |  96.8  | 81.48 |  0.0  |       1.3        | 979.41 |
+| fodors-zagats  |    82.61    | 86.36  | 84.44 | 0.0  |        1.2        | 163.06  |
+| itunes-amazon  |    29.89    | 100.0  | 46.02 | 0.0  |        0.87        |   125.01  |
+| walmart-amazon |   32.87   | 97.93  | 49.22 |  0.0  |       1.1        | 1067.5 |
+
 ### Prompt-level batching
 
 To run the benchmark with batching, use the `--batch-size` flag with the desired batch size. For example, to run

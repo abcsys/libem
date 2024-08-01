@@ -51,4 +51,9 @@ def run(args):
             "libem.match.prompt.output": ""
         })
 
+    if args.model == 'llama3.1':
+        libem.calibrate({
+            "libem.match.prompt.output": "Do not provide explanation. Please only give your answer in the form of a single ‘yes’ or ‘no’.",
+        }, verbose=True)
+
     return util.benchmark(train_set, test_set, args)
