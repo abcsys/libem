@@ -104,11 +104,15 @@ llama3:
 	python -m benchmark.suite.llama3
 
 # tests clean
-.PHONY: test clean
+.PHONY: test clean time_pkg_load time_mod_load
 test:
 	pytest -v test/*
 clean:
 	rm -r _logs > /dev/null 2>&1 || true
+time_pkg_load:
+	python script/time_pkg_load.py
+time_mod_load:
+	python script/time_mod_load.py
 
 # refresh price
 .PHONY: price
