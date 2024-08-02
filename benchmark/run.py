@@ -1,3 +1,4 @@
+import copy
 import json
 import argparse
 
@@ -8,6 +9,9 @@ import benchmark.util as util
 
 
 def run(args) -> dict:
+    # create a deep copy of args before making changes
+    args = copy.deepcopy(args)
+    
     if args.input_file:
         args.name = args.input_file.split('/')[-1].split(".")[0]
         benchmark_func = run_from_file
@@ -29,6 +33,10 @@ def run_from_file(args) -> dict:
     These pairs could be nested under a "results.match",
     "fp", "fn", "tn", "tp" keys or directly in the JSON file.
     """
+    
+    # create a deep copy of args before making changes
+    args = copy.deepcopy(args)
+    
     pairs = []
     with open(args.input_file, 'r') as f:
         input_data = json.load(f)
