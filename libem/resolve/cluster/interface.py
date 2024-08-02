@@ -1,25 +1,33 @@
-import pandas as pd
-from typing import Union, Iterator
+from typing import (
+    Union, Iterator,
+    TYPE_CHECKING
+)
 
 from libem.resolve.cluster.function import func
-from libem.resolve.cluster.integrations.pandas import func as pandas_func
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 InputType = Union[
     Iterator[str],
     Iterator[dict],
-    pd.DataFrame
+    "pd.DataFrame",
 ]
 
 OutputType = Union[
     list[(int, str)],
     list[(int, dict)],
-    pd.DataFrame,
+    "pd.DataFrame",
 ]
 
 
 def cluster(records: InputType, sort=False) -> OutputType:
+    import pandas as pd
+
     match records:
         case pd.DataFrame():
+            from libem.resolve.cluster.integrations.pandas import func as pandas_func
+
             # add a column of 'cluster_id' to the DataFrame
             if sort:
                 return pandas_func(records).sort_values(by="cluster_id")

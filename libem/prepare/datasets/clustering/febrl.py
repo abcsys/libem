@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 
 import libem.prepare.datasets as datasets
 
@@ -9,6 +8,8 @@ TEST_FILE = os.path.join(DIR_PATH, "test.csv")
 
 
 def load_test(num_samples=-1):
+    import pandas as pd
+    
     df = pd.read_csv(TEST_FILE)
     df = df.drop(columns=["recId", "id"])
     if num_samples > 0:
