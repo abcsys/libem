@@ -4,7 +4,7 @@ model = Parameter(
     default="gpt-4o",
     options=["gpt-4o-mini", "gpt-4",
              "gpt-4-turbo", "gpt-3.5-turbo",
-             "llama3"]
+             "llama3", "llama3.1"]
 )
 temperature = Parameter(
     default=0,
