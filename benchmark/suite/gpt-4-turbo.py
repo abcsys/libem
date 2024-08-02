@@ -24,7 +24,8 @@ def run_benchmark():
     reports = {}
     for dataset in datasets:
         args.name = dataset
-
+        args.kwargs = {}
+        
         print(f"Running {dataset}...")
         print(args)
 
