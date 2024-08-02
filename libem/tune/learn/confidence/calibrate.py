@@ -1,9 +1,10 @@
 import numpy as np
-from scipy.optimize import minimize
-from sklearn.metrics import log_loss
 
 
 def temperature_scale(confidence_scores, labels) -> list[float]:
+    from scipy.optimize import minimize
+    from sklearn.metrics import log_loss
+
     if len(confidence_scores) == 0:
         return confidence_scores
 

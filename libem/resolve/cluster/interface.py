@@ -1,6 +1,5 @@
 import pandas as pd
 from typing import Union, Iterator
-import sklearn.metrics as metrics
 
 from libem.resolve.cluster.function import func
 from libem.resolve.cluster.integrations.pandas import func as pandas_func
@@ -35,6 +34,8 @@ def cluster(records: InputType, sort=False) -> OutputType:
 
 
 def eval(truths: list[int], preds: list[int]) -> dict:
+    import sklearn.metrics as metrics
+
     return {
         "adjusted_rand_score": metrics.adjusted_rand_score(truths, preds),
         "adjusted_mutual_info_score": metrics.adjusted_mutual_info_score(truths, preds),
