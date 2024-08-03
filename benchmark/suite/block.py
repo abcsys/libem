@@ -3,7 +3,7 @@ import time
 
 import libem
 import benchmark.run
-from benchmark.classic import dataset_benchmarks
+from benchmark.classic import dataset_benchmarks, block_similarities
 from benchmark.suite.util import (report_to_dataframe, 
                                   tabulate, plot, 
                                   save, show)
@@ -14,19 +14,17 @@ name = os.path.basename(__file__).replace(".py", "")
 def run(args):
     datasets = dataset_benchmarks.keys()
 
-    args.block = False
-    args.match = True
-    args.model = "llama3"
+    args.block = True
+    args.match = False
     args.num_pairs = -1
-    
+
     # do not use downstream log/print
     log = args.log
     args.log = False
     quiet = args.quiet
     args.quiet = True
-    
-    print(f"Benchmark: Matching all {len(datasets)} datasets "
-          f"with {args.model}:")
+
+    print(f"Benchmark: Blocking all {len(datasets)} datasets:")
     start = time.time()
 
     reports = {}
@@ -35,23 +33,23 @@ def run(args):
 
         libem.reset()
         report = benchmark.run.run(args)
-        reports[dataset] = report["stats"]["match"]
+        reports[dataset] = report["stats"]["block"]
+        reports[dataset]["similarity_cutoff"] = block_similarities[dataset]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
-
+    
     df = report_to_dataframe(reports)
     if log:
         save(df, name)
-
+    
     # generate markdown table
-    df = df[["dataset", "precision", "recall", "f1",
-             "cost", "throughput"]]
+    df = df[["dataset", "similarity_cutoff", "percent_blocked", "f1", "throughput"]]
     field_names = {
         "dataset": "Dataset",
-        "precision": "Precision",
-        "recall": "Recall",
+        "total_pairs": "Total Pairs",
+        "similarity_cutoff": "Similarity Cutoff (0-100)",
+        "percent_blocked": "Percent Blocked",
         "f1": "F1",
-        "cost": "Cost ($)",
         "throughput": "Throughput (pps)",
     }
     df = df.rename(columns=field_names)
