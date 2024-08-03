@@ -15,6 +15,9 @@ def run(args) -> dict:
     if args.input_file:
         args.name = args.input_file.split('/')[-1].split(".")[0]
         benchmark_func = run_from_file
+    elif args.suite:
+        args.suite = args.suite.lower().replace('_', '-')
+        benchmark_func = benchmark.benchmark_suites[args.suite]
     else:
         args.name = args.name.lower().replace('_', '-')
         benchmark_func = benchmark.benchmarks[args.name]
@@ -33,9 +36,6 @@ def run_from_file(args) -> dict:
     These pairs could be nested under a "results.match",
     "fp", "fn", "tn", "tp" keys or directly in the JSON file.
     """
-    
-    # create a deep copy of args before making changes
-    args = copy.deepcopy(args)
     
     pairs = []
     with open(args.input_file, 'r') as f:
@@ -68,7 +68,10 @@ def args() -> argparse.Namespace:
     # intput configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
-                        type=str, default='abt-buy')
+                        type=str, default='')
+    parser.add_argument("-s", "--suite", dest='suite', nargs='?',
+                        help="The benchmark suite.",
+                        type=str, default='')
     parser.add_argument("-i", "--input-file", dest='input_file', nargs='?',
                         help="Name of the input file to use as a dataset.",
                         type=str, default='')
@@ -156,8 +159,47 @@ def args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def validate(args):
+    if args.name and args.name not in benchmark.benchmarks:
+        raise ValueError(f"Benchmark {args.name} not found.")
+    if args.suite and args.suite not in benchmark.benchmark_suites:
+        raise ValueError(f"Suite {args.suite} not found.")
+    if sum([bool(args.name), bool(args.suite), bool(args.input_file)]) > 1:
+        raise ValueError(f"Please only specify one from the following: "
+                         "name, suite and input file.")
+    if not args.suite and not args.input_file:
+        # set default value for args.name
+        args.name = 'abt-buy'
+    
+    if args.start_index < 0:
+        raise ValueError(f"Start index cannot be < 0.")
+    if args.batch_size <= 0:
+        raise ValueError(f"Batch size cannot be <= 0.")
+    if args.batch_size > 1 and (args.cot or args.confidence):
+        raise ValueError(f"CoT and confidence are not "
+                         "supported with batch size > 1.")
+    if args.batch_size > 1 and args.sync:
+        raise ValueError(f"Synchronous operation not supported for batch size > 1.")
+    
+    if not args.match:
+        if args.batch_size > 1:
+            raise ValueError(f"Enable match to use batch size.")
+        if args.num_shots > 0:
+            raise ValueError(f"Enable match to use in-context learning.")
+        if args.cot or args.confidence or args.similarity:
+            raise ValueError(f"Enable match to use CoT and confidence.")
+        if args.browse:
+            raise ValueError(f"Enable  match to use browse.")
+        if args.guess:
+            raise ValueError(f"Enable match to use guess.")
+    if not args.block and args.similarity > 0:
+        raise ValueError(f"Enable block to use similarity cutoff.")
+    
+    return args
+
+
 def main():
-    run(args())
+    run(validate(args()))
 
 
 if __name__ == "__main__":

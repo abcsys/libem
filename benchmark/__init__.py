@@ -18,5 +18,4 @@ from benchmark.suite import benchmark_suites
 
 benchmarks = {
     **classic_benchmarks,
-    **benchmark_suites,
 }

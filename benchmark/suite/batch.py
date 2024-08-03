@@ -1,11 +1,8 @@
 import os
-import copy
 import time
 
-import libem
-import benchmark.run
-from benchmark.classic import dataset_benchmarks
-from benchmark.suite.util import (report_to_dataframe, 
+from benchmark.suite.util import (run_dataset, 
+                                  report_to_dataframe, 
                                   tabulate, plot, 
                                   save, show)
 
@@ -28,9 +25,7 @@ def run(args):
         dataset = 'abt-buy'
     
     # do not use downstream log/print
-    log = args.log
     args.log = False
-    quiet = args.quiet
     args.quiet = True
     
     batch_sizes = [1, 4, 16, 64, 128, 256, 512]
@@ -41,20 +36,14 @@ def run(args):
     reports = {}
     for batch_size in batch_sizes:
         args.batch_size = batch_size
-        args.name = dataset
-        
-        # create a deep copy of args to pass into benchmark
-        args_cpy = copy.deepcopy(args)
 
-        libem.reset()
-        report = dataset_benchmarks[dataset](args)
+        report = run_dataset(dataset, args)
         reports[batch_size] = report["stats"]["match"]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
     df = report_to_dataframe(reports, key_col="batch_size")
-    if log:
-        save(df, f"{name}-{dataset}")
+    save(df, f"{name}-{dataset}")
 
     # generate markdown table
     df = df[["batch_size", "f1", "latency", "per_pair_latency",
@@ -68,12 +57,9 @@ def run(args):
         "throughput": "Throughput (pps)",
     }
     df = df.rename(columns=field_names)
-    
-    if log:
-        tabulate(df, f"{name}-{dataset}")
-    
-    if not quiet:
-        plot(df)
-        show(df)
+
+    tabulate(df, f"{name}-{dataset}")
+    plot(df)
+    show(df)
 
     return reports

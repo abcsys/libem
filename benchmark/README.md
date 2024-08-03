@@ -17,7 +17,7 @@ Available benchmarks in the `classic` directory:
 To run the blocking benchmark:
 
 ```
-python -m benchmark.run -n block
+python -m benchmark.run -s block
 ```
 
 ----
@@ -31,16 +31,16 @@ similarity score cutoff between 1-100.
 
 ### Results
 
-| Dataset       | Total Pairs | Similarity Cutoff (0-100) | Percentage Blocked |    F1    | Throughput (pps) |
-| :------------ |:-----------:|:-------------------------:|:------------------:|:--------:|:----------------:|
-| abt-buy*      |   367136    |            50             |        95.6        |   2.54   |            86000 |
-| amazon-google |   460106    |            54             |        96.4        |   2.8    |            79000 |
-| beer          |    6308     |            79             |        98.8        |   30.4   |            59000 |
-| dblp-acm      |   678927    |            79             |        99.9        |   50.3   |            50000 |
-| dblp-scholar  |   823244    |            59             |        99.2        |   7.32   |            56000 |
-| fodors-zagats |    13224    |            83             |        99.8        |   80.0   |            58000 |
-| itunes-amazon |    7488     |            63             |        95.8        |   15.2   |            32000 |
-| walmart-amazon|   716846    |            50             |        96.7        |   1.6    |            64000 |
+|    Dataset    | Total Pairs | Similarity Cutoff (0-100) | Percentage Blocked |    F1    | Throughput (pps) |
+| :------------ | :---------: | :-----------------------: | :----------------: | :------: | :--------------: |
+| abt-buy*      |   367136    |            50             |        95.6        |   2.54   |      86000       |
+| amazon-google |   460106    |            54             |        96.4        |   2.8    |      79000       |
+| beer          |    6308     |            79             |        98.8        |   30.4   |      59000       |
+| dblp-acm      |   678927    |            79             |        99.9        |   50.3   |      50000       |
+| dblp-scholar  |   823244    |            59             |        99.2        |   7.32   |      56000       |
+| fodors-zagats |    13224    |            83             |        99.8        |   80.0   |      58000       |
+| itunes-amazon |    7488     |            63             |        95.8        |   15.2   |      32000       |
+| walmart-amazon|   716846    |            50             |        96.7        |   1.6    |      64000       |
 
 \* abt-buy dataset is blocked without the `description` field.
 
@@ -49,7 +49,7 @@ similarity score cutoff between 1-100.
 To run through all the datasets in `/classic`:
 
 ```
-python -m benchmark.run -n <model-name>
+python -m benchmark.run -s <model-name>
 ```
 
 ----
@@ -63,7 +63,7 @@ python -m benchmark.run -n <model-name>
 
 ### Results
 
-| Dataset        | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
+|    Dataset     | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
 | :------------- | :----------------: | :--------------: | :-------------: |
 | abt-buy        |   84.0, **89.9**   |  99.5, **99.5**  | 91.1, **94.5**  |
 | amazon-google  |   60.0, **67.4**   |  89.7, **92.7**  | 71.9, **78.1**  |
@@ -77,7 +77,7 @@ python -m benchmark.run -n <model-name>
 #### GPT-4o-mini
 
 |    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
-| :------------: | :-------: | :----: | :---: | :------: | :--------------: |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |
 |    abt-buy     |   94.61   |  76.7  | 84.72 |  0.0362  |       140        |
 | amazon-google  |   68.32   | 76.82  | 72.32 | 0.02291  |       110        |
 |      beer      |    100    | 28.57  | 44.44 | 0.002078 |        87        |
@@ -87,10 +87,23 @@ python -m benchmark.run -n <model-name>
 | itunes-amazon  |    100    | 46.15  | 63.16 | 0.004256 |        34        |
 | walmart-amazon |   96.3    | 67.36  | 79.27 | 0.03037  |        82        |
 
+#### GPT-4
+
+|     Dataset    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |
+| abt-buy        |   95.02   |  92.72 | 93.86 |   7.26   |              140 |
+| amazon-google  |   63.44   |  90.13 | 74.47 |   4.44   |               94 |
+| beer           |     90    |  64.29 | 75    |  0.4133  |               74 |
+| dblp-acm       |   96.15   |  100   | 98.04 |   6.232  |              130 |
+| dblp-scholar   |   91.56   |  82.4  | 86.74 |   5.694  |              130 |
+| fodors-zagats  |    100    |  86.36 | 92.68 |  0.9667  |               73 |
+| itunes-amazon  |    100    |  46.15 | 63.16 |   0.853  |               71 |
+| walmart-amazon |   90.91   |  88.08 | 89.47 |   6.032  |              140 |
+
 #### GPT-3.5-turbo
 
 |    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
-| :------------: | :-------: | :----: | :---: | :------: | :--------------: |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |
 |    abt-buy     |    100    | 15.05  | 26.16 |  0.3649  |        22        |
 | amazon-google  |   68.6    | 35.62  | 46.89 |  0.2209  |       160        |
 |      beer      |    100    | 35.71  | 52.63 | 0.02057  |        78        |
@@ -103,7 +116,7 @@ python -m benchmark.run -n <model-name>
 #### Meta-Llama3-8B-Instruct-8bit
 
 |    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Latency (s) |
-| :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
 |    abt-buy     |    50.25    | 97.09  | 66.23 |  0.0  |        0.92        | 1312.29  |
 | amazon-google  |   31.11    | 96.14  | 47.01 |  0.0  |       1.4        | 912.32  |
 |      beer      |    80.0    | 85.71  | 82.76 | 0.0  |        1.1        |   81.18
@@ -118,7 +131,7 @@ python -m benchmark.run -n <model-name>
 To run the batching benchmark for a dataset, use:
 
 ```
-python -m benchmark.run -n batch -k '{"dataset": <dataset-name>}'
+python -m benchmark.run -s batch -k '{"dataset": <dataset-name>}'
 ```
 
 All candidate pairs in a batch are grouped into the same prompt request. Each pair is prefixed with "Q#:"

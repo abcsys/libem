@@ -1,10 +1,9 @@
 import os
 import time
 
-import libem
-import benchmark.run
 from benchmark.classic import dataset_benchmarks, block_similarities
-from benchmark.suite.util import (report_to_dataframe, 
+from benchmark.suite.util import (run_dataset, 
+                                  report_to_dataframe, 
                                   tabulate, plot, 
                                   save, show)
 
@@ -19,9 +18,7 @@ def run(args):
     args.num_pairs = -1
 
     # do not use downstream log/print
-    log = args.log
     args.log = False
-    quiet = args.quiet
     args.quiet = True
 
     print(f"Benchmark: Blocking all {len(datasets)} datasets:")
@@ -29,18 +26,14 @@ def run(args):
 
     reports = {}
     for dataset in datasets:
-        args.name = dataset
-
-        libem.reset()
-        report = benchmark.run.run(args)
+        report = run_dataset(dataset, args)
         reports[dataset] = report["stats"]["block"]
         reports[dataset]["similarity_cutoff"] = block_similarities[dataset]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
     df = report_to_dataframe(reports)
-    if log:
-        save(df, name)
+    save(df, name)
     
     # generate markdown table
     df = df[["dataset", "similarity_cutoff", "percent_blocked", "f1", "throughput"]]
@@ -54,11 +47,8 @@ def run(args):
     }
     df = df.rename(columns=field_names)
     
-    if log:
-        tabulate(df, name)
-    
-    if not quiet:
-        plot(df)
-        show(df)
+    tabulate(df, name)
+    plot(df)
+    show(df)
 
     return reports
