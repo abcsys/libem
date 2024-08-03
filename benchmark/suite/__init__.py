@@ -9,7 +9,7 @@ from benchmark.suite import (
     llama3,
 )
 
-benchmark_suites = {
+suites = {
     'block': block.run,
     'batch': batch.run,
     'gpt-3.5-turbo': gpt_35_turbo.run,

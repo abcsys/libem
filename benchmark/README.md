@@ -14,7 +14,13 @@ Available benchmarks in the `classic` directory:
 
 ## Entity Blocking
 
-To run the blocking benchmark:
+To run blocking through a single benchmark in `/classic`:
+
+```
+python -m benchmark.run -n <benchmark-name> -p -1 --block --no-match
+```
+
+To run through the entire blocking benchmark:
 
 ```
 python -m benchmark.run -s block
@@ -31,7 +37,7 @@ similarity score cutoff between 1-100.
 
 ### Results
 
-|    Dataset    | Total Pairs | Similarity Cutoff (0-100) | Percentage Blocked |    F1    | Throughput (pps) |
+|   Benchmark   | Total Pairs | Similarity Cutoff (0-100) | Percentage Blocked |    F1    | Throughput (pps) |
 | :------------ | :---------: | :-----------------------: | :----------------: | :------: | :--------------: |
 | abt-buy*      |   367136    |            50             |        95.6        |   2.54   |      86000       |
 | amazon-google |   460106    |            54             |        96.4        |   2.8    |      79000       |
@@ -46,10 +52,16 @@ similarity score cutoff between 1-100.
 
 ## Entity Matching
 
-To run through all the datasets in `/classic`:
+To run through a single benchmark in `/classic`:
 
 ```
-python -m benchmark.run -s <model-name>
+python -m benchmark.run -n <benchmark-name> -p -1
+```
+
+To run through all the benchmarks with a specific model, choose one of the model suites in `/suite`:
+
+```
+python -m benchmark.run -s <suite-name>
 ```
 
 ----
@@ -63,7 +75,7 @@ python -m benchmark.run -s <model-name>
 
 ### Results
 
-|    Dataset     | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
+|   Benchmark    | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
 | :------------- | :----------------: | :--------------: | :-------------: |
 | abt-buy        |   84.0, **89.9**   |  99.5, **99.5**  | 91.1, **94.5**  |
 | amazon-google  |   60.0, **67.4**   |  89.7, **92.7**  | 71.9, **78.1**  |
@@ -76,7 +88,7 @@ python -m benchmark.run -s <model-name>
 
 #### GPT-4o-mini
 
-|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
 | :------------- | :-------: | :----: | :---: | :------: | :--------------: |
 |    abt-buy     |   94.61   |  76.7  | 84.72 |  0.0362  |       140        |
 | amazon-google  |   68.32   | 76.82  | 72.32 | 0.02291  |       110        |
@@ -89,7 +101,7 @@ python -m benchmark.run -s <model-name>
 
 #### GPT-4
 
-|     Dataset    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+|    Benchmark   | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
 | :------------- | :-------: | :----: | :---: | :------: | :--------------: |
 | abt-buy        |   95.02   |  92.72 | 93.86 |   7.26   |              140 |
 | amazon-google  |   63.44   |  90.13 | 74.47 |   4.44   |               94 |
@@ -102,7 +114,7 @@ python -m benchmark.run -s <model-name>
 
 #### GPT-3.5-turbo
 
-|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
 | :------------- | :-------: | :----: | :---: | :------: | :--------------: |
 |    abt-buy     |    100    | 15.05  | 26.16 |  0.3649  |        22        |
 | amazon-google  |   68.6    | 35.62  | 46.89 |  0.2209  |       160        |
@@ -115,7 +127,7 @@ python -m benchmark.run -s <model-name>
 
 #### Meta-Llama3-8B-Instruct-8bit
 
-|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Latency (s) |
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Latency (s) |
 | :------------- | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
 |    abt-buy     |    50.25    | 97.09  | 66.23 |  0.0  |        0.92        | 1312.29  |
 | amazon-google  |   31.11    | 96.14  | 47.01 |  0.0  |       1.4        | 912.32  |
@@ -128,10 +140,11 @@ python -m benchmark.run -s <model-name>
 
 ### Prompt-level batching
 
-To run the batching benchmark for a dataset, use:
+To run a benchmark with batching, use the `--batch-size` flag with the desired batch size. For example, to run
+the `abt-buy` benchmark with a batch size of 16, use the following command:
 
 ```
-python -m benchmark.run -s batch -k '{"dataset": <dataset-name>}'
+python -m benchmark.run -n abt-buy -p -1 --batch-size 16
 ```
 
 All candidate pairs in a batch are grouped into the same prompt request. Each pair is prefixed with "Q#:"
@@ -150,9 +163,15 @@ Q2: <ans>
 ...
 ```
 
+To run through the following batching experiment for a benchmark, use:
+
+```
+python -m benchmark.run -s batch -n <benchmark-name>
+```
+
 #### Results
 
-Varying the batch size when performing EM over the `abt-buy` dataset:
+Varying the batch size when performing EM over the `abt-buy` benchmark:
 
 | Batch Size | F1    | Latency    | Per Pair Latency | Cost |
 |:----------:|:-----:|:----------:|:----------------:|:----:|

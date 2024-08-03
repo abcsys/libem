@@ -23,7 +23,7 @@ from benchmark.classic import (
     challenging,
 )
 
-dataset_benchmarks = {
+classic_benchmarks = {
     'abt-buy': abt_buy.run,
     'amazon-google': amazon_google.run,
     'beer': beer.run,
@@ -38,7 +38,7 @@ challenges = {
     'classic.challenging': challenging.run,
 }
 
-classic_benchmarks = {
-    **dataset_benchmarks,
+benchmarks = {
+    **classic_benchmarks,
     **challenges,
 }

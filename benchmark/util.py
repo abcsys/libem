@@ -124,10 +124,11 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
           f"from the {args.name} benchmark", end='')
     
     if args.num_pairs > 0:
-        total_pairs = args.num_pairs + args.start_index
         print(f",\nBenchmark: stopping after the first "
-              f"{'pair' if total_pairs == 1 else f'{total_pairs} pairs'} "
-              f"that pass{f'es' if total_pairs == 1 else ''} the cutoff:")
+              f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
+              f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
+        print("Benchmark: Note that most stats are unavailable when running "
+              "only part of the benchmark.")
     else:
         print(":")
 
@@ -137,7 +138,7 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         blocked.append(pair)
 
         # check num_pairs stop condition
-        if 0 < args.num_pairs <= len(blocked) - args.start_index:
+        if 0 < args.num_pairs <= len(blocked):
             break
     total_time = time.time() - start_time
     
@@ -161,24 +162,25 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
             })
 
     # if didn't run through the entire dataset
-    # then tn, fn not available
+    # then all F1 related stats are not available
     if args.num_pairs > 0 and args.num_pairs <= len(out):
-        num_tn = 0
+        num_tn = -1
         fn = []
+        precision, recall, f1 = -1, -1, -1
     else:
         for pair in true:
             if pair not in tp:
                 fn.append(pair)
         num_tn = max_pairs - len(tp) - len(fp) - len(fn)
     
-    if len(tp) == 0:
-        precision = 100 if len(fp) == 0 else 0
-        recall = 100 if len(fn) == 0 else 0
-    else:
-        precision = len(tp) / (len(tp) + len(fp)) * 100
-        recall = len(tp) / (len(tp) + len(fn)) * 100
-    f1 = 0 if precision + recall == 0 \
-        else 2 * round(precision * recall / (precision + recall), 2)
+        if len(tp) == 0:
+            precision = 100 if len(fp) == 0 else 0
+            recall = 100 if len(fn) == 0 else 0
+        else:
+            precision = len(tp) / (len(tp) + len(fp)) * 100
+            recall = len(tp) / (len(tp) + len(fn)) * 100
+        f1 = 0 if precision + recall == 0 \
+            else 2 * round(precision * recall / (precision + recall), 2)
 
     stats = {
         'precision': round(precision, 2),
@@ -197,8 +199,8 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         stats['percent_blocked'] = round((1 - len(out) / max_pairs) * 100, 1)
         stats['throughput'] = libem.round(max_pairs / total_time, 2)
     else:
-        stats['percent_blocked'] = 0
-        stats['throughput'] = 0
+        stats['percent_blocked'] = -1
+        stats['throughput'] = -1
     
     results = {
         'tp': tp,
@@ -212,10 +214,10 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         if args.num_pairs <= 0 or args.num_pairs > len(out):
             print(f"Benchmark: Resulting pairs\t {len(out)}")
             print(f"Benchmark: Percent blocked\t {stats['percent_blocked']}")
-            print(f"Benchmark: Throughput\t {stats['throughput']} pps")
-        print(f"Benchmark: Precision\t\t {stats['precision']}")
-        print(f"Benchmark: Recall\t\t {stats['recall']}")
-        print(f"Benchmark: F1 score\t\t {stats['f1']}")
+            print(f"Benchmark: Throughput\t\t {stats['throughput']} pps")
+            print(f"Benchmark: Precision\t\t {stats['precision']}")
+            print(f"Benchmark: Recall\t\t {stats['recall']}")
+            print(f"Benchmark: F1 score\t\t {stats['f1']}")
 
     return out, stats, results
 
@@ -224,9 +226,9 @@ def run_match(train_set, test_set, args):
     test_set = list(test_set)
 
     if args.num_pairs > 0:
-        num_pairs = min(args.num_pairs, len(test_set) - args.start_index)
+        num_pairs = min(args.num_pairs, len(test_set))
     else:
-        num_pairs = len(test_set) - args.start_index
+        num_pairs = len(test_set)
     num_batches = math.ceil(num_pairs / args.batch_size)
 
     print(f"Benchmark: Matching {num_pairs} "
@@ -259,7 +261,7 @@ def run_match(train_set, test_set, args):
 
         if args.sync and args.batch_size == 1:
             # iterate and match each pair
-            for i, data in enumerate(test_set[args.start_index:]):
+            for i, data in enumerate(test_set):
                 if 0 < args.num_pairs < i + 1:
                     break
 
@@ -296,7 +298,7 @@ def run_match(train_set, test_set, args):
         else:
             # prepare datasets
             left, right, labels = [], [], []
-            for i, data in enumerate(test_set[args.start_index:]):
+            for i, data in enumerate(test_set):
                 if 0 < args.num_pairs < i + 1:
                     break
 

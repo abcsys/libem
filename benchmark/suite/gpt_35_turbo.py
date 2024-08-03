@@ -1,17 +1,17 @@
 import os
 import time
 
-from benchmark.classic import dataset_benchmarks
-from benchmark.suite.util import (run_dataset, 
-                                  report_to_dataframe, 
-                                  tabulate, plot, 
-                                  save, show)
+import benchmark as bm
+from benchmark.suite.util import (
+    run_benchmark, report_to_dataframe, 
+    tabulate, plot, save, show
+)
 
 name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
-    datasets = dataset_benchmarks.keys()
+    benchmarks = bm.benchmarks.keys()
 
     args.block = False
     args.match = True
@@ -22,14 +22,14 @@ def run(args):
     args.log = False
     args.quiet = True
     
-    print(f"Benchmark: Matching all {len(datasets)} datasets "
+    print(f"Benchmark: Running all {len(benchmarks)} benchmarks "
           f"with {args.model}:")
     start = time.time()
 
     reports = {}
-    for dataset in datasets:
-        report = run_dataset(dataset, args)
-        reports[dataset] = report["stats"]["match"]
+    for benchmark in benchmarks:
+        report = run_benchmark(benchmark, args)
+        reports[benchmark] = report["stats"]["match"]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
 
@@ -37,10 +37,10 @@ def run(args):
     save(df, name)
 
     # generate markdown table
-    df = df[["dataset", "precision", "recall", "f1",
+    df = df[["benchmark", "precision", "recall", "f1",
              "cost", "throughput"]]
     field_names = {
-        "dataset": "Dataset",
+        "benchmark": "Benchmark",
         "precision": "Precision",
         "recall": "Recall",
         "f1": "F1",

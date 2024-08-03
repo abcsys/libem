@@ -1,28 +1,18 @@
 import os
 import time
 
-from benchmark.suite.util import (run_dataset, 
-                                  report_to_dataframe, 
-                                  tabulate, plot, 
-                                  save, show)
+from benchmark.suite.util import (
+    run_benchmark, report_to_dataframe, 
+    tabulate, plot, save, show
+)
 
 name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
-    '''
-    kwargs:
-        dataset (str): the dataset to perform batch size benchmark.
-                       Defaults to 'abt-buy'.
-    '''
-    
     args.block = False
     args.match = True
     args.num_pairs = -1
-    if args.kwargs and 'dataset' in args.kwargs:
-        dataset = args.kwargs['dataset']
-    else:
-        dataset = 'abt-buy'
     
     # do not use downstream log/print
     args.log = False
@@ -30,20 +20,20 @@ def run(args):
     
     batch_sizes = [1, 4, 16, 64, 128, 256, 512]
     
-    print(f"Benchmark: Varying the batch size on the {dataset} datasets:")
+    print(f"Benchmark: Varying the batch size on the {args.name} benchmarks:")
     start = time.time()
     
     reports = {}
     for batch_size in batch_sizes:
         args.batch_size = batch_size
 
-        report = run_dataset(dataset, args)
+        report = run_benchmark(args.name, args)
         reports[batch_size] = report["stats"]["match"]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
     df = report_to_dataframe(reports, key_col="batch_size")
-    save(df, f"{name}-{dataset}")
+    save(df, f"{name}-{args.name}")
 
     # generate markdown table
     df = df[["batch_size", "f1", "latency", "per_pair_latency",
@@ -58,7 +48,7 @@ def run(args):
     }
     df = df.rename(columns=field_names)
 
-    tabulate(df, f"{name}-{dataset}")
+    tabulate(df, f"{name}-{args.name}")
     plot(df)
     show(df)
 

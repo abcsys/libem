@@ -4,7 +4,7 @@ import argparse
 
 import libem
 
-import benchmark
+import benchmark as bm
 import benchmark.util as util
 
 
@@ -17,10 +17,10 @@ def run(args) -> dict:
         benchmark_func = run_from_file
     elif args.suite:
         args.suite = args.suite.lower().replace('_', '-')
-        benchmark_func = benchmark.benchmark_suites[args.suite]
+        benchmark_func = bm.suites[args.suite]
     else:
         args.name = args.name.lower().replace('_', '-')
-        benchmark_func = benchmark.benchmarks[args.name]
+        benchmark_func = bm.benchmarks[args.name]
 
     return benchmark_func(args)
 
@@ -68,7 +68,7 @@ def args() -> argparse.Namespace:
     # intput configurations
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
-                        type=str, default='')
+                        type=str, default='abt-buy')
     parser.add_argument("-s", "--suite", dest='suite', nargs='?',
                         help="The benchmark suite.",
                         type=str, default='')
@@ -84,9 +84,6 @@ def args() -> argparse.Namespace:
                         type=int, default=5)
 
     # dataset configurations
-    parser.add_argument("--start-index", dest='start_index', nargs='?',
-                        help="The index of the dataset to start from.",
-                        type=int, default=0)
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
@@ -160,19 +157,17 @@ def args() -> argparse.Namespace:
 
 
 def validate(args):
-    if args.name and args.name not in benchmark.benchmarks:
+    if args.name not in bm.benchmarks:
         raise ValueError(f"Benchmark {args.name} not found.")
-    if args.suite and args.suite not in benchmark.benchmark_suites:
+    if args.suite and args.suite not in bm.suites:
         raise ValueError(f"Suite {args.suite} not found.")
-    if sum([bool(args.name), bool(args.suite), bool(args.input_file)]) > 1:
-        raise ValueError(f"Please only specify one from the following: "
-                         "name, suite and input file.")
-    if not args.suite and not args.input_file:
-        # set default value for args.name
-        args.name = 'abt-buy'
-    
-    if args.start_index < 0:
-        raise ValueError(f"Start index cannot be < 0.")
+    if args.name and args.input_file:
+        raise ValueError(f"Cannot specify both "
+                         "name and input file.")
+    if args.suite and args.input_file:
+        raise ValueError(f"Cannot specify both "
+                         "suite and input file.")
+
     if args.batch_size <= 0:
         raise ValueError(f"Batch size cannot be <= 0.")
     if args.batch_size > 1 and (args.cot or args.confidence):
@@ -186,7 +181,7 @@ def validate(args):
             raise ValueError(f"Enable match to use batch size.")
         if args.num_shots > 0:
             raise ValueError(f"Enable match to use in-context learning.")
-        if args.cot or args.confidence or args.similarity:
+        if args.cot or args.confidence:
             raise ValueError(f"Enable match to use CoT and confidence.")
         if args.browse:
             raise ValueError(f"Enable  match to use browse.")

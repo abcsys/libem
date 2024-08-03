@@ -103,7 +103,7 @@ gpt-4:
 gpt-4-turbo:
 	python -m benchmark.run -s gpt-4-turbo
 gpt-3.5-turbo:
-	python -m benchmark.run -s gpt-35-turbo
+	python -m benchmark.run -s gpt-3.5-turbo
 
 .PHONY: llama3
 llama3:

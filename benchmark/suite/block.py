@@ -1,17 +1,18 @@
 import os
 import time
 
-from benchmark.classic import dataset_benchmarks, block_similarities
-from benchmark.suite.util import (run_dataset, 
-                                  report_to_dataframe, 
-                                  tabulate, plot, 
-                                  save, show)
+import benchmark as bm
+from benchmark.classic import block_similarities
+from benchmark.suite.util import (
+    run_benchmark, report_to_dataframe, 
+    tabulate, plot, save, show
+)
 
 name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
-    datasets = dataset_benchmarks.keys()
+    benchmarks = bm.benchmarks.keys()
 
     args.block = True
     args.match = False
@@ -21,14 +22,19 @@ def run(args):
     args.log = False
     args.quiet = True
 
-    print(f"Benchmark: Blocking all {len(datasets)} datasets:")
+    print(f"Benchmark: Runnig blocking on all {len(benchmarks)} benchmarks:")
     start = time.time()
+    
 
     reports = {}
-    for dataset in datasets:
-        report = run_dataset(dataset, args)
-        reports[dataset] = report["stats"]["block"]
-        reports[dataset]["similarity_cutoff"] = block_similarities[dataset]
+    for benchmark in benchmarks:
+        try:
+            report = run_benchmark(benchmark, args)
+        except NotImplementedError:
+            continue
+        
+        reports[benchmark] = report["stats"]["block"]
+        reports[benchmark]["similarity_cutoff"] = block_similarities[benchmark]
 
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
@@ -36,9 +42,9 @@ def run(args):
     save(df, name)
     
     # generate markdown table
-    df = df[["dataset", "similarity_cutoff", "percent_blocked", "f1", "throughput"]]
+    df = df[["benchmark", "similarity_cutoff", "percent_blocked", "f1", "throughput"]]
     field_names = {
-        "dataset": "Dataset",
+        "benchmark": "Benchmark",
         "total_pairs": "Total Pairs",
         "similarity_cutoff": "Similarity Cutoff (0-100)",
         "percent_blocked": "Percent Blocked",
