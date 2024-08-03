@@ -22,23 +22,3 @@ from benchmark.classic import (
     walmart_amazon,
     challenging,
 )
-
-dataset_benchmarks = {
-    'abt-buy': abt_buy.run,
-    'amazon-google': amazon_google.run,
-    'beer': beer.run,
-    'dblp-acm': dblp_acm.run,
-    'dblp-scholar': dblp_scholar.run,
-    'fodors-zagats': fodors_zagats.run,
-    'itunes-amazon': itunes_amazon.run,
-    'walmart-amazon': walmart_amazon.run,
-}
-
-challenges = {
-    'classic.challenging': challenging.run,
-}
-
-classic_benchmarks = {
-    **dataset_benchmarks,
-    **challenges,
-}

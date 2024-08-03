@@ -15,7 +15,7 @@ def run_benchmark():
     datasets = bm.classic_benchmarks.keys()
 
     args = run.args()
-    args.model = "llama3"
+    args.model = "gpt-4o-mini"
     args.num_pairs = -1
     args.log = False
 

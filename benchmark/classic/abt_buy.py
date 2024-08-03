@@ -5,7 +5,6 @@ from libem.core.struct import Rules, Experiences
 from libem.prepare.datasets import abt_buy
 
 from benchmark import util
-from benchmark.classic import block_similarities
 
 
 def run(args):
@@ -55,13 +54,6 @@ def run(args):
             "libem.match.prompt.experiences": Experiences(),
             "libem.match.prompt.output": ""
         })
-    
-    # set pre-trained similarity cutoff for blocking
-    if args.block:
-        libem.calibrate({
-            "libem.block.parameter.similarity": args.similarity
-            if 0 <= args.similarity <= 100
-            else block_similarities['abt-buy']
-        })
+        
 
     return util.benchmark(train_set, test_set, args)
