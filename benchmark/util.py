@@ -19,7 +19,6 @@ from libem.tune.learn.confidence.calibrate import temperature_scale
 from libem.tune.learn import icl_strategies
 from libem.core.struct import Shots, Shot
 
-from benchmark.classic import block_similarities
 import benchmark as bm
 
 
@@ -112,12 +111,6 @@ def benchmark(train_set: Iterable,
 
 
 def run_block(test_set: Iterable, args: argparse.Namespace):
-    libem.calibrate({
-        "libem.block.parameter.similarity": args.similarity
-        if 0 <= args.similarity <= 100
-        else block_similarities[args.name]
-    })
-
     # prepare the blocking dataset
     # deduplicate left and right descriptions
     left = [json.loads(i) for i in set(json.dumps(d['left']) for d in test_set)]
@@ -125,14 +118,16 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
     true = [{'left': d['left'], 'right': d['right']}
             for d in test_set if d['label'] == 1]
 
-    total_pairs = len(left) * len(right)
+    max_pairs = len(left) * len(right)
 
-    print(f"Benchmark: Blocking {total_pairs} potential pairs "
+    print(f"Benchmark: Blocking {max_pairs} potential pairs "
           f"from the {args.name} benchmark", end='')
+    
     if args.num_pairs > 0:
+        total_pairs = args.num_pairs + args.start_index
         print(f",\nBenchmark: stopping after the first "
-              f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
-              f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
+              f"{'pair' if total_pairs == 1 else f'{total_pairs} pairs'} "
+              f"that pass{f'es' if total_pairs == 1 else ''} the cutoff:")
     else:
         print(":")
 
@@ -145,6 +140,7 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         if 0 < args.num_pairs <= len(blocked) - args.start_index:
             break
     total_time = time.time() - start_time
+    
     # generate output and stats
     out = []
     tp, fp, fn, num_tn = [], [], [], 0
@@ -164,11 +160,17 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
                 'label': 0
             })
 
-    for pair in true:
-        if pair not in tp:
-            fn.append(pair)
-
-    num_tn = total_pairs - len(tp) - len(fp) - len(fn)
+    # if didn't run through the entire dataset
+    # then tn, fn not available
+    if args.num_pairs > 0 and args.num_pairs <= len(out):
+        num_tn = 0
+        fn = []
+    else:
+        for pair in true:
+            if pair not in tp:
+                fn.append(pair)
+        num_tn = max_pairs - len(tp) - len(fp) - len(fn)
+    
     if len(tp) == 0:
         precision = 100 if len(fp) == 0 else 0
         recall = 100 if len(fn) == 0 else 0
@@ -190,7 +192,14 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
             'fn': len(fn)
         }
     }
-
+    
+    if args.num_pairs <= 0 or args.num_pairs > len(out):
+        stats['percent_blocked'] = round((1 - len(out) / max_pairs) * 100, 1)
+        stats['throughput'] = libem.round(max_pairs / total_time, 2)
+    else:
+        stats['percent_blocked'] = 0
+        stats['throughput'] = 0
+    
     results = {
         'tp': tp,
         'fp': fp,
@@ -198,14 +207,15 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         'tn': num_tn
     }
 
-    print()
     print(f"Benchmark: Blocking done in {round(total_time, 2)}s.")
-    if args.num_pairs <= 0 or args.num_pairs > len(out):
-        print(f"Benchmark: Resulting pairs\t {len(out)}")
-        print(f"Benchmark: Percent blocked\t {round((1 - len(out) / total_pairs) * 100, 2)}")
-    print(f"Benchmark: Precision\t\t {stats['precision']}")
-    print(f"Benchmark: Recall\t\t {stats['recall']}")
-    print(f"Benchmark: F1 score\t\t {stats['f1']}")
+    if not args.quiet:
+        if args.num_pairs <= 0 or args.num_pairs > len(out):
+            print(f"Benchmark: Resulting pairs\t {len(out)}")
+            print(f"Benchmark: Percent blocked\t {stats['percent_blocked']}")
+            print(f"Benchmark: Throughput\t {stats['throughput']} pps")
+        print(f"Benchmark: Precision\t\t {stats['precision']}")
+        print(f"Benchmark: Recall\t\t {stats['recall']}")
+        print(f"Benchmark: F1 score\t\t {stats['f1']}")
 
     return out, stats, results
 
@@ -389,13 +399,13 @@ def run_match(train_set, test_set, args):
         }
     }
 
-    print()
     print(f"Benchmark: Matching done in {stats['latency']}s.")
-    print(f"Benchmark: Precision\t {stats['precision']}")
-    print(f"Benchmark: Recall\t {stats['recall']}")
-    print(f"Benchmark: F1 score\t {stats['f1']}")
-    print(f"Benchmark: Throughput\t {stats['throughput']} pps")
-    print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
+    if not args.quiet:
+        print(f"Benchmark: Precision\t {stats['precision']}")
+        print(f"Benchmark: Recall\t {stats['recall']}")
+        print(f"Benchmark: F1 score\t {stats['f1']}")
+        print(f"Benchmark: Throughput\t {stats['throughput']} pps")
+        print(f"Benchmark: Cost \t ${stats['tokens']['cost']}")
 
     return stats, results
 

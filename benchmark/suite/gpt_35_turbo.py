@@ -16,7 +16,7 @@ def run(args):
 
     args.block = False
     args.match = True
-    args.model = "llama3"
+    args.model = "gpt-3.5-turbo"
     args.num_pairs = -1
     
     # do not use downstream log/print
