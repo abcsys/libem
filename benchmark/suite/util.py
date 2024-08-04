@@ -6,12 +6,12 @@ from datetime import datetime
 import libem
 import benchmark as bm
 
+
 def run_benchmark(benchmark, args):
     # create a deep copy of args to pass into benchmark
-    args_cpy = copy.deepcopy(args)
-
     libem.reset()
-    return bm.benchmarks[benchmark](args_cpy)
+    benchmark = bm.benchmarks[benchmark]
+    return benchmark(copy.deepcopy(args))
 
 
 def report_to_dataframe(reports, key_col: str = "benchmark"):

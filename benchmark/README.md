@@ -14,13 +14,13 @@ Available benchmarks in the `classic` directory:
 
 ## Entity Blocking
 
-To run blocking through a single benchmark in `/classic`:
+To run a single blocking benchmark in `/classic`:
 
 ```
 python -m benchmark.run -n <benchmark-name> -p -1 --block --no-match
 ```
 
-To run through the entire blocking benchmark:
+To run all blocking benchmarks:
 
 ```
 python -m benchmark.run -s block
@@ -52,13 +52,13 @@ similarity score cutoff between 1-100.
 
 ## Entity Matching
 
-To run through a single benchmark in `/classic`:
+To run a single benchmark in `/classic`:
 
 ```
 python -m benchmark.run -n <benchmark-name> -p -1
 ```
 
-To run through all the benchmarks with a specific model, choose one of the model suites in `/suite`:
+To run all the benchmarks with a specific model, choose one of the model suites in `/suite`:
 
 ```
 python -m benchmark.run -s <suite-name>
@@ -163,7 +163,7 @@ Q2: <ans>
 ...
 ```
 
-To run through the following batching experiment for a benchmark, use:
+To run the following batching experiment for a benchmark, use:
 
 ```
 python -m benchmark.run -s batch -n <benchmark-name>

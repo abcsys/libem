@@ -138,7 +138,7 @@ def args() -> argparse.Namespace:
                         action='store_true', default=False)
     parser.add_argument("--similarity", dest='similarity', nargs='?',
                         help="The similarity score cutoff for block, between 0-100.",
-                        type=int, default=-1)
+                        type=int, default=None)
     parser.add_argument("-r", "--rules", dest='rules', nargs='*',
                         help="List of rules to add to match.",
                         type=str, default='')
@@ -162,33 +162,35 @@ def validate(args):
     if args.suite and args.suite not in bm.suites:
         raise ValueError(f"Suite {args.suite} not found.")
     if args.name and args.input_file:
-        raise ValueError(f"Cannot specify both "
+        raise ValueError("Cannot specify both "
                          "name and input file.")
     if args.suite and args.input_file:
-        raise ValueError(f"Cannot specify both "
+        raise ValueError("Cannot specify both "
                          "suite and input file.")
 
     if args.batch_size <= 0:
-        raise ValueError(f"Batch size cannot be <= 0.")
+        raise ValueError("Batch size cannot be <= 0.")
     if args.batch_size > 1 and (args.cot or args.confidence):
-        raise ValueError(f"CoT and confidence are not "
+        raise ValueError("CoT and confidence are not "
                          "supported with batch size > 1.")
     if args.batch_size > 1 and args.sync:
-        raise ValueError(f"Synchronous operation not supported for batch size > 1.")
+        raise ValueError("Synchronous operation not supported for batch size > 1.")
+    if args.similarity and (args.similarity < 0 or args.similarity > 100):
+        raise ValueError("Similarity cutoff should be between 0 and 100.")
     
     if not args.match:
         if args.batch_size > 1:
-            raise ValueError(f"Enable match to use batch size.")
+            raise ValueError("Enable match to use batch size.")
         if args.num_shots > 0:
-            raise ValueError(f"Enable match to use in-context learning.")
+            raise ValueError("Enable match to use in-context learning.")
         if args.cot or args.confidence:
-            raise ValueError(f"Enable match to use CoT and confidence.")
+            raise ValueError("Enable match to use CoT and confidence.")
         if args.browse:
-            raise ValueError(f"Enable  match to use browse.")
+            raise ValueError("Enable  match to use browse.")
         if args.guess:
-            raise ValueError(f"Enable match to use guess.")
-    if not args.block and args.similarity > 0:
-        raise ValueError(f"Enable block to use similarity cutoff.")
+            raise ValueError("Enable match to use guess.")
+    if not args.block and args.similarity:
+        raise ValueError("Enable block to use similarity cutoff.")
     
     return args
 

@@ -5,6 +5,7 @@ import time
 import json
 import argparse
 import numpy as np
+from itertools import product
 from datetime import datetime
 from typing import Iterable
 
@@ -127,8 +128,6 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         print(f",\nBenchmark: stopping after the first "
               f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
               f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
-        print("Benchmark: Note that most stats are unavailable when running "
-              "only part of the benchmark.")
     else:
         print(":")
 
@@ -161,26 +160,36 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
                 'label': 0
             })
 
-    # if didn't run through the entire dataset
-    # then all F1 related stats are not available
-    if args.num_pairs > 0 and args.num_pairs <= len(out):
-        num_tn = -1
-        fn = []
-        precision, recall, f1 = -1, -1, -1
+    # if didn't run through the entire dataset,
+    # go through all pairs to find the fn and total pairs
+    if 0 < args.num_pairs <= len(blocked):
+        total_pairs, i = 0, 0
+        for l, r in product(left, right):
+            total_pairs += 1
+            
+            if l == blocked[i]['left'] and r == blocked[i]['right']:
+                i += 1
+                
+                # stop early if reached end of blocked
+                if i == len(blocked) - 1:
+                    break
+            else:
+                if {'left': l, 'right': r} in true:
+                    fn.append(pair)
     else:
-        for pair in true:
-            if pair not in tp:
-                fn.append(pair)
-        num_tn = max_pairs - len(tp) - len(fp) - len(fn)
+        total_pairs = max_pairs
+        fn = [pair for pair in true if pair not in tp]
     
-        if len(tp) == 0:
-            precision = 100 if len(fp) == 0 else 0
-            recall = 100 if len(fn) == 0 else 0
-        else:
-            precision = len(tp) / (len(tp) + len(fp)) * 100
-            recall = len(tp) / (len(tp) + len(fn)) * 100
-        f1 = 0 if precision + recall == 0 \
-            else 2 * round(precision * recall / (precision + recall), 2)
+    num_tn = total_pairs - len(tp) - len(fp) - len(fn)
+    
+    if len(tp) == 0:
+        precision = 100 if len(fp) == 0 else 0
+        recall = 100 if len(fn) == 0 else 0
+    else:
+        precision = len(tp) / (len(tp) + len(fp)) * 100
+        recall = len(tp) / (len(tp) + len(fn)) * 100
+    f1 = 0 if precision + recall == 0 \
+        else 2 * round(precision * recall / (precision + recall), 2)
 
     stats = {
         'precision': round(precision, 2),
@@ -195,12 +204,8 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
         }
     }
     
-    if args.num_pairs <= 0 or args.num_pairs > len(out):
-        stats['percent_blocked'] = round((1 - len(out) / max_pairs) * 100, 1)
-        stats['throughput'] = libem.round(max_pairs / total_time, 2)
-    else:
-        stats['percent_blocked'] = -1
-        stats['throughput'] = -1
+    stats['percent_blocked'] = round((1 - len(out) / total_pairs) * 100, 1)
+    stats['throughput'] = libem.round(total_pairs / total_time, 2)
     
     results = {
         'tp': tp,
@@ -211,13 +216,12 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
 
     print(f"Benchmark: Blocking done in {round(total_time, 2)}s.")
     if not args.quiet:
-        if args.num_pairs <= 0 or args.num_pairs > len(out):
-            print(f"Benchmark: Resulting pairs\t {len(out)}")
-            print(f"Benchmark: Percent blocked\t {stats['percent_blocked']}")
-            print(f"Benchmark: Throughput\t\t {stats['throughput']} pps")
-            print(f"Benchmark: Precision\t\t {stats['precision']}")
-            print(f"Benchmark: Recall\t\t {stats['recall']}")
-            print(f"Benchmark: F1 score\t\t {stats['f1']}")
+        print(f"Benchmark: Resulting pairs\t {len(out)}")
+        print(f"Benchmark: Percent blocked\t {stats['percent_blocked']}")
+        print(f"Benchmark: Throughput\t\t {stats['throughput']} pps")
+        print(f"Benchmark: Precision\t\t {stats['precision']}")
+        print(f"Benchmark: Recall\t\t {stats['recall']}")
+        print(f"Benchmark: F1 score\t\t {stats['f1']}")
 
     return out, stats, results
 

@@ -55,9 +55,7 @@ def run(args):
     # set pre-trained similarity cutoff for blocking
     if args.block:
         libem.calibrate({
-            "libem.block.parameter.similarity": args.similarity
-            if 0 <= args.similarity <= 100
-            else block_similarities['dblp-acm']
+            "libem.block.parameter.similarity": args.similarity or block_similarities['dblp-acm']
         })
 
     return util.benchmark(train_set, test_set, args)
