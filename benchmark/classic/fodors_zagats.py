@@ -5,6 +5,7 @@ from libem.core.struct import Rules, Experiences
 from libem.prepare.datasets import fodors_zagats
 
 from benchmark import util
+from benchmark.classic import block_similarities
 
 
 def run(args):
@@ -44,6 +45,12 @@ def run(args):
             "libem.match.prompt.rules": Rules(),
             "libem.match.prompt.experiences": Experiences(),
             "libem.match.prompt.output": ""
+        })
+    
+    # set pre-trained similarity cutoff for blocking
+    if args.block:
+        libem.calibrate({
+            "libem.block.parameter.similarity": args.similarity or block_similarities['fodors-zagats']
         })
 
     return util.benchmark(train_set, test_set, args)

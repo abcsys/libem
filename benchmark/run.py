@@ -4,7 +4,7 @@ import argparse
 
 import libem
 
-import benchmark
+import benchmark as bm
 import benchmark.util as util
 
 
@@ -15,9 +15,12 @@ def run(args) -> dict:
     if args.input_file:
         args.name = args.input_file.split('/')[-1].split(".")[0]
         benchmark_func = run_from_file
+    elif args.suite:
+        args.suite = args.suite.lower().replace('_', '-')
+        benchmark_func = bm.suites[args.suite]
     else:
         args.name = args.name.lower().replace('_', '-')
-        benchmark_func = benchmark.benchmarks[args.name]
+        benchmark_func = bm.benchmarks[args.name]
 
     return benchmark_func(args)
 
@@ -33,9 +36,6 @@ def run_from_file(args) -> dict:
     These pairs could be nested under a "results.match",
     "fp", "fn", "tn", "tp" keys or directly in the JSON file.
     """
-    
-    # create a deep copy of args before making changes
-    args = copy.deepcopy(args)
     
     pairs = []
     with open(args.input_file, 'r') as f:
@@ -69,6 +69,9 @@ def args() -> argparse.Namespace:
     parser.add_argument("-n", "--name", dest='name', nargs='?',
                         help="The name of the benchmark.",
                         type=str, default='abt-buy')
+    parser.add_argument("-s", "--suite", dest='suite', nargs='?',
+                        help="The benchmark suite.",
+                        type=str, default='')
     parser.add_argument("-i", "--input-file", dest='input_file', nargs='?',
                         help="Name of the input file to use as a dataset.",
                         type=str, default='')
@@ -81,9 +84,6 @@ def args() -> argparse.Namespace:
                         type=int, default=5)
 
     # dataset configurations
-    parser.add_argument("--start-index", dest='start_index', nargs='?',
-                        help="The index of the dataset to start from.",
-                        type=int, default=0)
     parser.add_argument("--no-shuffle", dest='shuffle',
                         help="Don't shuffle the dataset.",
                         action='store_false', default=True)
@@ -138,7 +138,7 @@ def args() -> argparse.Namespace:
                         action='store_true', default=False)
     parser.add_argument("--similarity", dest='similarity', nargs='?',
                         help="The similarity score cutoff for block, between 0-100.",
-                        type=int, default=-1)
+                        type=int, default=None)
     parser.add_argument("-r", "--rules", dest='rules', nargs='*',
                         help="List of rules to add to match.",
                         type=str, default='')
@@ -156,8 +156,47 @@ def args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def validate(args):
+    if args.name not in bm.benchmarks:
+        raise ValueError(f"Benchmark {args.name} not found.")
+    if args.suite and args.suite not in bm.suites:
+        raise ValueError(f"Suite {args.suite} not found.")
+    if args.name and args.input_file:
+        raise ValueError("Cannot specify both "
+                         "name and input file.")
+    if args.suite and args.input_file:
+        raise ValueError("Cannot specify both "
+                         "suite and input file.")
+
+    if args.batch_size <= 0:
+        raise ValueError("Batch size cannot be <= 0.")
+    if args.batch_size > 1 and (args.cot or args.confidence):
+        raise ValueError("CoT and confidence are not "
+                         "supported with batch size > 1.")
+    if args.batch_size > 1 and args.sync:
+        raise ValueError("Synchronous operation not supported for batch size > 1.")
+    if args.similarity and (args.similarity < 0 or args.similarity > 100):
+        raise ValueError("Similarity cutoff should be between 0 and 100.")
+    
+    if not args.match:
+        if args.batch_size > 1:
+            raise ValueError("Enable match to use batch size.")
+        if args.num_shots > 0:
+            raise ValueError("Enable match to use in-context learning.")
+        if args.cot or args.confidence:
+            raise ValueError("Enable match to use CoT and confidence.")
+        if args.browse:
+            raise ValueError("Enable  match to use browse.")
+        if args.guess:
+            raise ValueError("Enable match to use guess.")
+    if not args.block and args.similarity:
+        raise ValueError("Enable block to use similarity cutoff.")
+    
+    return args
+
+
 def main():
-    run(args())
+    run(validate(args()))
 
 
 if __name__ == "__main__":

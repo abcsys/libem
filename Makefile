@@ -87,21 +87,27 @@ archive:
 	@zip -r "$$(date +%Y-%m-%d_%H-%M-%S)_benchmarks.zip" $(RESULT_DIRS) \
 	&& rm -rf $(RESULT_DIRS) || true
 
+.PHONY: block-suite batch-suite
+block-suite:
+	python -m benchmark.run -s block
+batch-suite:
+	python -m benchmark.run -s batch
+
 .PHONY: gpt-4o gpt-4o-mini gpt-4 gpt-4-turbo gpt-3.5-turbo
 gpt-4o:
-	python -m benchmark.suite.gpt-4o
+	python -m benchmark.run -s gpt-4o
 gpt-4o-mini:
-	python -m benchmark.suite.gpt-4o-mini
+	python -m benchmark.run -s gpt-4o-mini
 gpt-4:
-	python -m benchmark.suite.gpt-4
+	python -m benchmark.run -s gpt-4
 gpt-4-turbo:
-	python -m benchmark.suite.gpt-4-turbo
+	python -m benchmark.run -s gpt-4-turbo
 gpt-3.5-turbo:
-	python -m benchmark.suite.gpt-35-turbo
+	python -m benchmark.run -s gpt-3.5-turbo
 
 .PHONY: llama3
 llama3:
-	python -m benchmark.suite.llama3
+	python -m benchmark.run -s llama3
 
 # tests clean
 .PHONY: test clean time_pkg_load time_mod_load
