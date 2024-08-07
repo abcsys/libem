@@ -21,7 +21,7 @@ schema = {
                     "description": "A list containing the second dataset.",
                 },
             },
-            "required": ["left"],
+            "required": ["left", "right"],
         },
     }
 }

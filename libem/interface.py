@@ -32,8 +32,9 @@ from libem.match.interface import match
 from libem.block.interface import block
 from libem.extract.interface import extract
 from libem.resolve.cluster.interface import cluster
+from libem.resolve.dedupe.interface import dedupe
 
-_ = match, block, extract, cluster
+_ = match, block, extract, cluster, dedupe
 
 from libem.tune.calibrate.interface import (
     calibrate, export

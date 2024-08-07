@@ -84,7 +84,7 @@ def main():
     block_time = time.time() - start_time
     print("Blocking done.")
     print("Number of pairs after blocking:", len(output))
-    
+
     print("\nMatching...")
     predictions, actual = [], []
     start_time = time.time()
