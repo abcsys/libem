@@ -77,7 +77,7 @@ def call(prompt: str | list | dict,
 
         response = generate(model, tokenizer, prompt=messages[0], temp=temperature)
         response_message = "messages is not supported"
-        
+
     else:
         if model == "llama3":
             try:
@@ -102,14 +102,25 @@ def call(prompt: str | list | dict,
         else:
             libem.debug("model loaded from cache")
         model = _model
-        
+
         if tools:
             raise libem.ToolUseUnsupported("Tool use is not supported")
         else:
-            completion_response = model.create_chat_completion(messages=message_openai)
+            response = model.create_chat_completion(messages=message_openai)
             response_message = response['choices'][0]['message']
             response = response_message['content']
-            
+
+    # TBD: get input and output tokens count
+    libem.trace.add({
+        "model": {
+            "messages": messages,
+            "num_model_calls": 1,
+            "num_input_tokens": -1,
+            "num_output_tokens": -1,
+            "model": model,
+        }
+    })
+
     return {
         "output": response,
         "messages": response_message,

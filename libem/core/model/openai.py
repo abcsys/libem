@@ -210,6 +210,7 @@ async def async_call(
             "num_model_calls": num_model_calls,
             "num_input_tokens": num_input_tokens,
             "num_output_tokens": num_output_tokens,
+            "model": model,
         }
     })
 
