@@ -122,7 +122,7 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
 
 async def once(left: str, right: str) -> dict:
     start = time.time()
-
+    
     system_prompt = Prompt.join(
         prompt.role(),
         prompt.rules(),

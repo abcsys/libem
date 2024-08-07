@@ -94,7 +94,7 @@ class Shots(Parameter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         _shots = []
         for shot in self.value:
             _shots.extend(shot())

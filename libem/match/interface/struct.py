@@ -67,7 +67,7 @@ def parse_input(left: Left, right: Right) -> (_Left, _Right):
             left, right = encode(left), encode(right)
         case list():
             assert len(left) == len(right)
-            encode = parameter.dict_desc_encoding
+            encode = parameter.dict_desc_encoding(recurse=False)
             left = [
                 encode(e) if isinstance(e, dict)
                 else str(e) for e in left
