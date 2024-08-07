@@ -40,7 +40,8 @@ class Parameter(Tunable):
     def __call__(self, *args, **kwargs):
         """
         When called, the instance evaluates and returns its current value. If the
-        value is a string, it formats the string with supplied args and kwargs.
+        value is a string, it formats the string with supplied args and kwargs. If
+        the value is a callable, it calls the function with supplied args and kwargs.
         """
         value = self.value
         if isinstance(value, Index):
@@ -50,7 +51,8 @@ class Parameter(Tunable):
                 raise KeyError(f"Index {self.value.key} "
                                f"not found in options "
                                f"{list(self.options.keys())}.")
-
+        if callable(value):
+            return value(*args, **kwargs)
         if isinstance(value, str):
             return value.format(*args, **kwargs)
         else:
@@ -58,6 +60,12 @@ class Parameter(Tunable):
 
     def __str__(self):
         return str(self.__call__())
+
+    def __eq__(self, other):
+        if isinstance(other, Parameter):
+            return self.value == other.value
+        else:
+            return self.value == other
 
     def __repr__(self):
         return self.__str__()

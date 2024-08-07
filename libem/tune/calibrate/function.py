@@ -4,8 +4,7 @@ import pkgutil
 
 import libem
 from libem.core.struct import (
-    Parameter, Prompt,
-    Shots, Shot, Rules, Experiences
+    Parameter,
 )
 
 schema = {}
@@ -25,9 +24,6 @@ def func(config, verbose=False):
         except:
             raise Exception(f"unable to find parameter {path}")
         assert isinstance(parameter, Parameter), f"invalid parameter {path}"
-
-        if isinstance(value, Parameter):
-            value = value()
 
         parameter.update(value)
 
