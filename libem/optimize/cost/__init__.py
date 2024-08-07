@@ -6,3 +6,4 @@ def get_cost(model, *args, **kwargs):
         return 0
     else:
         return openai.get_cost(model, *args, **kwargs)
+

@@ -14,27 +14,27 @@ InputType = Union[
     "pd.DataFrame",
 ]
 
+ID = int
+
 OutputType = Union[
-    list[(int, str)],
-    list[(int, dict)],
+    list[(ID, str)],
+    list[(ID, dict)],
     "pd.DataFrame",
 ]
 
 
-def cluster(records: InputType, sort=False) -> OutputType:
+def cluster(records: InputType, *, sort=False) -> OutputType:
     import pandas as pd
 
     match records:
         case pd.DataFrame():
             from libem.resolve.cluster.integrations.pandas import func as pandas_func
 
-            # add a column of 'cluster_id' to the DataFrame
             if sort:
                 return pandas_func(records).sort_values(by="cluster_id")
             else:
                 return pandas_func(records)
         case _:
-            # return a list of clusters
             if sort:
                 return sorted(func(records), key=lambda x: x[0])
             else:
