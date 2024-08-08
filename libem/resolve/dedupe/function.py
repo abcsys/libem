@@ -9,17 +9,17 @@ def func(records):
     match records:
         case pd.DataFrame():
             if "cluster_id" not in records.columns:
-                libem.info("[dedupe] cluster_id not found in records, "
+                libem.info("[dedupe] __cluster__ not found in records, "
                            "do clustering first")
                 records: pd.DataFrame = libem.cluster(records)
-                return records.drop_duplicates("cluster_id", keep="first") \
-                    .drop("cluster_id", axis=1).reset_index(drop=True)
+                return records.drop_duplicates("__cluster__", keep="first") \
+                    .drop("__cluster__", axis=1).reset_index(drop=True)
 
-            return records.drop_duplicates("cluster_id", keep="first") \
+            return records.drop_duplicates("__cluster__", keep="first") \
                 .reset_index(drop=True)
         case list():
             if "cluster_id" not in records[0]:
-                libem.info("[dedupe] cluster_id not found in records, "
+                libem.info("[dedupe] __cluster__ not found in records, "
                            "do clustering first")
                 records = libem.cluster(records)
                 return list({record[0]: record for record in records}.values())

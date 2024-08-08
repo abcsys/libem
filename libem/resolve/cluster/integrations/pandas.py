@@ -29,5 +29,5 @@ def func(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     new_df = df.copy()
-    new_df["cluster_id"] = [cluster_id for cluster_id, _ in clusters]
+    new_df["__cluster__"] = [cluster_id for cluster_id, _ in clusters]
     return new_df

@@ -31,7 +31,7 @@ def cluster(records: InputType, *, sort=False) -> OutputType:
             from libem.resolve.cluster.integrations.pandas import func as pandas_func
 
             if sort:
-                return pandas_func(records).sort_values(by="cluster_id")
+                return pandas_func(records).sort_values(by="__cluster__")
             else:
                 return pandas_func(records)
         case _:
