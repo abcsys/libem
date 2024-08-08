@@ -139,8 +139,10 @@ build:
 	docker push silveryfu/libem-serve:0.0.21
 
 # libem apps
-.PHONY: cluster dedupe
+.PHONY: cluster dedupe link
 cluster:
 	python examples/apps/cluster.py
 dedupe:
 	python examples/apps/dedupe.py
+link:
+	python examples/apps/link.py
