@@ -29,9 +29,9 @@ likelihood:
 # tool examples
 .PHONY: block extract
 block:
-	python examples/block.py
+	python examples/tool/block.py
 extract:
-	python examples/extract.py
+	python examples/tool/extract.py
 
 # utility examples
 .PHONY: calibrate trace
@@ -139,6 +139,10 @@ build:
 	docker push silveryfu/libem-serve:0.0.21
 
 # libem apps
-.PHONY: cluster
+.PHONY: cluster dedupe link
 cluster:
 	python examples/apps/cluster.py
+dedupe:
+	python examples/apps/dedupe.py
+link:
+	python examples/apps/link.py

@@ -4,8 +4,6 @@ import libem
 from libem.prepare.datasets.clustering import febrl
 from libem.optimize import cost
 
-from libem.resolve.cluster import eval
-
 
 def main():
     random.seed(1)
@@ -18,15 +16,14 @@ def main():
     df_test = df.drop(["cluster_id"], axis=1)
 
     with libem.trace as t:
-        df_cluster = libem.cluster(df_test)
+        df_dedupe = libem.dedupe(df_test)
 
     print(f"Given:\n{df_test}")
-    print(f"After clustering:\n{df_cluster.sort_values(by='__cluster__')}")
+    print(f"After deduplication:\n{df_dedupe}")
 
     print("Stats:")
     stats = t.stats()
     libem.pprint({
-        **eval(df["cluster_id"], df_cluster["__cluster__"]),
         "task_completion_time": libem.round(t.duration()),
         "throughput": libem.round(len(df_test) / t.duration()),
         "num_model_calls": stats["model"]["num_model_calls"]["sum"],

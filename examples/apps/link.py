@@ -1,34 +1,33 @@
 import random
 
 import libem
-from libem.prepare.datasets.clustering import febrl
+from libem.prepare.datasets.linking import febrl
 from libem.optimize import cost
-
-from libem.resolve.cluster import eval
 
 
 def main():
     random.seed(1)
-    num_samples = 15
+    num_samples = 10
 
-    df = febrl.load_test() \
-        .head(num_samples) \
-        .sample(frac=1) \
-        .reset_index(drop=True)
-    df_test = df.drop(["cluster_id"], axis=1)
+    print("Loading data...")
+    df_a, df_b = febrl.load(num_samples=num_samples)
+    df_a_test = df_a.drop(columns=["rec_id"])
+    df_b_test = df_b.drop(columns=["rec_id"])
 
+    libem.calibrate({
+        "libem.match.prompt.rules": "soc_sec_id distinguishes individuals"
+    })
     with libem.trace as t:
-        df_cluster = libem.cluster(df_test)
+        df_link = libem.link(df_a_test, df_b_test)
 
-    print(f"Given:\n{df_test}")
-    print(f"After clustering:\n{df_cluster.sort_values(by='__cluster__')}")
+    print(f"Given:\n{df_a}\nAnd:\n{df_b}")
+    print(f"After linking:\n{df_link.sort_values(by=['__cluster__'])}")
 
     print("Stats:")
     stats = t.stats()
     libem.pprint({
-        **eval(df["cluster_id"], df_cluster["__cluster__"]),
         "task_completion_time": libem.round(t.duration()),
-        "throughput": libem.round(len(df_test) / t.duration()),
+        "throughput": libem.round((len(df_a) + len(df_b)) / t.duration()),
         "num_model_calls": stats["model"]["num_model_calls"]["sum"],
         "num_input_tokens": stats["model"]["num_input_tokens"]["sum"],
         "num_output_tokens": stats["model"]["num_output_tokens"]["sum"],

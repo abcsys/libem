@@ -76,11 +76,11 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
 
 
 def block_and_match(records: Iterable[Record]) -> (list, list[dict]):
-    block_func = parameter.block_func()
-    match_func = parameter.match_func()
+    block = parameter.block_func
+    match = parameter.match_func
 
-    pairs = list(block_func(records))
-    answers = list(match_func(pairs))
+    pairs = list(block(records))
+    answers = list(match(pairs))
 
     return pairs, answers
 

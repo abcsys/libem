@@ -11,6 +11,9 @@ def get_model_info(model=None):
 
 
 def get_input_cost(model, num_tokens):
+    if num_tokens is None or num_tokens <= 0:
+        return 0
+
     global model_info
     if model_info is None:
         model_info = get_model_info(model)
@@ -18,6 +21,9 @@ def get_input_cost(model, num_tokens):
 
 
 def get_output_cost(model, num_tokens):
+    if num_tokens is None or num_tokens <= 0:
+        return 0
+
     global model_info
     if model_info is None:
         model_info = get_model_info(model)
