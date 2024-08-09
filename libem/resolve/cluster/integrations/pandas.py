@@ -23,6 +23,10 @@ schema = {
 }
 
 
+def cluster(*args, **kwargs):
+    return func(*args, **kwargs)
+
+
 def func(df: pd.DataFrame, sort: bool = False) -> pd.DataFrame:
     clusters = cluster_func(
         df.to_dict(orient="records")
@@ -30,8 +34,8 @@ def func(df: pd.DataFrame, sort: bool = False) -> pd.DataFrame:
 
     new_df = df.copy()
     new_df["__cluster__"] = [cluster_id for cluster_id, _ in clusters]
-    
+
     if sort:
         return new_df.sort_values(by="__cluster__")
-    
+
     return new_df

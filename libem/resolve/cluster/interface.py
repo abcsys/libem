@@ -24,30 +24,25 @@ OutputType = Union[
     list[(ID, str)],
     list[(ID, dict)],
     "pd.DataFrame",
-    str
+    "duckdb.Table",
+    "mongodb.Collection",
 ]
 
 
 def cluster(records: InputType, *, sort=False) -> OutputType:
     import pandas as pd
-    from libem.resolve.cluster.integrations.duckdb import Table
-    from libem.resolve.cluster.integrations.mongodb import MongoCollection
+
+    from libem.resolve.cluster.integrations import pandas
+    from libem.resolve.cluster.integrations import duckdb
+    from libem.resolve.cluster.integrations import mongodb
 
     match records:
-        case Table():
-            from libem.resolve.cluster.integrations.duckdb import func as duckdb_func
-            
-            # return the name of the clustered table
-            return duckdb_func(records, sort)
-        case MongoCollection():
-            from libem.resolve.cluster.integrations.mongodb import func as mongo_func
-            
-            # return the name of the clustered collection
-            return mongo_func(records, sort)
         case pd.DataFrame():
-            from libem.resolve.cluster.integrations.pandas import func as pandas_func
-            
-            return pandas_func(records, sort)
+            return pandas.cluster(records, sort)
+        case duckdb.Table():
+            return duckdb.cluster(records, sort)
+        case mongodb.Collection():
+            return mongodb.cluster(records, sort)
         case _:
             if sort:
                 return sorted(func(records), key=lambda x: x[0])

@@ -13,7 +13,7 @@ class Table:
         self.name = name
         self.conn = duckdb.connect(":default:") if conn is None else conn
         if not self.exist():
-            raise ValueError("Table not found in database.")
+            raise ValueError(f"Table {self.name} not found in database.")
 
     def __call__(self, df: pd.DataFrame = None):
         if df is None:
@@ -45,6 +45,10 @@ class Table:
             self.conn.rollback()
             raise e
         return self
+
+
+def cluster(*args, **kwargs):
+    return func(*args, **kwargs)
 
 
 def func(table: Table, sort: bool = False) -> Table:
