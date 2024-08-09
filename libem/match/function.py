@@ -131,7 +131,7 @@ async def once(left: str, right: str) -> dict:
         struct.Confidence() if parameter.confidence() else "",
         prompt.output.options["llama"] if libem.parameter.model in ["llama3", "llama3.1"] else prompt.output(),
     )
-    print(system_prompt)
+
     match_prompt = Prompt.join(
         prompt.query(
             left=left,
