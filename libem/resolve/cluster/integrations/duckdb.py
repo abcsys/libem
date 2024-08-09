@@ -18,8 +18,8 @@ class DuckDBTable():
         
         # get all tables in DB
         tables = self.con.sql(
-                "SELECT table_name FROM INFORMATION_SCHEMA.TABLES"
-            ).fetchall()
+            "SELECT table_name FROM INFORMATION_SCHEMA.TABLES"
+        ).fetchall()
         if len(tables) == 0:
             raise ValueError("No tables in database.")
         tables = [t[0] for t in tables]
@@ -37,16 +37,12 @@ class DuckDBTable():
                 table = tables[0]
         
         self.table = table
-        
-        # for assigning new table names
-        self.counter = 1
+    
     
     def get(self) -> pd.DataFrame:
         ''' Get the table. '''
         
-        return self.con.execute(
-                f"SELECT * FROM {self.table}"
-            ).df()
+        return self.con.execute(f"SELECT * FROM {self.table}").df()
     
     
     def add(self, df: pd.DataFrame) -> str:
@@ -57,21 +53,20 @@ class DuckDBTable():
             
             # get all tables in DB
             tables = self.con.sql(
-                    "SELECT table_name FROM INFORMATION_SCHEMA.TABLES"
-                ).fetchall()
+                "SELECT table_name FROM INFORMATION_SCHEMA.TABLES"
+            ).fetchall()
             tables = [t[0] for t in tables]
             
-            new_table = self.table + "_clustered"
+            basename = self.table + "_clustered"
             
             # append number if table already exists
-            if new_table in tables:
-                new_table = f"{new_table}_{self.counter}"
-                self.counter += 1
-            while new_table in tables:
-                new_table = re.sub(r'\d+$', str(self.counter), new_table)
-                self.counter += 1
-            
-            return new_table
+            if basename in tables:
+                counter = 1
+                while f"{basename}_{counter}" in tables:
+                    counter += 1
+                
+                return f"{basename}_{counter}"
+            return basename
         
         new_table = get_new_table_name()
         
@@ -83,9 +78,7 @@ class DuckDBTable():
 def func(input: DuckDBTable, sort: bool = False) -> str:
     df = input.get()
     
-    clusters = cluster_func(
-            df.to_dict(orient="records")
-        )
+    clusters = cluster_func(df.to_dict(orient="records"))
     
     df["__cluster__"] = [cluster_id for cluster_id, _ in clusters]
     

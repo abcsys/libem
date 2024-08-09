@@ -1,4 +1,3 @@
-import re
 import pymongo.database
 
 from libem.resolve.cluster.function import func as cluster_func
@@ -30,9 +29,7 @@ class MongoCollection():
                 collection = collections[0]
         
         self.collection = collection
-        
-        # for assigning new collection names
-        self.counter = 1
+    
     
     def get(self) -> list:
         ''' Get the collection. '''
@@ -48,17 +45,16 @@ class MongoCollection():
             
             collections = self.db.list_collection_names()
             
-            new_collection = self.collection + "_clustered"
+            basename = self.collection + "_clustered"
             
             # append number if collection already exists
-            if new_collection in collections:
-                new_collection = f"{new_collection}_{self.counter}"
-                self.counter += 1
-            while new_collection in collections:
-                new_collection = re.sub(r'\d+$', str(self.counter), new_collection)
-                self.counter += 1
-            
-            return new_collection
+            if basename in collections:
+                counter = 1
+                while f"{basename}_{counter}" in collections:
+                    counter += 1
+                
+                return f"{basename}_{counter}"
+            return basename
         
         new_collection = get_new_collection_name()
         
@@ -70,7 +66,7 @@ def func(input: MongoCollection, sort: bool = False) -> str:
     clusters = cluster_func(input.get())
     
     if sort:
-        clusters = sorted(func(clusters), key=lambda x: x[0])
+        clusters = sorted(clusters, key=lambda x: x[0])
     
     collection = [{
             "__cluster__": id,

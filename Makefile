@@ -146,3 +146,10 @@ dedupe:
 	python examples/apps/dedupe.py
 link:
 	python examples/apps/link.py
+
+# libem integrations
+.PHONY: duckdb mongodb
+duckdb:
+	python examples/integrations/duckdb-integration.py
+mongodb:
+	python examples/integrations/mongodb-integration.py
