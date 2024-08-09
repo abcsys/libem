@@ -38,4 +38,9 @@ def run(args):
         test_set = list(test_set)
         random.shuffle(test_set)
 
+    if args.model == 'llama3.1':
+        libem.calibrate({
+            "libem.match.prompt.output": "Do not provide explanation. Please only give your answer in the form of a single ‘yes’ or ‘no’.",
+        }, verbose=True)
+        
     return util.benchmark([], test_set, args)

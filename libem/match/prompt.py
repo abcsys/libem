@@ -28,7 +28,8 @@ output = Prompt(
         "likelihood": "At the end, give your answer strictly in the "
                       "format of a single number between 0.0 and 1.0, "
                       "estimating the likelihood that the two entities "
-                      "are the same."
+                      "are the same.",
+        "llama" : "Please only give your answer in the form of a single ‘yes’ or ‘no’. Nothing else.",
     },
 )
 
