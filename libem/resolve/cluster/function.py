@@ -33,20 +33,21 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
         left_cluster_id = record_cluster_ids[left]
         right_cluster_id = record_cluster_ids[right]
 
+        # merge with the smaller cluster id when matched
         if answer['answer'] == 'yes':
             if left_cluster_id == right_cluster_id:
                 continue
-            
-            # merge the cluster with the bigger id 
-            # into the smaller id cluster when matched
-            small_id_cluster = min(left_cluster_id, right_cluster_id)
-            big_id_cluster = max(left_cluster_id, right_cluster_id)
-            cluster_id_records[small_id_cluster].extend(
-                cluster_id_records.pop(big_id_cluster)
-            )
-            
-            for record_digest in cluster_id_records[small_id_cluster]:
-                record_cluster_ids[record_digest] = small_id_cluster
+            cluster_id = min(left_cluster_id, right_cluster_id)
+            if left_cluster_id == cluster_id:
+                cluster_id_records[cluster_id].extend(
+                    cluster_id_records.pop(right_cluster_id)
+                )
+            else:
+                cluster_id_records[cluster_id].extend(
+                    cluster_id_records.pop(left_cluster_id)
+                )
+            for record_digest in cluster_id_records[cluster_id]:
+                record_cluster_ids[record_digest] = cluster_id
         else:
             if left_cluster_id == right_cluster_id:
                 # TBD: report inconsistent match results
@@ -59,13 +60,17 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
     libem.debug(f"[cluster] {len(cluster_id_records)} clusters found,"
                 f"average cluster size: {len(records) / len(cluster_id_records):.2f}")
 
-    # reassign cluster ids to records to increment from 0 without gaps
-    for i, cluster in enumerate(cluster_id_records.keys()):
-        for record_digest in cluster_id_records[cluster]:
-            record_cluster_ids[record_digest] = i
-    
+    # add cluster id to records
+    # remap cluster ids to increment from 0 without gaps
+    unique_cluster_ids = sorted(
+        id for id in set(record_cluster_ids.values())
+    )
+    new_cluster_id_map = {
+        old_id: new_id
+        for new_id, old_id in enumerate(unique_cluster_ids)
+    }
     return [
-        (record_cluster_ids[digest(record)], record)
+        (new_cluster_id_map[record_cluster_ids[digest(record)]], record)
         for record in records
     ]
 
