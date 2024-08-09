@@ -150,6 +150,6 @@ link:
 # libem integrations
 .PHONY: duckdb mongodb
 duckdb:
-	python examples/integrations/duckdb-integration.py
+	python examples/apps/integration/duckdb_cluster.py
 mongodb:
-	python examples/integrations/mongodb-integration.py
+	python examples/apps/integration/mongodb_cluster.py

@@ -7,15 +7,15 @@ from libem.resolve.cluster.function import func
 
 if TYPE_CHECKING:
     import pandas as pd
-    from libem.resolve.cluster.integrations.duckdb import DuckDBTable
-    from libem.resolve.cluster.integrations.mongodb import MongoCollection
+    from libem.resolve.cluster.integrations import duckdb
+    from libem.resolve.cluster.integrations import mongodb
 
 InputType = Union[
     Iterator[str],
     Iterator[dict],
     "pd.DataFrame",
-    "DuckDBTable",
-    "MongoCollection",
+    "duckdb.Table",
+    "mongodb.Collection",
 ]
 
 ID = int
@@ -30,11 +30,11 @@ OutputType = Union[
 
 def cluster(records: InputType, *, sort=False) -> OutputType:
     import pandas as pd
-    from libem.resolve.cluster.integrations.duckdb import DuckDBTable
+    from libem.resolve.cluster.integrations.duckdb import Table
     from libem.resolve.cluster.integrations.mongodb import MongoCollection
 
     match records:
-        case DuckDBTable():
+        case Table():
             from libem.resolve.cluster.integrations.duckdb import func as duckdb_func
             
             # return the name of the clustered table
