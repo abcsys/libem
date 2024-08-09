@@ -20,9 +20,10 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
     """
     records = list(records)
     pairs, answers = block_and_match(records)
+    digests = [digest(record) for record in records]
 
     record_cluster_ids = {
-        digest(record): i for i, record in enumerate(records)
+        d: i for i, d in enumerate(digests)
     }
     cluster_id_records = {
         v: [k] for k, v in record_cluster_ids.items()
@@ -65,13 +66,13 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
     unique_cluster_ids = sorted(
         id for id in set(record_cluster_ids.values())
     )
-    new_cluster_id_map = {
+    remap_cluster_id = {
         old_id: new_id
         for new_id, old_id in enumerate(unique_cluster_ids)
     }
     return [
-        (new_cluster_id_map[cluster_id], record)
-        for record, cluster_id in zip(records, record_cluster_ids.values())
+        (remap_cluster_id[record_cluster_ids[d]], r)
+        for r, d in zip(records, digests)
     ]
 
 
