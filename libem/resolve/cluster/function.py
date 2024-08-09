@@ -40,14 +40,14 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
             
             # merge the cluster with the highger id 
             # into the lower id cluster when matched
-            low_id_cluster = min(left_cluster_id, right_cluster_id)
-            high_id_cluster = max(left_cluster_id, right_cluster_id)
-            cluster_id_records[low_id_cluster].extend(
-                cluster_id_records.pop(high_id_cluster)
+            low_cluster_id = min(left_cluster_id, right_cluster_id)
+            high_cluster_id = max(left_cluster_id, right_cluster_id)
+            cluster_id_records[low_cluster_id].extend(
+                cluster_id_records.pop(high_cluster_id)
             )
             
-            for record_digest in cluster_id_records[low_id_cluster]:
-                record_cluster_ids[record_digest] = low_id_cluster
+            for record_digest in cluster_id_records[low_cluster_id]:
+                record_cluster_ids[record_digest] = low_cluster_id
         else:
             if left_cluster_id == right_cluster_id:
                 # TBD: report inconsistent match results
@@ -62,13 +62,13 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
 
     # reassign cluster ids so that they increment from 0 without gaps, 
     # the final cluster_id order will follow the input records order
-    for i, cluster in enumerate(cluster_id_records.keys()):
-        for record_digest in cluster_id_records[cluster]:
+    for i, cluster_id in enumerate(cluster_id_records.keys()):
+        for record_digest in cluster_id_records[cluster_id]:
             record_cluster_ids[record_digest] = i
     
     return [
-        (record_cluster_ids[digest], record)
-        for digest, record in zip(digests, records)
+        (record_cluster_ids[d], r)
+        for d, r in zip(digests, records)
     ]
 
 
