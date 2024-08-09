@@ -52,7 +52,7 @@ def call(prompt: str | list | dict,
     messages = context + [input_text]
 
     # apple silicon
-    if not platform.machine() == "arm64" and platform.system() == "Darwin":
+    if platform.machine() == "arm64" and platform.system() == "Darwin":
         # first check whether mlx_lm is installed
         try:
             from mlx_lm import load, generate
