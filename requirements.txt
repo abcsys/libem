@@ -20,3 +20,5 @@ requests
 fastapi
 tqdm
 recordlinkage
+duckdb
+pymongo
