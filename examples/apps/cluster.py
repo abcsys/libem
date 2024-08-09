@@ -9,7 +9,7 @@ from libem.resolve.cluster import eval
 
 def main():
     random.seed(1)
-    num_samples = 15
+    num_samples = 10
 
     df = febrl.load_test() \
         .head(num_samples) \
@@ -17,10 +17,11 @@ def main():
         .reset_index(drop=True)
     df_test = df.drop(["cluster_id"], axis=1)
 
+    print(f"Given:\n{df_test}")
+
     with libem.trace as t:
         df_cluster = libem.cluster(df_test)
 
-    print(f"Given:\n{df_test}")
     print(f"After clustering:\n{df_cluster.sort_values(by='__cluster__')}")
 
     print("Stats:")
