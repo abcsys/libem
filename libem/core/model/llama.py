@@ -52,10 +52,10 @@ def call(prompt: str | list | dict,
     messages = context + [input_text]
 
     # apple silicon
-    if platform.machine() == "arm64" and platform.system() == "Darwin":
+    if not platform.machine() == "arm64" and platform.system() == "Darwin":
         # first check whether mlx_lm is installed
         try:
-                from mlx_lm import load, generate
+            from mlx_lm import load, generate
         except ImportError:
             raise ImportError("mlx_lm is not installed.")
     
@@ -82,13 +82,16 @@ def call(prompt: str | list | dict,
         response_message = "messages is not supported"
 
     else:
+        try:
+            from llama_cpp import Llama
+        except ImportError:
+            raise ImportError("llama.cpp is not installed.")
         if model == "llama3":
-            try:
-                from llama_cpp import Llama
-            except ImportError:
-                raise ImportError("llama.cpp is not installed.")
             model_path = "bartowski/Meta-Llama-3-8B-Instruct-GGUF"
             model_name = "Meta-Llama-3-8B-Instruct-Q5_K_S.gguf"
+        elif model == "llama3.1":
+            model_path = "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+            model_name = "Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf"
         else:
             raise ValueError(f"{model} is not supported.")
 

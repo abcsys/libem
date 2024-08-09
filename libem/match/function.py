@@ -129,7 +129,7 @@ async def once(left: str, right: str) -> dict:
         prompt.experiences(),
         struct.CoT() if parameter.cot() else "",
         struct.Confidence() if parameter.confidence() else "",
-        prompt.output(),
+        prompt.output.options.get("llama") if libem.parameter.model == "llama3" or libem.parameter.model == "llama3.1" else prompt.output(),
     )
 
     match_prompt = Prompt.join(
@@ -190,7 +190,7 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
         prompt.role(),
         prompt.rules(),
         prompt.experiences(),
-        prompt.output(),
+        prompt.output.options.get("llama") if libem.parameter.model == "llama3" or libem.parameter.model == "llama3.1" else prompt.output(),
     )
 
     shots: list[dict] = prompt.shots()

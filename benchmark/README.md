@@ -127,16 +127,16 @@ python -m benchmark.run -s <suite-name>
 
 ### Meta-Llama3-8B-Instruct-8bit
 
-|    Dataset     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Total Latency (s) |
-| :------------: | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
-|    abt-buy     |    70.36    | 95.63  | 81.07 |  -  |        0.74        | 1631.3  |
-| amazon-google  |   51.46    | 75.54  | 61.22 |  -  |       1.2        | 1000.8  |
-|      beer      |    90.0    | 64.29  | 75.0 | -  |        0.89        |   102.82 |
-|    dblp-acm    |   88.58   |   90.0   | 89.29 |  -  |       0.99        |    1266.49 |
-|  dblp-scholar  |   81.68   |  85.6  | 83.59 |  -  |       1.1        | 1188.34 |
-| fodors-zagats  |    89.47    | 77.27  | 82.93 | -  |        0.92        | 205.13  |
-| itunes-amazon  |    50.0    | 69.23  | 58.06 | -  |        0.66        |   165.39  |
-| walmart-amazon |   54.9   | 87.05  | 67.33 |  -  |       0.98        | 1213.26 |
+|    Benchmark     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |
+|    abt-buy     |    70.36    | 95.63  | 81.07 |  -  |        0.74        |
+| amazon-google  |   51.46    | 75.54  | 61.22 |  -  |       1.2        |
+|      beer      |    90.0    | 64.29  | 75.0 | -  |        0.89        |
+|    dblp-acm    |   88.58   |   90.0   | 89.29 |  -  |       0.99        |
+|  dblp-scholar  |   81.68   |  85.6  | 83.59 |  -  |       1.1        |
+| fodors-zagats  |    89.47    | 77.27  | 82.93 | -  |        0.92        |
+| itunes-amazon  |    50.0    | 69.23  | 58.06 | -  |        0.66        |
+| walmart-amazon |   54.9   | 87.05  | 67.33 |  -  |       0.98        |
 
 For more results on Llama models, please see [Llama.md](Llama.md)
 
