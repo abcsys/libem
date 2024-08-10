@@ -1,5 +1,5 @@
 from libem.core.model import (
-    openai, llama
+    openai, llama, claude
 )
 from libem.core import exec
 import libem
@@ -15,6 +15,10 @@ async def async_call(*args, **kwargs) -> dict:
         return llama.call(*args, **kwargs)
     elif kwargs.get("model", "") == "llama3.1":
         return llama.call(*args, **kwargs)
+    elif kwargs.get("model", "") == "llama3.1":
+        return llama.call(*args, **kwargs)
+    elif kwargs.get("model", "") == "claude-3-5-sonnet-20240620":
+        return await claude.call(*args, **kwargs) 
     else:
         return await openai.async_call(*args, **kwargs)
 
