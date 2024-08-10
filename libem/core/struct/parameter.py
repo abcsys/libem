@@ -14,14 +14,20 @@ class Tunable(abc.ABC):
 
 
 class Index:
-    def __init__(self, key: str | int):
+    def __init__(self, key: str | int | typing.Callable):
         self.key = key
+
+    def __call__(self):
+        if callable(self.key):
+            return self.key()
+        else:
+            return self.key
 
     def __eq__(self, other):
         if isinstance(other, Index):
-            return self.key == other.key
+            return self() == other()
         else:
-            return self.key == other
+            return self() == other
 
 
 class Parameter(Tunable):
@@ -47,9 +53,9 @@ class Parameter(Tunable):
 
         if isinstance(value, Index):
             try:
-                value = self.options[self.value.key]
+                value = self.options[self.value()]
             except KeyError:
-                raise KeyError(f"Index {self.value.key} "
+                raise KeyError(f"Index {self.value()} "
                                f"not found in options "
                                f"{list(self.options.keys())}.")
 
@@ -68,6 +74,9 @@ class Parameter(Tunable):
             return self.value == other.value
         else:
             return self.value == other
+
+    def __hash__(self):
+        return hash(self.value)
 
     def __repr__(self):
         return self.__str__()

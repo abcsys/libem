@@ -38,7 +38,7 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
             if left_cluster_id == right_cluster_id:
                 continue
             
-            # merge the cluster with the highger id 
+            # merge the cluster with the higher id
             # into the lower id cluster when matched
             low_cluster_id = min(left_cluster_id, right_cluster_id)
             high_cluster_id = max(left_cluster_id, right_cluster_id)

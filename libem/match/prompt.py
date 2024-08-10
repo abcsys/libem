@@ -2,6 +2,7 @@ from libem.core.struct import Prompt, Shots, Index
 from libem.core.struct.prompt import (
     Shot, Rules, Experiences
 )
+from libem.match.parameter import model
 
 """System prompts"""
 role = Prompt(
@@ -21,15 +22,18 @@ experiences = Prompt(
 )
 
 output = Prompt(
-    default=Index("plain"),
+    default=Index(
+        lambda: "strict" if model().startswith("llama") else "standard"
+    ),
     options={
-        "plain": "At the end, give your answer in the form of a "
-                 "single 'yes' or 'no'.",
+        "standard": "At the end, give your answer in the form of a "
+                    "single 'yes' or 'no'.",
+        "strict": "At the end, give your answer in the form of a "
+                  "single 'yes' or 'no'. Nothing else.",
         "likelihood": "At the end, give your answer strictly in the "
                       "format of a single number between 0.0 and 1.0, "
                       "estimating the likelihood that the two entities "
                       "are the same.",
-        "llama" : "Please only give your answer in the form of a single ‘yes’ or ‘no’. Nothing else.",
     },
 )
 
