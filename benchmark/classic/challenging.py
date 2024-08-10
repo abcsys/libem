@@ -37,5 +37,5 @@ def run(args):
     if args.shuffle:
         test_set = list(test_set)
         random.shuffle(test_set)
-
+        
     return util.benchmark([], test_set, args)

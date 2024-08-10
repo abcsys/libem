@@ -33,7 +33,7 @@ def call(prompt: str | list | dict,
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
     message_openai = (messages or []) + (context or [])
 
-    if model == "llama3":
+    if model == "llama3" or model == "llama3.1":
         BOS = "<|begin_of_text|>"
         SYS = "<|start_header_id|>system<|end_header_id|>"
         USER = "<|start_header_id|>user<|end_header_id|>"
@@ -53,14 +53,17 @@ def call(prompt: str | list | dict,
 
     # apple silicon
     if platform.machine() == "arm64" and platform.system() == "Darwin":
+        # first check whether mlx_lm is installed
+        try:
+            from mlx_lm import load, generate
+        except ImportError:
+            raise ImportError("mlx_lm is not installed.")
+    
         # Load the model using MLX for apple silicon device
         if model == "llama3":
-            # first check whether mlx_lm is installed
-            try:
-                from mlx_lm import load, generate
-            except ImportError:
-                raise ImportError("mlx_lm is not installed.")
-            model_path = "mlx-community/Meta-Llama-3-8B-Instruct-4bit"
+            model_path = "mlx-community/Meta-Llama-3-8B-Instruct-8bit"
+        elif model == "llama3.1":
+            model_path = "mlx-community/Meta-Llama-3.1-8B-Instruct-8bit"
         else:
             raise ValueError(f"{model} is not supported.")
 
@@ -79,13 +82,16 @@ def call(prompt: str | list | dict,
         response_message = "messages is not supported"
 
     else:
+        try:
+            from llama_cpp import Llama
+        except ImportError:
+            raise ImportError("llama.cpp is not installed.")
         if model == "llama3":
-            try:
-                from llama_cpp import Llama
-            except ImportError:
-                raise ImportError("llama.cpp is not installed.")
             model_path = "bartowski/Meta-Llama-3-8B-Instruct-GGUF"
             model_name = "Meta-Llama-3-8B-Instruct-Q5_K_S.gguf"
+        elif model == "llama3.1":
+            model_path = "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+            model_name = "Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf"
         else:
             raise ValueError(f"{model} is not supported.")
 

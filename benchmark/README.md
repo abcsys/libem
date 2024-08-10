@@ -125,18 +125,20 @@ python -m benchmark.run -s <suite-name>
 | itunes-amazon  |    100    | 19.23  | 32.26 | 0.04254  |        87        |
 | walmart-amazon |   94.44   | 35.23  | 51.32 |  0.3007  |       150        |
 
-#### Meta-Llama3-8B-Instruct-8bit
+### Meta-Llama3-8B-Instruct-8bit
 
-|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |   Latency (s) |
-| :------------- | :-------: | :----: | :---: | :------: | :--------------: |  :------:  |
-|    abt-buy     |    50.25    | 97.09  | 66.23 |  0.0  |        0.92        | 1312.29  |
-| amazon-google  |   31.11    | 96.14  | 47.01 |  0.0  |       1.4        | 912.32  |
-|      beer      |    80.0    | 85.71  | 82.76 | 0.0  |        1.1        |   81.18
-|    dblp-acm    |   76.47   |   98.8   | 86.21 |  0.0  |       1.1        |    1161.97 |
-|  dblp-scholar  |   65.56   |  95.2  | 77.65 |  0.0  |       0.62        | 2020.08 |
-| fodors-zagats  |    50.0    | 100.0  | 66.67 | 0.0  |        1.0        | 187.98  |
-| itunes-amazon  |    36.23    | 96.15  | 52.63 | 0.0  |        0.72        |   151.76  |
-| walmart-amazon |   32.92   | 96.37  | 49.08 |  0.0  |       0.25        | 4805.38 |
+|    Benchmark     | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------: | :-------: | :----: | :---: | :------: | :--------------: |
+|    abt-buy     |    70.36    | 95.63  | 81.07 |  -  |        0.74        |
+| amazon-google  |   51.46    | 75.54  | 61.22 |  -  |       1.2        |
+|      beer      |    90.0    | 64.29  | 75.0 | -  |        0.89        |
+|    dblp-acm    |   88.58   |   90.0   | 89.29 |  -  |       0.99        |
+|  dblp-scholar  |   81.68   |  85.6  | 83.59 |  -  |       1.1        |
+| fodors-zagats  |    89.47    | 77.27  | 82.93 | -  |        0.92        |
+| itunes-amazon  |    50.0    | 69.23  | 58.06 | -  |        0.66        |
+| walmart-amazon |   54.9   | 87.05  | 67.33 |  -  |       0.98        |
+
+For more results on Llama models, please see [Llama.md](Llama.md)
 
 ### Prompt-level batching
 
