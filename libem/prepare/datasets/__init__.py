@@ -8,20 +8,6 @@ LIBEM_SAMPLE_DATA_PATH = os.path.join(
     '..', '..', '..', '..',
     'libem-sample-data')
 
-from libem.prepare.datasets.clustering import (
-    febrl,
-    amazon_google,
-    dblp_scholar,
-    itunes_amazon,
-)
-
-datasets = {
-    'febrl': febrl.load_raw,
-    'amazon-google': amazon_google.load_raw,
-    'dblp-scholar': dblp_scholar.load_raw,
-    'itunes-amazon': itunes_amazon.load_raw,
-}
-
 
 def load(dataset: Iterable[dict], num_samples=-1, stringify=True) \
         -> ([str], [str], [int]):
