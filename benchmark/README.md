@@ -66,25 +66,18 @@ python -m benchmark.run -s <suite-name>
 
 ----
 
-### Setup
+#### GPT-4o
 
-| Setup   | Model    | Tools | Data Preparation                       |
-| :------ | :------- | :---- | :------------------------------------  |
-| S1      | `gpt-4o` | Off   | Field values only separated by spaces  |
-| S2      | `gpt-4o` | Off   | Schema inline with entity description  |
-
-### Results
-
-|   Benchmark    | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
-| :------------- | :----------------: | :--------------: | :-------------: |
-| abt-buy        |   84.0, **89.9**   |  99.5, **99.5**  | 91.1, **94.5**  |
-| amazon-google  |   60.0, **67.4**   |  89.7, **92.7**  | 71.9, **78.1**  |
-| beer           |   92.3, **92.3**   |  85.7, **85.7**  | 88.9, **88.9**  |
-| dblp-acm       |   80.4, **94.7**   | **100.0**, 99.6  | 89.1, **97.1**  |
-| dblp-scholar   |   78.4, **88.3**   |  98.8, **93.6**  | 87.4, **90.9**  |
-| fodors-zagats  |  95.7, **100.0**   | 100.0, **100.0** | 97.8, **100.0** |
-| itunes-amazon  |  89.3, **100.0**   |  92.6, **96.3**  | 90.9, **98.11** |
-| walmart-amazon |   75.4, **85.4**   |  95.3, **91.2**  | 84.2, **88.2**  |
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |
+| abt-buy        |   90.18   | 98.06  | 93.95 |  1.206   |        95        |
+| amazon-google  |   69.71   | 81.97  | 75.35 |  1.045   |        75        |
+| beer           |   91.67   | 78.57  | 84.62 |  0.06916 |        54        |
+| dblp-acm       |   96.51   | 99.6   | 98.03 |  1.035   |        90        |
+| dblp-scholar   |   92.92   | 89.2   | 91.02 |  0.9502  |       140        |
+| fodors-zagats  |   100     | 95.45  | 97.67 |  0.1674  |       120        |
+| itunes-amazon  |   100     | 88.46  | 93.88 |  0.1422  |        46        |
+| walmart-amazon |   91.01   | 89.12  | 90.05 |  1.01    |       110        |
 
 #### GPT-4o-mini
 
@@ -99,18 +92,31 @@ python -m benchmark.run -s <suite-name>
 | itunes-amazon  |    100    | 46.15  | 63.16 | 0.004256 |        34        |
 | walmart-amazon |   96.3    | 67.36  | 79.27 | 0.03037  |        82        |
 
+#### GPT-4-turbo
+
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
+| :------------- | :-------: | :----: | :---: | :------: | :--------------: |
+| abt-buy        |   92.06   | 84.47  | 88.1  |  2.486   |        86        |
+| amazon-google  |   69.92   | 73.82  | 71.82 |  1.531   |       110        |
+| beer           |    100    |  50    | 66.67 |  0.1406  |        63        |
+| dblp-acm       |   95.75   | 99.2   | 97.45 |  2.139   |        79        |
+| dblp-scholar   |   95.12   |  78    | 85.71 |  2.064   |        58        |
+| fodors-zagats  |    100    | 86.36  | 92.68 |  0.3252  |        51        |
+| itunes-amazon  |    100    | 57.69  | 73.17 |  0.2998  |       9.8        |
+| walmart-amazon |   92.18   | 85.49  | 88.71 |  2.106   |        47        |
+
 #### GPT-4
 
 |    Benchmark   | Precision | Recall |  F1   | Cost ($) | Throughput (pps) |
 | :------------- | :-------: | :----: | :---: | :------: | :--------------: |
-| abt-buy        |   95.02   |  92.72 | 93.86 |   7.26   |              140 |
-| amazon-google  |   63.44   |  90.13 | 74.47 |   4.44   |               94 |
-| beer           |     90    |  64.29 | 75    |  0.4133  |               74 |
-| dblp-acm       |   96.15   |  100   | 98.04 |   6.232  |              130 |
-| dblp-scholar   |   91.56   |  82.4  | 86.74 |   5.694  |              130 |
-| fodors-zagats  |    100    |  86.36 | 92.68 |  0.9667  |               73 |
-| itunes-amazon  |    100    |  46.15 | 63.16 |   0.853  |               71 |
-| walmart-amazon |   90.91   |  88.08 | 89.47 |   6.032  |              140 |
+| abt-buy        |   95.02   |  92.72 | 93.86 |   7.26   |       140        |
+| amazon-google  |   63.44   |  90.13 | 74.47 |   4.44   |        94        |
+| beer           |     90    |  64.29 | 75    |  0.4133  |        74        |
+| dblp-acm       |   96.15   |  100   | 98.04 |   6.232  |       130        |
+| dblp-scholar   |   91.56   |  82.4  | 86.74 |   5.694  |       130        |
+| fodors-zagats  |    100    |  86.36 | 92.68 |  0.9667  |        73        |
+| itunes-amazon  |    100    |  46.15 | 63.16 |   0.853  |        71        |
+| walmart-amazon |   90.91   |  88.08 | 89.47 |   6.032  |       140        |
 
 #### GPT-3.5-turbo
 
@@ -184,3 +190,31 @@ Varying the batch size when performing EM over the `abt-buy` benchmark:
 |    128     | 94.54 |   22.32    | 0.11             | 0.99 |
 |    256     | 93.43 |   32.93    | 0.10             | 0.99 |
 |    512     | 70.87 |   74.44    | 0.08             | 0.95 |
+
+### Exclusion of schema
+
+To run a single benchmark in `/classic` without schema:
+
+```
+python -m benchmark.run -n <benchmark-name> -p -1 --no-schema
+```
+
+#### Setup
+
+| Setup   | Model    | Tools | Data Preparation                       |
+| :------ | :------- | :---- | :------------------------------------  |
+| S1      | `gpt-4o` | Off   | Field values only separated by spaces  |
+| S2      | `gpt-4o` | Off   | Schema inline with entity description  |
+
+#### Results
+
+|   Benchmark    | Precision (S1, S2) | Recall (S1, S2)  |   F1 (S1, S2)   |
+| :------------- | :----------------: | :--------------: | :-------------: |
+| abt-buy        |   84.0, **89.9**   |  99.5, **99.5**  | 91.1, **94.5**  |
+| amazon-google  |   60.0, **67.4**   |  89.7, **92.7**  | 71.9, **78.1**  |
+| beer           |   92.3, **92.3**   |  85.7, **85.7**  | 88.9, **88.9**  |
+| dblp-acm       |   80.4, **94.7**   | **100.0**, 99.6  | 89.1, **97.1**  |
+| dblp-scholar   |   78.4, **88.3**   |  98.8, **93.6**  | 87.4, **90.9**  |
+| fodors-zagats  |  95.7, **100.0**   | 100.0, **100.0** | 97.8, **100.0** |
+| itunes-amazon  |  89.3, **100.0**   |  92.6, **96.3**  | 90.9, **98.11** |
+| walmart-amazon |   75.4, **85.4**   |  95.3, **91.2**  | 84.2, **88.2**  |
