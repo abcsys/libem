@@ -9,11 +9,12 @@ import benchmark as bm
 
 def run_benchmark(benchmark: str, args):
     libem.reset()
-    args.name = benchmark
+    
+    _args = copy.deepcopy(args)
+    _args.name = benchmark
     benchmark = bm.benchmarks[benchmark]
     
-    # create a deep copy of args before passing into benchmark
-    return benchmark(copy.deepcopy(args))
+    return benchmark(_args)
 
 
 def report_to_dataframe(reports, key_col: str = "benchmark"):
