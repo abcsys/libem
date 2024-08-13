@@ -37,14 +37,16 @@ def run(args):
     save(df, name)
 
     # generate markdown table
+    df["pair_per_$"] = df["num_pairs"] // df["cost"]
     df = df[["benchmark", "precision", "recall", "f1",
-             "cost", "throughput"]]
+             "cost", "pair_per_$", "throughput"]]
     field_names = {
         "benchmark": "Benchmark",
         "precision": "Precision",
         "recall": "Recall",
         "f1": "F1",
         "cost": "Cost ($)",
+        "pair_per_$": "Pair per $",
         "throughput": "Throughput (pps)",
     }
     df = df.rename(columns=field_names)
