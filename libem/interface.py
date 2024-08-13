@@ -71,7 +71,7 @@ def seed(seed=42):
 
 
 """ Utilities """
-from libem.prepare.datasets import datasets
+from libem.prepare.datasets.clustering import datasets
 
 
 def load(name, num_samples=-1):

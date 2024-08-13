@@ -29,67 +29,6 @@ class Shot:
         return self.__str__()
 
 
-class Rules:
-    def __init__(self, rules: list[str] = None,
-                 intro: str = "Rules to follow:",
-                 sep="\n", bullet="-"):
-        self.rules = rules or []
-        self.intro = intro
-        self.sep = sep
-        self.bullet = bullet
-
-    def __call__(self, *args, **kwargs):
-        if len(self.rules) == 0:
-            return ""
-        rules = [f"{self.bullet} {rule}" for rule in self.rules
-                 if len(rule.strip()) != ""]
-        return f"{self.intro}\n" \
-               f"{self.sep.join(rules)}"
-
-    def __str__(self):
-        return str(self.__call__())
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __len__(self):
-        return len(self.rules)
-
-    def __add__(self, other):
-        return self.add(other).copy()
-
-    def add(self, *rules):
-        """rule.add(rule1, rule2, ...)"""
-        for rule in rules:
-            match rule:
-                case str():
-                    self.rules.append(rule)
-                case list():
-                    self.rules.extend(rule)
-                case Rules():
-                    self.rules.extend(rule.rules)
-                case _:
-                    raise ValueError(f"Invalid rule type to add:"
-                                     f"{type(rule)} for {rule}")
-        return self
-
-    def export(self):
-        return self.__call__()
-
-    def copy(self):
-        return copy.deepcopy(self)
-
-
-class Experiences(Rules):
-    def __init__(self, mistakes: list[str] = None,
-                 intro: str = "Mistakes to avoid:",
-                 sep="\n", bullet="*"):
-        super().__init__(rules=mistakes,
-                         intro=intro,
-                         sep=sep,
-                         bullet=bullet)
-
-
 class Shots(Parameter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -151,6 +90,67 @@ class Shots(Parameter):
 
     def copy(self):
         return copy.deepcopy(self)
+
+
+class Rules:
+    def __init__(self, rules: list[str] = None,
+                 intro: str = "Rules to follow:",
+                 sep="\n", bullet="-"):
+        self.rules = rules or []
+        self.intro = intro
+        self.sep = sep
+        self.bullet = bullet
+
+    def __call__(self, *args, **kwargs):
+        if len(self.rules) == 0:
+            return ""
+        rules = [f"{self.bullet} {rule}" for rule in self.rules
+                 if len(rule.strip()) != ""]
+        return f"{self.intro}\n" \
+               f"{self.sep.join(rules)}"
+
+    def __str__(self):
+        return str(self.__call__())
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __len__(self):
+        return len(self.rules)
+
+    def __add__(self, other):
+        return self.add(other).copy()
+
+    def add(self, *rules):
+        """rule.add(rule1, rule2, ...)"""
+        for rule in rules:
+            match rule:
+                case str():
+                    self.rules.append(rule)
+                case list():
+                    self.rules.extend(rule)
+                case Rules():
+                    self.rules.extend(rule.rules)
+                case _:
+                    raise ValueError(f"Invalid rule type to add:"
+                                     f"{type(rule)} for {rule}")
+        return self
+
+    def export(self):
+        return self.__call__()
+
+    def copy(self):
+        return copy.deepcopy(self)
+
+
+class Experiences(Rules):
+    def __init__(self, mistakes: list[str] = None,
+                 intro: str = "Mistakes to avoid:",
+                 sep="\n", bullet="*"):
+        super().__init__(rules=mistakes,
+                         intro=intro,
+                         sep=sep,
+                         bullet=bullet)
 
 
 class Prompt(Parameter):

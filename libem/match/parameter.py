@@ -9,7 +9,14 @@ model = libem.parameter.model
 temperature = libem.parameter.temperature
 tools = Parameter(
     default=[],
-    options=["libem.browse", "libem.match", "libem.prepare"],
+    options={
+        "common": [
+            "libem.prepare",
+            "libem.block",
+            "libem.match",
+            "libem.browse",
+        ]
+    },
 )
 
 # chain-of-thought and confidence score

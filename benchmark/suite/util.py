@@ -7,11 +7,14 @@ import libem
 import benchmark as bm
 
 
-def run_benchmark(benchmark, args):
-    # create a deep copy of args to pass into benchmark
+def run_benchmark(benchmark: str, args):
     libem.reset()
+    
+    _args = copy.deepcopy(args)
+    _args.name = benchmark
     benchmark = bm.benchmarks[benchmark]
-    return benchmark(copy.deepcopy(args))
+    
+    return benchmark(_args)
 
 
 def report_to_dataframe(reports, key_col: str = "benchmark"):
@@ -28,7 +31,8 @@ def report_to_dataframe(reports, key_col: str = "benchmark"):
     return pd.concat(rows)
 
 
-def tabulate(df: pd.DataFrame, name):
+def tabulate(df: pd.DataFrame, name: str):
+    name = name.replace('_', '-')
     output_file = os.path.join(
                     bm.table_dir,
                     f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-"
@@ -43,7 +47,8 @@ def plot(df: pd.DataFrame):
     pass
 
 
-def save(df: pd.DataFrame, name):
+def save(df: pd.DataFrame, name: str):
+    name = name.replace('_', '-')
     output_file = os.path.join(
                     bm.result_dir,
                     f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-"

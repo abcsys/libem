@@ -122,14 +122,14 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
 
 async def once(left: str, right: str) -> dict:
     start = time.time()
-    
+
     system_prompt = Prompt.join(
         prompt.role(),
         prompt.rules(),
         prompt.experiences(),
         struct.CoT() if parameter.cot() else "",
         struct.Confidence() if parameter.confidence() else "",
-        prompt.output.options["llama"] if libem.parameter.model in ["llama3", "llama3.1"] else prompt.output(),
+        prompt.output(),
     )
 
     match_prompt = Prompt.join(
@@ -190,7 +190,7 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
         prompt.role(),
         prompt.rules(),
         prompt.experiences(),
-        prompt.output.options["llama"] if libem.parameter.model in ["llama3", "llama3.1"] else prompt.output(),
+        prompt.output(),
     )
 
     shots: list[dict] = prompt.shots()
