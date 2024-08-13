@@ -66,19 +66,6 @@ python -m benchmark.run -s <suite-name>
 
 ----
 
-#### GPT-4o-2024-05-13
-
-|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
-| :------------- | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
-| abt-buy        |   90.18   | 98.06  | 93.95 |  1.206   |     999     |        95        |
-| amazon-google  |   69.71   | 81.97  | 75.35 |  1.045   |    1174     |        75        |
-| beer           |   91.67   | 78.57  | 84.62 |  0.06916 |    1315     |        54        |
-| dblp-acm       |   96.51   | 99.6   | 98.03 |  1.035   |    1204     |        90        |
-| dblp-scholar   |   92.92   | 89.2   | 91.02 |  0.9502  |    1311     |       140        |
-| fodors-zagats  |   100     | 95.45  | 97.67 |  0.1674  |    1129     |       120        |
-| itunes-amazon  |   100     | 88.46  | 93.88 |  0.1422  |     738     |        46        |
-| walmart-amazon |   91.01   | 89.12  | 90.05 |  1.01    |    1181     |       110        |
-
 #### GPT-4o-2024-08-06
 
 | Benchmark      | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
@@ -91,6 +78,19 @@ python -m benchmark.run -s <suite-name>
 | fodors-zagats  |    100    | 95.45  | 97.67 |  0.08398 |     2250    |        40        |
 | itunes-amazon  |    100    | 57.69  | 73.17 |  0.07134 |     1471    |        98        |
 | walmart-amazon |   90.26   | 91.19  | 90.72 |  0.6333  |     1883    |       110        |
+
+#### GPT-4o-2024-05-13
+
+|   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
+| :------------- | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
+| abt-buy        |   90.18   | 98.06  | 93.95 |  1.206   |     999     |        95        |
+| amazon-google  |   69.71   | 81.97  | 75.35 |  1.045   |    1174     |        75        |
+| beer           |   91.67   | 78.57  | 84.62 |  0.06916 |    1315     |        54        |
+| dblp-acm       |   96.51   | 99.6   | 98.03 |  1.035   |    1204     |        90        |
+| dblp-scholar   |   92.92   | 89.2   | 91.02 |  0.9502  |    1311     |       140        |
+| fodors-zagats  |   100     | 95.45  | 97.67 |  0.1674  |    1129     |       120        |
+| itunes-amazon  |   100     | 88.46  | 93.88 |  0.1422  |     738     |        46        |
+| walmart-amazon |   91.01   | 89.12  | 90.05 |  1.01    |    1181     |       110        |
 
 #### GPT-4o-mini
 
@@ -204,7 +204,7 @@ Varying the batch size when performing EM over the `abt-buy` benchmark:
 |    256     | 93.43 |   32.93    | 0.10             | 0.99 |
 |    512     | 70.87 |   74.44    | 0.08             | 0.95 |
 
-### Exclusion of schema
+### Data preparation (w/ vs. w/o schema)
 
 To run a single benchmark in `/classic` without schema:
 
