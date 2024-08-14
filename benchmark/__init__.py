@@ -13,5 +13,7 @@ Path(analysis_dir).mkdir(parents=True, exist_ok=True)
 Path(figure_dir).mkdir(parents=True, exist_ok=True)
 Path(table_dir).mkdir(parents=True, exist_ok=True)
 
-from benchmark.classic import classic_benchmarks, benchmarks
+from benchmark.classic import (
+    benchmarks, classic_benchmarks, challenges
+)
 from benchmark.suite import suites
