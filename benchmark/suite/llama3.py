@@ -1,5 +1,6 @@
 import os
 import time
+import pandas as pd
 
 import benchmark as bm
 from benchmark.suite.util import (
@@ -11,7 +12,7 @@ name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
-    benchmarks = bm.benchmarks.keys()
+    benchmarks = bm.classic_benchmarks.keys()
 
     args.block = False
     args.match = True
@@ -37,14 +38,18 @@ def run(args):
     save(df, name)
 
     # generate markdown table
-    df = df[["benchmark", "precision", "recall", "f1",
-             "cost", "throughput"]]
+    df = df[["benchmark", "precision", "recall", "f1", "throughput"]]
+    
+    # add column-wise average
+    mean = df[["precision", "recall", "f1", "throughput"]].mean()
+    mean["benchmark"] = "Average"
+    df = pd.concat([df, mean.to_frame().T])
+    
     field_names = {
         "benchmark": "Benchmark",
         "precision": "Precision",
         "recall": "Recall",
         "f1": "F1",
-        "cost": "Cost ($)",
         "throughput": "Throughput (pps)",
     }
     df = df.rename(columns=field_names)

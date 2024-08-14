@@ -23,7 +23,7 @@ experiences = Prompt(
 
 output = Prompt(
     default=Index(
-        lambda: "strict" if model().startswith("llama") else "standard"
+        lambda: "strict" if model() in {"llama3", "llama3.1", "gpt-4o-2024-08-06"} else "standard"
     ),
     options={
         "standard": "At the end, give your answer in the form of a "
