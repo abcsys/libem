@@ -1,16 +1,39 @@
-# Benchmark Results
+# Libem Benchmark Results
 
-Available benchmarks in the `classic` directory:
+1. [Available Benchmarks](#available-benchmarks)
+2. [Blocking](#blocking)
+   - [Setup](#setup)
+   - [Results](#results)
+3. [Matching](#matching)
+   - [GPT-4o](#gpt-4o)
+   - [GPT-4o-2024-08-06](#gpt-4o-2024-08-06)
+   - [GPT-4o-mini](#gpt-4o-mini)
+   - [GPT-4-turbo](#gpt-4-turbo)
+   - [GPT-4](#gpt-4)
+   - [GPT-3.5-turbo](#gpt-35-turbo)
+   - [Meta-Llama3-8B-Instruct-8bit](#meta-llama3-8b-instruct-8bit)
+   - [Meta-Llama-3.1-8B-Instruct-8bit (no-schema)](#meta-llama-31-8b-instruct-8bit-no-schema)
+4. [Prompt-level Batching](#prompt-level-batching)
+   - [Results](#results-1)
+5. [Data Preparation](#data-preparation-w-vs-wo-schema)
+   - [Setup](#setup-1)
+   - [Results](#results-2)
 
-- [abt-buy](https://github.com/abcsys/libem-sample-data/tree/main/abt-buy)
-- [amazon-google](https://github.com/abcsys/libem-sample-data/tree/main/amazon-google)
-- [beer](https://github.com/abcsys/libem-sample-data/tree/main/beer)
-- [dblp-acm](https://github.com/abcsys/libem-sample-data/tree/main/dblp-acm)
-- [dblp-scholar](https://github.com/abcsys/libem-sample-data/tree/main/dblp-scholar)
-- [fodors-zagats](https://github.com/abcsys/libem-sample-data/tree/main/fodors-zagats)
-- [itunes-amazon](https://github.com/abcsys/libem-sample-data/tree/main/itunes-amazon)
-- [walmart-amazon](https://github.com/abcsys/libem-sample-data/tree/main/walmart-amazon)
-- [challenging](https://github.com/abcsys/libem-sample-data/tree/main/challenging)
+## Available Benchmarks
+
+The `classic` directory includes the following available benchmarks, each using the corresponding dataset:
+
+- [abt-buy](https://github.com/abcsys/libem-sample-data/tree/main/abt-buy): The Abt-Buy dataset derives from the online retailers Abt.com and Buy.com.
+- [amazon-google](https://github.com/abcsys/libem-sample-data/tree/main/amazon-google): The Amazon-Google dataset derives from the online retailers Amazon.com and the product search service of Google accessible through the Google Base Data API.
+- [beer](https://github.com/abcsys/libem-sample-data/tree/main/beer): This dataset contains beer data from BeerAdvocate and RateBeer. It was created by students in the CS 784 data science class at UW-Madison, Fall 2015, as a part of their class project.
+- [dblp-acm](https://github.com/abcsys/libem-sample-data/tree/main/dblp-acm): The DBLP-ACM dataset derives from the DBLP and ACM digital libraries.
+- [dblp-scholar](https://github.com/abcsys/libem-sample-data/tree/main/dblp-scholar): The DBLP-Scholar dataset derives from the DBLP and Google Scholar digital libraries.
+- [fodors-zagats](https://github.com/abcsys/libem-sample-data/tree/main/fodors-zagats): This dataset contains restaurant data from Fodors and from Zagat.
+- [itunes-amazon](https://github.com/abcsys/libem-sample-data/tree/main/itunes-amazon): This dataset contains music data from iTunes and Amazon. It was created by students in the CS 784 data science class at UW-Madison, Fall 2015, as a part of their class project.
+- [walmart-amazon](https://github.com/abcsys/libem-sample-data/tree/main/walmart-amazon): The Walmart-Amazon dataset derives from the online retailers Walmart.com and Amazon.com.
+- [challenging](https://github.com/abcsys/libem-sample-data/tree/main/challenging): This dataset contains commonly failed benchmark cases from the other 8 datasets.
+
+The `suite` directory contains benchmark suites that deep-dive into aspects of Libem performance.
 
 ## Blocking
 
@@ -66,7 +89,7 @@ python -m benchmark.run -s <suite-name>
 
 ----
 
-#### GPT-4o
+### GPT-4o
 > This points to gpt-4o-2024-05-13 as of Aug.14, 2024.
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
@@ -81,7 +104,7 @@ python -m benchmark.run -s <suite-name>
 | walmart-amazon |   91.01   | 89.12  | 90.05 |  1.01    |    1181     |       110        |
 | **Average**    | **91.50** |**90.05**|**90.57**|**0.7031**| **1131** |    **91.25**     |
 
-#### GPT-4o-2024-08-06
+### GPT-4o-2024-08-06
 
 | Benchmark      | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 | :-----------:  | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
@@ -95,7 +118,7 @@ python -m benchmark.run -s <suite-name>
 | walmart-amazon |   86.34   | 91.71  | 88.94 | 0.5152   |     2315    |       120        |
 | **Average**    | **89.59** |**88.85**|**88.63**|**0.340**| **2342**  |      **86**      |
 
-#### GPT-4o-mini
+### GPT-4o-mini
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 | :------------: | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
@@ -109,7 +132,7 @@ python -m benchmark.run -s <suite-name>
 | walmart-amazon |   96.3    | 67.36  | 79.27 | 0.03037  |    39282    |        82        |
 | **Average**    | **93.35** |**65.01**|**74.44**|**0.02008**|**39464**|    **90.13**     |
 
-#### GPT-4-turbo
+### GPT-4-turbo
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 | :------------: | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
@@ -123,7 +146,7 @@ python -m benchmark.run -s <suite-name>
 | walmart-amazon |   92.18   | 85.49  | 88.71 |  2.106   |     566     |        47        |
 | **Average**    | **93.13** |**76.88**|**83.04**|**1.3865**|**576**   |    **62.98**     |
 
-#### GPT-4
+### GPT-4
 
 |    Benchmark   | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 | :------------: | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
@@ -137,7 +160,7 @@ python -m benchmark.run -s <suite-name>
 | walmart-amazon |   90.91   |  88.08 | 89.47 |   6.032  |     197     |       140        |
 | **Average**    | **90.89** |**81.27**|**84.18**|**3.986**| **199**   |    **106.5**     |
 
-#### GPT-3.5-turbo
+### GPT-3.5-turbo
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 | :------------: | :-------: | :----: | :---: | :------: | :---------: | :--------------: |
@@ -156,7 +179,7 @@ python -m benchmark.run -s <suite-name>
 > Llama model runs on Apple M2 silicon
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
-|:--------------:|:---------:|:------:|:-----:|:----------------:|:----------------:|------------------|
+|:--------------:|:---------:|:------:|:-----:|:----------------:|:----------------:|:----------------:|
 |    abt-buy     |   70.36   | 95.63  | 81.07 | - | - |       0.74       |
 | amazon-google  |   51.46   | 75.54  | 61.22 | - | - |       1.2        |
 |      beer      |   90.0    | 64.29  | 75.0  | - | - |       0.89       |
@@ -179,7 +202,7 @@ python -m benchmark.run -s <suite-name>
 | fodors-zagats  |   82.61   |   86.36   |   84.44   |    -     |      -      |       1.2        |
 | itunes-amazon  |   29.89   |   100.0   |   46.02   |    -     |      -      |       0.87       |
 | walmart-amazon |   32.87   |   97.93   |   49.22   |    -     |      -      |       1.1        |
-|  **Average**   | **55.07** | **96.54** | **67.93** |  **-**   |    **-**    |   **1.18375**    |
+|  **Average**   | **55.07** | **96.54** | **67.93** |  **-**   |    **-**    |     **1.18**     |
 
 For more results on Llama models, please see [Llama.md](Llama.md)
 
