@@ -12,7 +12,7 @@ name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
-    benchmarks = bm.benchmarks.keys()
+    benchmarks = bm.classic_benchmarks.keys()
 
     args.block = True
     args.match = False

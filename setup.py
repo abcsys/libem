@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="libem",
-    version="0.0.24",
+    version="0.0.25",
     description="Libem python library",
     author="Systems Design Studio",
     author_email="team@SD.studio",
