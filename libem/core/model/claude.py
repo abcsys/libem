@@ -3,7 +3,7 @@ import json
 import httpx
 import importlib
 import inspect
-import asyncio
+
 from anthropic import (
     AsyncAnthropic, APITimeoutError
 )
