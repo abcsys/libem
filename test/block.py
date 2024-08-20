@@ -38,7 +38,7 @@ assert out == [{'left': {'i': 0, 'j': 'orange'}, 'right': {'i': 0, 'j': 'orange'
                {'left': {'i': 5, 'j': 'orange'}, 'right': {'i': 5, 'j': 'orange'}},]
 
 libem.calibrate({
-    "libem.block.parameter.similarity": 70
+    "libem.block.parameter.similarity": 50
 })
 
 out = list(libem.block(dataset_a, dataset_b, on='i'))
