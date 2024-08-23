@@ -17,5 +17,6 @@ class Pair(TypedDict):
 Output = Iterable[Pair]
 
 
-def block(left: Left, right: Right = None) -> Output:
-    yield from func(left, right)
+def block(left: Left, right: Right = None, 
+          on: str | list | None = None) -> Output:
+    yield from func(left, right, on)
