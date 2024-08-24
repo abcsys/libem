@@ -89,8 +89,6 @@ def configure(args):
     # If no input, keep the existing key; otherwise, update
     if new_openai_key:
         config['OPENAI_API_KEY'] = new_openai_key
-    else:
-        print("No input provided. Using existing API key.")
 
     existing_claude_key = config.get('CLAUDE_API_KEY', '')
     new_claude_key = input(f"Enter CLAUDE_API_KEY (press Enter to keep the existing key: "
@@ -99,8 +97,6 @@ def configure(args):
     # If no input, keep the existing key; otherwise, update
     if new_claude_key:
         config['CLAUDE_API_KEY'] = new_claude_key
-    else:
-        print("No input provided. Using existing API key.")
 
     ...
 
