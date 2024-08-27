@@ -1,6 +1,7 @@
 import os
 import time
 
+import benchmark as bm
 from benchmark.suite.util import (
     run_benchmark, report_to_dataframe, 
     tabulate, plot, save, show
@@ -10,6 +11,17 @@ name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
+    if args.plot:
+        files = list(os.scandir(bm.result_dir))
+        for file in reversed(files):
+            if file.name[26:31] == name:
+                print(f"Plotting run: {file.name}")
+                plot(file, x_axis="batch_size")
+                return
+        
+        print(f"Could not find past {name} suite results to plot.")
+        return
+    
     args.block = False
     args.match = True
     args.num_pairs = -1
@@ -33,7 +45,7 @@ def run(args):
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
     df = report_to_dataframe(reports, key_col="batch_size")
-    save(df, f"{name}-{args.name}")
+    file_name = save(df, f"{name}-{args.name}")
 
     # generate markdown table
     df = df[["batch_size", "f1", "latency", "per_pair_latency",
@@ -49,7 +61,7 @@ def run(args):
     df = df.rename(columns=field_names)
 
     tabulate(df, f"{name}-{args.name}")
-    plot(df)
+    plot(file_name, x_axis="batch_size")
     show(df)
 
     return reports

@@ -12,6 +12,17 @@ name = os.path.basename(__file__).replace(".py", "")
 
 
 def run(args):
+    if args.plot:
+        files = list(os.scandir(bm.result_dir))
+        for file in reversed(files):
+            if file.name[26:-4] == name:
+                print(f"Plotting run: {file.name}")
+                plot(file)
+                return
+        
+        print(f"Could not find past {name} suite results to plot.")
+        return
+    
     benchmarks = bm.classic_benchmarks.keys()
 
     args.block = True
@@ -39,7 +50,7 @@ def run(args):
     print(f"Benchmark: Suite done in: {time.time() - start:.2f}s.")
     
     df = report_to_dataframe(reports)
-    save(df, name)
+    file_name = save(df, name)
     
     # generate markdown table
     df = df[["benchmark", "similarity_cutoff", "percent_blocked", "f1", "throughput"]]
@@ -54,7 +65,7 @@ def run(args):
     df = df.rename(columns=field_names)
     
     tabulate(df, name)
-    plot(df)
+    plot(file_name)
     show(df)
 
     return reports

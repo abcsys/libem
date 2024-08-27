@@ -116,6 +116,9 @@ def args() -> argparse.Namespace:
     parser.add_argument("--num-shots", dest='num_shots', nargs='?',
                         help="The number of shots to use for in-context learning.",
                         type=int, default=0)
+    parser.add_argument("--plot", dest='plot',
+                        help="Plot the results of the last benchmark suite run.",
+                        action='store_true', default=False)
 
     # libem configurations
     parser.add_argument("-m", "--model", dest='model', nargs='?',

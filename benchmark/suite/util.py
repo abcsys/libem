@@ -32,7 +32,6 @@ def report_to_dataframe(reports, key_col: str = "benchmark"):
 
 
 def tabulate(df: pd.DataFrame, name: str):
-    name = name.replace('_', '-')
     output_file = os.path.join(
                     bm.table_dir,
                     f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-"
@@ -43,12 +42,28 @@ def tabulate(df: pd.DataFrame, name: str):
     print(f"Markdown table saved to: {output_file}")
 
 
-def plot(df: pd.DataFrame):
-    pass
+def plot(file: str, x_axis: str = 'benchmark'):
+    import seaborn as sns
+    from matplotlib import pyplot as plt
+    
+    df = pd.read_csv(file)
+    sns.set_theme(font_scale=1.3)
+    sns.barplot(df, x=x_axis, y='f1', color='#2ecc71', width=0.7)
+    plt.xticks(rotation=90)
+    plt.ylim(0, 100)
+    plt.title('')
+    plt.xlabel('')
+    plt.ylabel("F1 Score (%)")
+    
+    output_file = os.path.join(
+                    bm.figure_dir,
+                    f"{os.path.basename(file)[:-4]}.svg")
+    plt.savefig(output_file, format='svg', bbox_inches = "tight")
+    
+    print(f"Plot saved to: {output_file}")
 
 
 def save(df: pd.DataFrame, name: str):
-    name = name.replace('_', '-')
     output_file = os.path.join(
                     bm.result_dir,
                     f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-"
@@ -57,6 +72,8 @@ def save(df: pd.DataFrame, name: str):
     df.to_csv(output_file, index=False)
     
     print(f"Results saved to: {output_file}")
+    
+    return output_file
 
 
 def show(df: pd.DataFrame):
