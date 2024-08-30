@@ -20,7 +20,7 @@ def run(args):
     
     batch_sizes = [1, 4, 16, 64, 128, 256, 512]
     
-    print(f"Benchmark: Varying the batch size on the {args.name} benchmarks:")
+    print(f"Benchmark: Varying the batch size on the {args.name} benchmark:")
     start = time.time()
     
     reports = {}

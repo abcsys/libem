@@ -12,7 +12,9 @@ def run(args) -> dict:
     # create a deep copy of args before making changes
     args = copy.deepcopy(args)
     
-    if args.input_file:
+    if args.plot:
+        benchmark_func = run_plot
+    elif args.input_file:
         args.name = args.input_file.split('/')[-1].split(".")[0]
         benchmark_func = run_from_file
     elif args.suite:
@@ -23,6 +25,19 @@ def run(args) -> dict:
         benchmark_func = bm.benchmarks[args.name]
 
     return benchmark_func(args)
+
+
+def run_plot(args):
+    if args.plot == 'all':
+        for name in bm.suite_plots.keys():
+            bm.suite_plots[name](args)
+    else:
+        plots = args.plot.split(',')
+        for plot in plots:
+            name = plot.strip().replace('_', '-')
+            if name not in bm.suite_plots:
+                raise ValueError(f"Plot {name} not found.")
+            bm.suite_plots[name](args)
 
 
 def run_from_file(args) -> dict:
@@ -82,6 +97,10 @@ def args() -> argparse.Namespace:
                         help="Number of pairs to run through. "
                              "Set as <= 0 to run through the entire dataset.",
                         type=int, default=5)
+    parser.add_argument("--plot", dest='plot', nargs='?',
+                        help="The benchmark suite plot name(s), separated by comma,  "
+                             "or 'all' to plot all.",
+                        type=str, default='')
 
     # dataset configurations
     parser.add_argument("--no-shuffle", dest='shuffle',
@@ -167,6 +186,12 @@ def validate(args):
     if args.suite and args.input_file:
         raise ValueError("Cannot specify both "
                          "suite and input file.")
+    if args.plot and args.suite:
+        raise ValueError("Cannot specify both "
+                         "plot and suite.")
+    if args.plot and args.input_file:
+        raise ValueError("Cannot specify both "
+                         "plot and input file.")
 
     if args.batch_size <= 0:
         raise ValueError("Batch size cannot be <= 0.")
