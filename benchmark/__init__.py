@@ -16,4 +16,4 @@ Path(table_dir).mkdir(parents=True, exist_ok=True)
 from benchmark.classic import (
     benchmarks, classic_benchmarks, challenges
 )
-from benchmark.suite import suites
+from benchmark.suite import suites, suite_plots

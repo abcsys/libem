@@ -19,3 +19,17 @@ suites = {
     'gpt-4o-mini': gpt_4o_mini.run,
     'llama3': llama3.run,
 }
+
+from benchmark.suite.plot import (
+    batch_size,
+    model_cost_trend,
+    model_f1,
+    model_throughput
+)
+
+suite_plots = {
+    'batch-size': batch_size.plot,
+    'model-cost-trend': model_cost_trend.plot,
+    'model-f1': model_f1.plot,
+    'model-throughput': model_throughput.plot
+}
