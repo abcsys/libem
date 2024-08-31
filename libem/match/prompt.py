@@ -26,7 +26,7 @@ output = Prompt(
         lambda: "strict"
         if model() in {
             "llama3", "llama3.1",
-            "gpt-4o-2024-08-06"
+            "gpt-4o-2024-08-06", "claude-3-5-sonnet-20240620",
         }
         else "standard"
     ),

@@ -60,6 +60,11 @@ async_batch:
 	python examples/optimize/async_batch.py
 batch: async_batch
 
+# claude model example
+.PHONY: claude
+claude:
+	python examples/model/claude.py
+
 # opensource model examples
 .PHONY: mlx_lm llama_cpp llama_ex local
 mlx_lm:

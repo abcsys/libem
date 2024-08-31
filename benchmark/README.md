@@ -176,7 +176,7 @@ python -m benchmark.run -s <suite-name>
 
 ### Meta-Llama3-8B-Instruct-8bit
 
-> Llama model runs on Apple M2 silicon
+> Llama model runs on Apple M1 silicon
 
 |   Benchmark    | Precision | Recall |  F1   | Cost ($) | Pairs per $ | Throughput (pps) |
 |:--------------:|:---------:|:------:|:-----:|:----------------:|:----------------:|:----------------:|
