@@ -35,6 +35,11 @@ The `classic` directory includes the following available benchmarks, each using 
 
 The `suite` directory contains benchmark suites that deep-dive into aspects of Libem performance.
 
+Note: if `libem` is installed via pip, specify the location of `libem-sample-data` via cli:
+```
+libem configure
+```
+
 ## Blocking
 
 To run a single blocking benchmark in `/classic`:
