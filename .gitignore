@@ -1,9 +1,7 @@
 _logs/
 _output/
 
-arena/node_modules
-arena/results
-arena/secrets
+arena/app/node_modules
 
 libem/tune/catalog.db
 

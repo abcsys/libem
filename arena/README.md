@@ -20,7 +20,13 @@ The API is available to try out at https://arena.libem.org/api/.
 
 ## Local setup
 
-To host your own version: 
+#### Docker
+
+To host both the frontend and backend through docker:
+
+```
+libem/arena> docker-compose up --build
+```
 
 #### Backend
 
@@ -42,13 +48,13 @@ libem/arena> npm run build
 ## Screenshots
 
 ### Home
-![Libem Arena Homescreen](./demo/arena_home.png)
+![Libem Arena Homescreen](./docs/arena_home.png)
 
 ### Match
-![Libem Arena Homescreen](./demo/arena_select.png)
+![Libem Arena Homescreen](./docs/arena_select.png)
 
 ## Results
-![Libem Arena Homescreen](./demo/arena_result.png)
+![Libem Arena Homescreen](./docs/arena_result.png)
 
 ## Leaderboard
-![Libem Arena Homescreen](./demo/arena_leaderboard.png)
+![Libem Arena Homescreen](./docs/arena_leaderboard.png)

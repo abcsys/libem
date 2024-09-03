@@ -599,4 +599,4 @@ async def run_sql(data: RunSql):
 
 # run the API
 if __name__ == "__main__":
-        uvicorn.run("serve:app", host="127.0.0.1", port=8000)
+        uvicorn.run("serve:app", host="0.0.0.0", port=8000)

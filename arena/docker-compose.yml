@@ -1,0 +1,11 @@
+services:
+    app:
+        build:
+            context: ./app
+        ports:
+            - "5000:5000"
+    serve:
+        build:
+            context: ./serve
+        ports:
+            - "8000:8000"

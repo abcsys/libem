@@ -1,8 +1,8 @@
 .PHONY: install run build
 install:
-	npm i
+	npm i --prefix app
 run:
-	python serve.py &
-	npm start
+	python serve/serve.py &
+	npm start --prefix app
 build:
-	npm run build
+	npm run build --prefix app
