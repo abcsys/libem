@@ -3,10 +3,16 @@ import json
 import random
 from typing import Iterable
 
-LIBEM_SAMPLE_DATA_PATH = os.path.join(
-    os.path.dirname(__file__),
-    '..', '..', '..', '..',
-    'libem-sample-data')
+import libem
+
+LIBEM_SAMPLE_DATA_PATH = libem.LIBEM_CONFIG.get(
+    "LIBEM_SAMPLE_DATA_PATH", 
+    os.path.join(
+        os.path.dirname(__file__),
+        '..', '..', '..', '..',
+        'libem-sample-data'
+    )
+)
 
 
 def load(dataset: Iterable[dict], num_samples=-1, stringify=True) \

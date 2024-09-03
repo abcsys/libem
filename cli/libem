@@ -7,6 +7,7 @@ import argparse
 import pprint
 
 import libem
+import libem.prepare.datasets as datasets
 from libem.match.parameter import tools
 from libem.core.struct import Index
 
@@ -97,6 +98,15 @@ def configure(args):
     # If no input, keep the existing key; otherwise, update
     if new_claude_key:
         config['CLAUDE_API_KEY'] = new_claude_key
+    
+    # Prompt for LIBEM_SAMPLE_DATA_PATH
+    existing_sample_data_path = datasets.LIBEM_SAMPLE_DATA_PATH
+    sample_data_path = input(f"Enter the path to libem-sample-data (press Enter to "
+                             f"keep existing location: {existing_sample_data_path}): ").strip()
+    
+    # If no input, keep existing path; otherwise, update
+    if sample_data_path:
+        config['LIBEM_SAMPLE_DATA_PATH'] = sample_data_path
 
     ...
 
