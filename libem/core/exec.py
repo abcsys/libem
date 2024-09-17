@@ -1,6 +1,7 @@
 import asyncio
 from typing import List, Coroutine
 from tqdm.asyncio import tqdm
+from aiolimiter import AsyncLimiter
 
 import libem
 
@@ -8,14 +9,24 @@ import libem
 async def proc_async_tasks(
         tasks: List[Coroutine],
         max_async_tasks: int = libem.LIBEM_MAX_ASYNC_TASKS,
+        rpm: int = -1,
         desc: str = "Processing Tasks") -> List:
-    ''' Run async tasks under na imposed max concurrent tasks. '''
+    ''' 
+        Run async tasks under na imposed max concurrent tasks 
+        with an optional rate limiter.
+    '''
 
     sem = asyncio.Semaphore(max_async_tasks)
+    if rpm > 0:
+        limiter = AsyncLimiter(rpm)
 
     async def _run(sem, task):
         async with sem:
-            return await task
+            if rpm > 0:
+                async with limiter:
+                    return await task
+            else:
+                return await task
 
     futures = [
         asyncio.ensure_future(_run(sem, task))

@@ -69,6 +69,10 @@ def benchmark(train_set: Iterable,
         libem.calibrate({
             "libem.match.parameter.num_shots": args.num_shots,
         })
+    if args.rpm:
+        libem.calibrate({
+            "libem.match.parameter.rpm": args.rpm,
+        })
 
     results, stats = {}, {}
 
@@ -264,8 +268,23 @@ def run_match(train_set, test_set, args):
         })
 
         if args.sync and args.batch_size == 1:
+            start, requests = time.time(), 0
+            
             # iterate and match each pair
             for i, data in enumerate(test_set):
+                # rate limit
+                if args.rpm > 0 and requests >= args.rpm:
+                    elapsed_time = time.time() - start
+                    
+                    if elapsed_time < 60:
+                        if not args.quiet:
+                            print(f"Rate limit reached, waiting "
+                                  f"{round(60 - elapsed_time, 2)}s before continuing.")
+                        time.sleep(60 - elapsed_time)
+                        
+                    requests = 0
+                    start = time.time()
+                
                 if 0 < args.num_pairs < i + 1:
                     break
 
@@ -280,6 +299,7 @@ def run_match(train_set, test_set, args):
                 num_retries = 0
                 while True:
                     try:
+                        requests += 1
                         is_match: dict = libem.match(left, right)
                         results[match_digest(left, right)] = {
                             'left': left,

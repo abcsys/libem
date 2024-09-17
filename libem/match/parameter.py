@@ -19,6 +19,16 @@ tools = Parameter(
     },
 )
 
+# optional requests per minute limit
+rpm = Parameter(
+    default=0
+)
+
+# enable system prompt
+system_prompt = Parameter(
+    default=True
+)
+
 # chain-of-thought and confidence score
 cot = Parameter(
     default=False

@@ -75,7 +75,7 @@ async def async_func(left: str | list[str], right: str | list[str]) -> dict | li
         tasks = create_batch_tasks(left, right)
 
     return list(chain.from_iterable(
-        await exec.proc_async_tasks(tasks, desc="Matching")
+        await exec.proc_async_tasks(tasks, rpm=parameter.rpm(), desc="Matching")
     ))
 
 
@@ -146,7 +146,7 @@ async def once(left: str, right: str) -> dict:
     )
 
     _prompt = [
-        {"role": "system", "content": system_prompt},
+        {"role": "system" if parameter.system_prompt() else "user", "content": system_prompt},
         *shots(),
         {"role": "user", "content": match_prompt},
     ]
@@ -208,7 +208,7 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
         )])
 
     _prompt = [
-        {"role": "system", "content": system_prompt},
+        {"role": "system" if parameter.system_prompt() else "user", "content": system_prompt},
         *shots,
         {"role": "user", "content": match_prompt},
     ]
