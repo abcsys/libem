@@ -7,6 +7,7 @@ from libem.tune.learn.icl import (
 # model call configurations
 model = libem.parameter.model
 temperature = libem.parameter.temperature
+system_role = libem.parameter.system_role
 tools = Parameter(
     default=[],
     options={
@@ -21,12 +22,7 @@ tools = Parameter(
 
 # optional requests per minute limit
 rpm = Parameter(
-    default=0
-)
-
-# enable system prompt
-system_prompt = Parameter(
-    default=True
+    default=-1
 )
 
 # chain-of-thought and confidence score

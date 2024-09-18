@@ -19,13 +19,7 @@ def run(args):
     args.match = True
     args.model = "o1-preview"
     args.num_pairs = -1
-    args.temperature = 1
     args.rpm = 20
-    
-    # o1 does not support system prompts
-    libem.calibrate({
-        "libem.match.parameter.system_prompt": False,
-    })
     
     # do not use downstream log/print
     args.log = False

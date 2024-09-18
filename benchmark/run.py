@@ -167,7 +167,7 @@ def args() -> argparse.Namespace:
                         action='store_true', default=False)
     parser.add_argument("--rpm", dest='rpm',
                         help="Limit Libem's request rate to the model.",
-                        type=int, default=0)
+                        type=int, default=-1)
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
                         action='store_true', default=False)

@@ -69,7 +69,7 @@ def benchmark(train_set: Iterable,
         libem.calibrate({
             "libem.match.parameter.num_shots": args.num_shots,
         })
-    if args.rpm:
+    if args.rpm > 0:
         libem.calibrate({
             "libem.match.parameter.rpm": args.rpm,
         })

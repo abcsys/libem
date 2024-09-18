@@ -146,7 +146,7 @@ async def once(left: str, right: str) -> dict:
     )
 
     _prompt = [
-        {"role": "system" if parameter.system_prompt() else "user", "content": system_prompt},
+        {"role": parameter.system_role(), "content": system_prompt},
         *shots(),
         {"role": "user", "content": match_prompt},
     ]
@@ -208,7 +208,7 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
         )])
 
     _prompt = [
-        {"role": "system" if parameter.system_prompt() else "user", "content": system_prompt},
+        {"role": parameter.system_role(), "content": system_prompt},
         *shots,
         {"role": "user", "content": match_prompt},
     ]
