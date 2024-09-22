@@ -1,17 +1,20 @@
 # use the Node.js Docker image as builder
-FROM node:alpine as builder
+FROM node:alpine AS builder
 
 # create the directory inside the container
 WORKDIR /app
 
 # copy the package.json files from local machine to the workdir in container
-COPY package*.json ./
+COPY app/package*.json ./
 
 # run npm install
 RUN npm install
 
 # copy the generated modules and all other files to the container
-COPY . .
+COPY app .
+
+# copy .env file
+COPY arena.env ../
 
 # run npm build
 RUN npm run build
@@ -23,7 +26,7 @@ FROM nginx
 COPY --from=builder /app/dist /var/www/html
 
 # copy the nginx config
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY app/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # nginx uses port 5000 so expose it
 EXPOSE 5000

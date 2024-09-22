@@ -2,6 +2,7 @@ import os
 import json
 import random
 import hashlib
+import pathlib
 import sqlite3
 import time
 import uvicorn
@@ -10,12 +11,16 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from functools import cmp_to_key
+from dotenv import load_dotenv
 
 import libem.prepare.datasets as ds
 from libem.prepare.datasets import (abt_buy, amazon_google, beer, dblp_acm, 
                                     dblp_scholar, fodors_zagats, itunes_amazon, 
                                     walmart_amazon, challenging)
 
+# load env
+env_path = os.path.join(pathlib.Path(__file__).parent.parent.resolve(), 'arena.env')
+load_dotenv(env_path)
 
 #####################
 # POST structs
@@ -225,7 +230,7 @@ app = FastAPI(
 # handle CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],
+    allow_origins=[os.getenv('FRONTEND_URL')],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -599,4 +604,4 @@ async def run_sql(data: RunSql):
 
 # run the API
 if __name__ == "__main__":
-        uvicorn.run("serve:app", host="0.0.0.0", port=8000)
+        uvicorn.run("serve:app", host=os.getenv('BACKEND_HOST'), port=int(os.getenv('BACKEND_PORT')))

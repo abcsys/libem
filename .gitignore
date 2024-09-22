@@ -1,7 +1,10 @@
 _logs/
 _output/
 
+# libem arena
 arena/app/node_modules
+arena/kubectl.exe
+!arena/arena.env
 
 libem/tune/catalog.db
 

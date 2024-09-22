@@ -25,24 +25,15 @@ The API is available to try out at https://arena.libem.org/api/.
 To host both the frontend and backend through docker:
 
 ```
-libem/arena> docker-compose up --build
+libem/arena> make docker-up
 ```
 
-#### Backend
+The frontend will be hosted at http://localhost:5000/ and the backend will be at http://localhost:8000/.
 
-The backend is self-contanined in `./serve.py`, and can be hosted using uvicorn by running
-
-```
-libem/arena> python serve.py
-```
-
-#### Frontend
-
-The frontend can be compiled into static HTML in `./dist` by running
+To stop hosting:
 
 ```
-libem/arena> npm i # installs all dependencies
-libem/arena> npm run build
+libem/arena> make docker-down
 ```
 
 ## Screenshots

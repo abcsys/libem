@@ -5,13 +5,17 @@ FROM python:3.12
 WORKDIR /serve
 
 # copy the current directory contents into the container
-ADD . /serve
+ADD serve /serve
 
-# install the needed packages
-RUN pip install libem && \
+# copy .env file
+COPY arena.env ../
+
+# install libem and clone libem-sample-data
+RUN pip install -r requirements.txt && \
+    pip install git+https://github.com/abcsys/libem.git && \
     mkdir /root/.libem && \
-    touch /root/.libem/config.yaml && \
-    git clone --depth 1 https://github.com/abcsys/libem-sample-data.git /usr/local/lib/python3.12/libem-sample-data
+    echo LIBEM_SAMPLE_DATA_PATH: /libem-sample-data >> /root/.libem/config.yaml && \
+    git clone --depth 1 https://github.com/abcsys/libem-sample-data.git /libem-sample-data
 
 # expose port 8000
 EXPOSE 8000
