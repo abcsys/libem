@@ -165,6 +165,9 @@ def args() -> argparse.Namespace:
     parser.add_argument("--sync", dest='sync',
                         help="Run Libem in synchronous mode.",
                         action='store_true', default=False)
+    parser.add_argument("--rpm", dest='rpm',
+                        help="Limit Libem's request rate to the model.",
+                        type=int, default=-1)
     parser.add_argument("-d", "--debug", dest='debug',
                         help="Enable debug mode.",
                         action='store_true', default=False)

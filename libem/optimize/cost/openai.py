@@ -1,13 +1,17 @@
 from libem.optimize.cost import cache
 
 model_info = None
+null_model_info = {
+    'input_cost_per_token': 0,
+    'output_cost_per_token': 0
+}
 
 
 def get_model_info(model=None):
     if model is None:
         return cache.load_openai()
     else:
-        return cache.load_openai().get(model, None)
+        return cache.load_openai().get(model, null_model_info)
 
 
 def get_input_cost(model, num_tokens):

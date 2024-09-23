@@ -7,6 +7,8 @@ from libem.tune.learn.icl import (
 # model call configurations
 model = libem.parameter.model
 temperature = libem.parameter.temperature
+system_role = libem.parameter.system_role
+
 tools = Parameter(
     default=[],
     options={
@@ -17,6 +19,11 @@ tools = Parameter(
             "libem.browse",
         ]
     },
+)
+
+# optional requests per minute limit
+rpm = Parameter(
+    default=-1
 )
 
 # chain-of-thought and confidence score

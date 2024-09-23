@@ -13,7 +13,8 @@ def load(args) -> pd.DataFrame:
     '''
     
     models = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 
-              'gpt-4o', 'gpt-4o-mini', 'llama3', 'llama3.1']
+              'gpt-4o', 'gpt-4o-2024-08-06', 'gpt-4o-mini', 'o1', 
+              'llama3', 'llama3.1']
     if args.kwargs and 'models' in args.kwargs:
         models = args.kwargs['models']
     
@@ -40,6 +41,9 @@ def load(args) -> pd.DataFrame:
         df.loc[:, 'model'] = k
         dfs.append(df)
     results = pd.concat(dfs)
+    
+    # rename models
+    results.loc[:, 'model'] = results['model'].replace(['gpt-4o-2024-08-06'], ['gpt-4o-08-06'])
     
     # filter benchmarks
     if len(benchmarks) > 0:
