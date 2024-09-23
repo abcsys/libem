@@ -19,10 +19,12 @@ async def proc_async_tasks(
     sem = asyncio.Semaphore(max_async_tasks)
     if rpm > 0:
         limiter = AsyncLimiter(rpm)
+    else:
+        limiter = None
 
     async def _run(sem, task):
         async with sem:
-            if rpm > 0:
+            if limiter:
                 async with limiter:
                     return await task
             else:

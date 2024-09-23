@@ -11,7 +11,7 @@ def get_model_info(model=None):
     if model is None:
         return cache.load_openai()
     else:
-        return cache.load_openai().get(model, None)
+        return cache.load_openai().get(model, null_model_info)
 
 
 def get_input_cost(model, num_tokens):
@@ -20,7 +20,7 @@ def get_input_cost(model, num_tokens):
 
     global model_info
     if model_info is None:
-        model_info = get_model_info(model) or null_model_info
+        model_info = get_model_info(model)
     return model_info['input_cost_per_token'] * num_tokens
 
 
@@ -30,7 +30,7 @@ def get_output_cost(model, num_tokens):
 
     global model_info
     if model_info is None:
-        model_info = get_model_info(model) or null_model_info
+        model_info = get_model_info(model)
     return model_info['output_cost_per_token'] * num_tokens
 
 
