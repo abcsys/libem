@@ -101,7 +101,7 @@ def configure(args):
     
     # Prompt for LIBEM_SAMPLE_DATA_PATH
     existing_sample_data_path = datasets.LIBEM_SAMPLE_DATA_PATH
-    sample_data_path = input(f"Enter the path to libem-sample-data (press Enter to "
+    sample_data_path = input(f"Enter the path to libem-sample-data (this is optional; press Enter to "
                              f"keep existing location: {existing_sample_data_path}): ").strip()
     
     # If no input, keep existing path; otherwise, update
