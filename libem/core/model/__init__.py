@@ -12,7 +12,7 @@ def call(*args, **kwargs) -> dict:
 
 async def async_call(*args, **kwargs) -> dict:
     match kwargs.get("model", ""):
-        case "llama3" | "llama3.1":
+        case "llama3" | "llama3.1" | "llama3.2":
             return llama.call(*args, **kwargs)
         case "claude-3-5-sonnet-20240620":
             return await claude.call(*args, **kwargs)
