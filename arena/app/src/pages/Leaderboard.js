@@ -46,7 +46,7 @@ const Leaderboard = () => {
         init()
         .then(r => {
             uuid.current = r['uuid']
-            return fetch(`${baseURL}/leaderboard/?benchmark=${dataset}&uuid=${uuid.current}`)
+            return fetch(`${baseURL}/leaderboard?benchmark=${dataset}&uuid=${uuid.current}`)
         })
         .then(r => r.json())
         .then(r => setLeaderboard(r))

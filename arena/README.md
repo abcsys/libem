@@ -18,6 +18,41 @@ Libem Arena supports benchmarking both users (preferably through the frontend) a
 
 The API is available to try out at https://arena.libem.org/api/.
 
+### Usage
+
+To benchmark Libem using Libem Arena:
+
+```
+import requests
+import libem
+
+# First call /init to get a session UUID, 
+# make sure to pass in token=model
+response = requests.get('arena.libem.org/api/init?token=model').json()
+uuid, benchmarks = response['uuid'], response['benchmarks']
+
+# Then call /match with the UUID to get the pairs from the first benchmark
+response = requests.get(f'arena.libem.org/api/match?
+                          uuid={uuid}&
+                          benchmark={benchmarks[0]}').json()
+pairs = response['pairs']
+
+# Separate the pairs into 'left' and 'right' 
+# then call Libem to get the answers
+left, right = [], []
+for pair in pairs:
+    left.append(pair['left'])
+    right.append(pair['right'])
+answers = libem.match(left, right)
+
+# Call /submit with the list of answers to get the score and time
+response = requests.post(f'arena.libem.org/api/submit', 
+                         json={'uuid': uuid, 
+                               'answers': answers, 
+                               'display_name': 'Test'}).json()
+score, time = response['score'], response['time']
+```
+
 ## Local setup
 
 #### Docker

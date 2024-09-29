@@ -1,5 +1,5 @@
-.PHONY: docker-build
-docker-build:
+.PHONY: build
+build:
 ifndef app
 	docker build -f app/Dockerfile .
 else
@@ -19,8 +19,8 @@ docker-up:
 docker-down:
 	docker compose down
 
-.PHONY: kubenetes-up kubenetes-down
-kubenetes-up:
+.PHONY: kuber-up kuber-down
+kuber-up:
 	kubectl apply -f arena.yaml
-kubenetes-down:
+kuber-down:
 	kubectl delete -f arena.yaml
