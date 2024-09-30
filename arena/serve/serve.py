@@ -2,6 +2,7 @@ import os
 import json
 import random
 import hashlib
+import pathlib
 import sqlite3
 import time
 import uvicorn
@@ -10,12 +11,16 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from functools import cmp_to_key
+from dotenv import load_dotenv
 
 import libem.prepare.datasets as ds
 from libem.prepare.datasets import (abt_buy, amazon_google, beer, dblp_acm, 
                                     dblp_scholar, fodors_zagats, itunes_amazon, 
                                     walmart_amazon, challenging)
 
+# load env
+env_path = os.path.join(pathlib.Path(__file__).parent.parent.resolve(), 'arena.env')
+load_dotenv(env_path)
 
 #####################
 # POST structs
@@ -217,21 +222,23 @@ tags_metadata = [
 ]
 
 app = FastAPI(
+    root_path=os.getenv('BACKEND_ROOT_PATH', ''),
+    openapi_prefix=os.getenv('BACKEND_ROOT_PATH', ''),
     title="Libem Arena API",
     description=description,
-    openapi_tags=tags_metadata
+    openapi_tags=tags_metadata,
 )
 
 # handle CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],
+    allow_origins=[os.getenv('FRONTEND_URL')],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
-@app.get("/init/", tags=["Init"])
+@app.get("/init", tags=["Init"])
 async def init(request: Request, token: str = '', uuid: str = ''):
     ''' Return benchmark info and generates a UUID if not given. '''
 
@@ -268,7 +275,7 @@ async def init(request: Request, token: str = '', uuid: str = ''):
         'benchmarks': metadata
     }
 
-@app.get("/match/", tags=["Model"])
+@app.get("/match", tags=["Model"])
 async def match(uuid: str, benchmark: str):
     ''' Return all pairs from a benchmark. '''
     
@@ -305,7 +312,7 @@ async def match(uuid: str, benchmark: str):
         'pairs': pairs
     }
 
-@app.post("/submit/", tags=["Model"])
+@app.post("/submit", tags=["Model"])
 async def submit(data: Submit):
     ''' Save all answers and return stats. '''
     
@@ -390,7 +397,7 @@ async def submit(data: Submit):
         'time': time_taken
     }
 
-@app.get("/matchone/", tags=["User"])
+@app.get("/matchone", tags=["User"])
 async def match_one(uuid: str, benchmark: str):
     ''' Return the next pair from a benchmark. '''
     
@@ -439,7 +446,7 @@ async def match_one(uuid: str, benchmark: str):
         'right': pair['right']
     }
 
-@app.post("/submitone/", tags=["User"])
+@app.post("/submitone", tags=["User"])
 async def submit_one(data: SubmitOne):
     ''' Save the answer and return the label. '''
     
@@ -527,7 +534,7 @@ async def submit_one(data: SubmitOne):
         'libem_pred': libem_res['pred'] == 'yes'
     }
 
-@app.get("/leaderboard/", tags=["Misc"])
+@app.get("/leaderboard", tags=["Misc"])
 async def get_leaderboard(benchmark: str, uuid: str | None = None):
     ''' Get the leaderboard for a benchmark, optionally pass in a UUID to get its entries. '''
     
@@ -560,7 +567,7 @@ async def get_leaderboard(benchmark: str, uuid: str | None = None):
         filtered_lb.extend([dict(u) for u in user])
     return sorted(filtered_lb, key=cmp_to_key(compare), reverse=True)
 
-@app.post('/deleteuser/', tags=["Misc"])
+@app.post('/deleteuser', tags=["Misc"])
 async def delete_user(data: DeleteUser):
     ''' Delete a user from the database. Requires a password if the user is not a demo type. '''
     
@@ -582,7 +589,7 @@ async def delete_user(data: DeleteUser):
     con.commit()
     cur.close()
 
-@app.post('/runsql/', include_in_schema=False)
+@app.post('/runsql', include_in_schema=False)
 async def run_sql(data: RunSql):
     ''' Run a SQL query. Requires a password. '''
     
@@ -599,4 +606,4 @@ async def run_sql(data: RunSql):
 
 # run the API
 if __name__ == "__main__":
-        uvicorn.run("serve:app", host="127.0.0.1", port=8000)
+        uvicorn.run("serve:app", host=os.getenv('BACKEND_HOST'), port=int(os.getenv('BACKEND_PORT')))
