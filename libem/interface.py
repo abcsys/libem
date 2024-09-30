@@ -38,10 +38,10 @@ from libem.resolve.link.interface import link
 _ = match, block, extract, cluster, dedupe, link
 
 from libem.tune.calibrate.interface import (
-    calibrate, export
+    calibrate, reset, export
 )
 
-_ = calibrate, export
+_ = calibrate, reset, export
 
 """ Configurations """
 
@@ -51,10 +51,6 @@ def config():
         toolchain="libem",
         nest=True,
     )
-
-
-def reset():
-    model.reset()
 
 
 def debug_on():

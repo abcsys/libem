@@ -25,7 +25,6 @@ def run():
         sort_dicts=False,
     )
 
-    libem.reset()
     print("After few-shot:")
 
     libem.calibrate({

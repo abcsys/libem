@@ -10,6 +10,8 @@ from libem.core.struct import (
 schema = {}
 
 
+cache = {}
+
 def func(config, verbose=False):
     for path, value in config.items():
         # Split the path into module and attribute parts
@@ -24,11 +26,20 @@ def func(config, verbose=False):
         except:
             raise Exception(f"unable to find parameter {path}")
         assert isinstance(parameter, Parameter), f"invalid parameter {path}"
+        
+        # Cache the original value
+        if path not in cache:
+            cache[path] = parameter()
 
         parameter.update(value)
 
     if verbose:
         libem.info(f"[calibrate] {config}")
+
+
+def reset(verbose=False):
+    func(cache, verbose=verbose)
+    cache.clear()
 
 
 def collect(tool: str, depth=sys.maxsize,

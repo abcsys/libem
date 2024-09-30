@@ -21,8 +21,6 @@ def main():
     libem.pprint(before)
     print()
 
-    libem.reset()
-
     print("With batch:")
     libem.calibrate({
         "libem.match.parameter.sync": True,

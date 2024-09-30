@@ -8,8 +8,6 @@ import benchmark as bm
 
 
 def run_benchmark(benchmark: str, args):
-    libem.reset()
-    
     _args = copy.deepcopy(args)
     _args.name = benchmark
     benchmark = bm.benchmarks[benchmark]
