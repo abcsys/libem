@@ -10,6 +10,7 @@ from libem.core.struct import (
 schema = {}
 
 
+# Cache the original/non-calibrated values to allow for resetting
 cache = {}
 
 def func(config, verbose=False):
