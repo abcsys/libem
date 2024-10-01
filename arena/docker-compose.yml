@@ -1,0 +1,18 @@
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: ./app/Dockerfile
+        ports:
+            - "5000:5000"
+    serve:
+        build:
+            context: ./
+            dockerfile: ./serve/Dockerfile
+        ports:
+            - "8000:8000"
+    # mysql:
+    #     build:
+    #         context: ./mysql
+    #     ports:
+    #         - "3306:3306"

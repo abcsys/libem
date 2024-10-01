@@ -1,4 +1,4 @@
-const baseURL = "http://127.0.0.1:8000"
+const baseURL = `${process.env.BACKEND_URL}`
 
 const init = async () => {
     const name = "uuid="
@@ -17,7 +17,7 @@ const init = async () => {
         }
     }
 
-    const res = await fetch(baseURL + `/init/?token=user&uuid=${uuid}`)
+    const res = await fetch(baseURL + `/init?token=user&uuid=${uuid}`)
     if (res.ok) {
         const body = await res.json()
 

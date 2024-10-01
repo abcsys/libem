@@ -1,5 +1,4 @@
 import React, { useEffect } from "react"
-import { baseURL } from "../Common"
 import "./EndScreen.css"
 
 const EndScreen = ({ uuid, dataset, userAns, libemAns, userTime, 
