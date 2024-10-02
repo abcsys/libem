@@ -33,7 +33,7 @@ def call(prompt: str | list | dict,
             raise ValueError(f"Invalid prompt type: {type(prompt)}")
     message_openai = (messages or []) + (context or [])
 
-    if model == "llama3" or model == "llama3.1" or "llama3.2":
+    if model in ["llama3", "llama3.1", "llama3.2-3b", "llama3.2-1b"]:
         BOS = "<|begin_of_text|>"
         SYS = "<|start_header_id|>system<|end_header_id|>"
         USER = "<|start_header_id|>user<|end_header_id|>"
@@ -64,8 +64,10 @@ def call(prompt: str | list | dict,
             model_path = "mlx-community/Meta-Llama-3-8B-Instruct-8bit"
         elif model == "llama3.1":
             model_path = "mlx-community/Meta-Llama-3.1-8B-Instruct-8bit"
-        elif model == "llama3.2":
+        elif model == "llama3.2-3b":
             model_path = "mlx-community/Llama-3.2-3B-Instruct-8bit"
+        elif model == "llama3.2-1b":
+            model_path = "mlx-community/Llama-3.2-1B-Instruct-8bit"
         else:
             raise ValueError(f"{model} is not supported.")
 
@@ -94,9 +96,12 @@ def call(prompt: str | list | dict,
         elif model == "llama3.1":
             model_path = "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
             model_name = "Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf"
-        elif model == "llama3.2":
+        elif model == "llama3.2-3b":
             model_path = "bartowski/Llama-3.2-3B-Instruct-GGUF"
             model_name = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+        elif model == "llama3.2-1b":
+            model_path = "bartowski/Llama-3.2-1B-Instruct-GGUF"
+            model_name = "Llama-3.2-1B-Instruct-Q4_K_M.gguf"
         else:
             raise ValueError(f"{model} is not supported.")
 
