@@ -24,3 +24,4 @@ duckdb
 pymongo
 anthropic
 aiolimiter
+seaborn
