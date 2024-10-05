@@ -21,8 +21,6 @@ def main():
     libem.pprint(before)
     print()
 
-    libem.reset()
-
     print("Asynchronous execution with batch size 5:")
     libem.calibrate({
         "libem.match.parameter.sync": False,

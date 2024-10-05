@@ -1,11 +1,13 @@
 import pprint
 
 from libem.tune.calibrate import func
-from libem.tune.calibrate.function import collect, flatten, unflatten
+from libem.tune.calibrate.function import reset, collect, flatten, unflatten
 
 
 def calibrate(*args, **kwargs):
     return func(*args, **kwargs)
+
+_ = reset
 
 
 def export(toolchain="libem",
