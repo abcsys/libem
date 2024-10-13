@@ -1,0 +1,9 @@
+uvicorn
+requests
+fastapi
+itsdangerous
+python-dotenv
+fastapi-login
+authlib
+mysql-connector-python
+https://github.com/abcsys/libem/archive/refs/heads/main.zip
