@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Libem Serve</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+            color: #757575;
+        }
+        .wrapper {
+            width: clamp(300px, 60vw, 900px);
+        }
+        .submit-btn,.login-btn {
+            align-self: center;
+            width: 100%;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 200ms;
+        }
+        .svg-btn {
+            background-color: rgba(0, 0, 0, 0);
+            border: none;
+            cursor: pointer;
+            transition: 200ms;
+        }
+        .avatar {
+            height: 2.2rem;
+            width: 2.2rem;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .avatar img {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+        }
+        .copy-svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            stroke: #757575;
+            stroke-width: 5;
+        }
+        .help-svg {
+            width: 1.3rem;
+            height: 1.3rem;
+            fill: #757575;
+        }
+        .close-svg {
+            width: 1.1rem;
+            height: 1.1rem;
+            fill: #757575;
+        }
+        .inactive {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .vertical-stack {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 5px;
+        }
+        .horizontal-stack {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid-hstack {
+            height: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+        }
+        .adaptive-stack {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+        .stack-child {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: 200ms;
+        }
+        .stack-child.inactive {
+            box-shadow: none;
+            transition: 200ms;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(300px, 60vw, 900px);
+            border-radius: 10px;
+            transition: 300ms;
+            z-index: 10;
+        }
+        .hide {
+            display: none;
+        }
+        .pad {
+            padding: 2px;
+        }
+        .textbox {
+            width: 100%;
+            box-sizing: border-box;
+            border: #ccc 1px solid;
+            border-radius: 5px;
+            padding: 10px;
+            overflow: auto;
+            word-wrap: break-word;
+        }
+        .tokenbox {
+            width: 100%;
+            box-sizing: border-box;
+            border: #ccc 1px solid;
+            border-radius: 5px;
+            overflow-x: auto;
+            padding: 5px;
+            min-height: 2rem;
+            white-space: nowrap;
+        }
+        .code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        textarea {
+            width: 100%;
+            resize: none;
+            font-family: Arial, sans-serif;
+            border: #ccc 1px solid;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        select {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+            padding: 5px;
+        }
+        h3 {
+            margin: 0 10px 0 0;
+        }
+        h1 {
+            text-align: center;
+            margin: 0;
+        }
+
+        /* Enable hover only on non-touch devices */
+        @media (hover: hover) and (pointer: fine) {
+            .submit-btn:hover,.login-btn:hover {
+                transition: 200ms;
+                transform: scale(1.01);
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+            .copy-svg:hover,.help-svg:hover,.close-svg:hover {
+                transition: 100ms;
+                transform: scale(1.05);
+                fill: #545454;
+                stroke: #545454;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 700px) {
+            .adaptive-stack {
+                flex-direction: column;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <main>
+        <div class="wrapper">
+            <div class="vertical-stack">
+                <div class="stack-child">
+                    <h1>Libem Serve</h1>
+                </div>
+                <div class="stack-child">
+                    <div class="vertical-stack">
+                        <div class="adaptive-stack">
+                            <div class="avatar hide">
+                                <img src="" id="avatar-img" />
+                            </div>
+                            <div id="login-message"></div>
+                        </div>
+                        <div class="pad"></div>
+                        <button class="login-btn">Login with Google</button>
+                        <div class="horizontal-stack hide" id="profile-message" 
+                             style="justify-content: center;gap:0;"></div>
+                    </div>
+                </div>
+                <div class="stack-child inactive" id="token-box">
+                    <div class="vertical-stack">
+                        <h3>Access Token</h3>
+                        <div class="pad"></div>
+                        <div class="horizontal-stack">
+                            <div class="tokenbox" id="access-token"></div>
+                            <button class="svg-btn" id="copy-btn" title="Copy" tabindex="-1">
+                                <svg class="copy-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-9.6 -9.6 83.20 83.20"><path d="M53.9791489,9.1429005H50.010849c-0.0826988,0-0.1562004,0.0283995-0.2331009,0.0469999V5.0228 C49.7777481,2.253,47.4731483,0,44.6398468,0h-34.422596C7.3839517,0,5.0793519,2.253,5.0793519,5.0228v46.8432999 c0,2.7697983,2.3045998,5.0228004,5.1378999,5.0228004h6.0367002v2.2678986C16.253952,61.8274002,18.4702511,64,21.1954517,64 h32.783699c2.7252007,0,4.9414978-2.1725998,4.9414978-4.8432007V13.9861002 C58.9206467,11.3155003,56.7043495,9.1429005,53.9791489,9.1429005z M7.1110516,51.8661003V5.0228 c0-1.6487999,1.3938999-2.9909999,3.1062002-2.9909999h34.422596c1.7123032,0,3.1062012,1.3422,3.1062012,2.9909999v46.8432999 c0,1.6487999-1.393898,2.9911003-3.1062012,2.9911003h-34.422596C8.5049515,54.8572006,7.1110516,53.5149002,7.1110516,51.8661003z M56.8888474,59.1567993c0,1.550602-1.3055,2.8115005-2.9096985,2.8115005h-32.783699 c-1.6042004,0-2.9097996-1.2608986-2.9097996-2.8115005v-2.2678986h26.3541946 c2.8333015,0,5.1379013-2.2530022,5.1379013-5.0228004V11.1275997c0.0769005,0.0186005,0.1504021,0.0469999,0.2331009,0.0469999 h3.9682999c1.6041985,0,2.9096985,1.2609005,2.9096985,2.8115005V59.1567993z"></path></svg>
+                                </button>
+                            <button class="svg-btn" id="help-btn" title="Help" tabindex="-1">
+                                <svg class="help-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 93.936 93.936"><path d="M80.179,13.758c-18.342-18.342-48.08-18.342-66.422,0c-18.342,18.341-18.342,48.08,0,66.421 c18.342,18.342,48.08,18.342,66.422,0C98.521,61.837,98.521,32.099,80.179,13.758z M44.144,83.117 c-4.057,0-7.001-3.071-7.001-7.305c0-4.291,2.987-7.404,7.102-7.404c4.123,0,7.001,3.044,7.001,7.404 C51.246,80.113,48.326,83.117,44.144,83.117z M54.73,44.921c-4.15,4.905-5.796,9.117-5.503,14.088l0.097,2.495 c0.011,0.062,0.017,0.125,0.017,0.188c0,0.58-0.47,1.051-1.05,1.051c-0.004-0.001-0.008-0.001-0.012,0h-7.867 c-0.549,0-1.005-0.423-1.047-0.97l-0.202-2.623c-0.676-6.082,1.508-12.218,6.494-18.202c4.319-5.087,6.816-8.865,6.816-13.145 c0-4.829-3.036-7.536-8.548-7.624c-3.403,0-7.242,1.171-9.534,2.913c-0.264,0.201-0.607,0.264-0.925,0.173 s-0.575-0.327-0.693-0.636l-2.42-6.354c-0.169-0.442-0.02-0.943,0.364-1.224c3.538-2.573,9.441-4.235,15.041-4.235 c12.36,0,17.894,7.975,17.894,15.877C63.652,33.765,59.785,38.919,54.73,44.921z"></path></svg>
+                            </button>
+                        </div>
+                        <div class="pad"></div>
+                        
+                    </div>
+                </div>
+                <div class="vertical-stack">
+                    <div class="stack-child inactive" id="api-box">
+                        <div class="vertical-stack">
+                            <div class="horizontal-stack">
+                                <h3>API Demo</h3>
+                                <select name="api-select" tabindex="-1">
+                                    <option value="match">/match</option>
+                                </select>
+                            </div>
+                            <div class="gap"></div>
+                            <div class="adaptive-stack">
+                                <textarea id="input-left" placeholder="Left entity:"
+                                        rows="5" tabindex="-1"></textarea>
+                                <textarea id="input-right" placeholder="Right entity:" 
+                                        rows="5" tabindex="-1"></textarea>
+                            </div>
+                            <div class="gap"></div>
+                            <div><button class="submit-btn" tabindex="-1">Submit</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="vertical-stack">
+                    <div class="stack-child inactive" id="output-box">
+                        <div class="vertical-stack">
+                            <h3>Output</h3>
+                            <div class="pad"></div>
+                            <div class="textbox" id="output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="background hide"></div>
+        <div class="popup hide">
+            <div class="stack-child">
+                <div class="vertical-stack">
+                    <div class="vertical-stack" style="align-items: end;">
+                        <button class="svg-btn" id="close-btn">
+                            <svg class="close-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460.775 460.775"><path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"></path></svg>
+                        </button>
+                    </div>
+                    <div>Include the access token as part of the authorization request header:</div>
+                    <div class="tokenbox code">
+                        Authorization: Bearer &ltACCESS TOKEN&gt
+                    </div>
+                    <div class="pad"></div>
+                    <div>Python example:</div>
+                    <div class="tokenbox code">
+                        requests.get("https://serve.arena.org/credits",<br>
+                        &emsp;&emsp;headers={<br>&emsp;&emsp;&emsp;&emsp;"Authorization": "Bearer &ltACCESS TOKEN&gt"<br>&emsp;&emsp;}<br>)
+                    </div>
+                    <div class="pad"></div>
+                    <div>Curl example:</div>
+                    <div class="tokenbox code">
+                        curl https://serve.arena.org/credits -H "Authorization: Bearer &ltACCESS TOKEN&gt"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const avatarImg = document.getElementById('avatar-img')
+        const avatar = document.querySelector('.avatar')
+        const loginBtn = document.querySelector('.login-btn')
+        const loginMessage = document.getElementById('login-message')
+        const profileMessage = document.getElementById('profile-message')
+        const accessToken = document.getElementById('access-token')
+        const outputText = document.getElementById('output')
+
+        const copySvg = document.querySelector('.copy-svg')
+        const tokenBox = document.getElementById('token-box')
+        const apiBox = document.getElementById('api-box')
+        const outputBox = document.getElementById('output-box')
+
+        const background = document.querySelector('.background')
+        const popup = document.querySelector('.popup')
+
+        const login = (state=false) => {
+            if (state) {
+                loginBtn.classList.add('hide')
+                avatar.classList.remove('hide')
+                profileMessage.classList.remove('hide')
+            }
+            else {
+                loginBtn.classList.remove('hide')
+                avatar.classList.add('hide')
+                profileMessage.classList.add('hide')
+            }
+        }
+
+        const setInactive = (inactive=true, mode=0) => { // 0: token, 1: api, 2: output
+            switch (mode) {
+                case 0:
+                    if (inactive) {
+                        tokenBox.classList.add('inactive')
+                        for (const c of tokenBox.children[0].children)
+                            c.setAttribute("tabindex", "-1")
+                    }
+                    else {
+                        tokenBox.classList.remove('inactive')
+                        for (const c of tokenBox.children[0].children)
+                            c.removeAttribute("tabindex")
+                    }
+                    break
+                case 1:
+                    if (inactive) {
+                        apiBox.classList.add('inactive')
+                        for (const p of apiBox.children[0].children)
+                            for (const c of p.children)
+                                c.setAttribute("tabindex", "-1")
+                    }
+                    else {
+                        apiBox.classList.remove('inactive')
+                        for (const p of apiBox.children[0].children)
+                            for (const c of p.children)
+                                c.removeAttribute("tabindex")
+                    }
+                    break
+                case 2:
+                    if (inactive) {
+                        outputBox.classList.add('inactive')
+                    }
+                    else {
+                        outputBox.classList.remove('inactive')
+                    }
+            }
+        }
+
+        const openPopup = (state=true) => {
+            if (state) {
+                background.classList.remove('hide')
+                popup.classList.remove('hide')
+            }
+            else {
+                background.classList.add('hide')
+                popup.classList.add('hide')
+            }
+        }
+
+        // first check if url contains token
+        const cookieName = 'auth='
+        const urlParams = new URLSearchParams(window.location.search)
+        let auth_token = ""
+        if (urlParams.has('auth')) {
+            // add auth token to cookies, set to expire in 30 days
+            auth_token = urlParams.get('auth')
+            const d = new Date()
+            d.setTime(d.getTime() + 30*24*60*60*1000)
+            const expires = "Expires=" + d.toUTCString()
+            document.cookie = cookieName + auth_token + ";" + expires + ";Path=/;SameSite=Strict;"
+        }
+        // check if auth token is in cookies
+        else {
+            const decodedCookie = decodeURIComponent(document.cookie)
+            const ca = decodedCookie.split(';')
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i]
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1)
+                }
+                if (c.indexOf(cookieName) == 0) {
+                    auth_token = c.substring(cookieName.length, c.length)
+                }
+            }
+        }
+
+        fetch("/profile", {
+            headers: { "Authorization": "Bearer " + auth_token }
+        })
+        .then((r) => {
+            if (!r.ok)
+                throw new Error()
+            else
+                return r.json()
+        }).then((r) => {
+            avatarImg.src = r['avatar']
+            loginMessage.innerHTML = r['name']
+            profileMessage.innerHTML = `<h3>Credits:</h3><div>${r['credits']}</div>`
+            accessToken.innerHTML = auth_token
+            login(true)
+            setInactive(false, 0)
+            setInactive(false, 1)
+        })
+        .catch(() => {
+            loginMessage.innerHTML = "<h3>You are not logged in.<h3>"
+        })
+
+        document.querySelector('.login-btn').addEventListener('click', e => {
+            window.location.href = '/login'
+        })
+
+        document.getElementById('copy-btn').addEventListener('click', e => {
+            if (auth_token) {
+                navigator.clipboard.writeText(auth_token)
+            }
+        })
+
+        document.getElementById('help-btn').addEventListener('click', e=> {
+            openPopup(true)
+        })
+
+        document.getElementById('close-btn').addEventListener('click', e=> {
+            openPopup(false)
+        })
+
+        document.querySelector('.submit-btn').addEventListener('click', e => {
+            setInactive(true, 1)
+            e.target.innerHTML = "Loading"
+
+            const leftText = document.getElementById('input-left').value
+            const rightText = document.getElementById('input-right').value
+            fetch("/match", {
+                method: "POST",
+                body: JSON.stringify({left: leftText, right: rightText}),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + auth_token
+                }
+            })
+            .then((r) => r.json())
+            .then((r) => {
+                outputText.innerHTML = JSON.stringify(r['response'])
+                profileMessage.innerHTML = `<h3>Credits:</h3><div>${r['credits']['remaining']}</div>`
+                e.target.innerHTML = "Submit"
+                setInactive(false, 1)
+                setInactive(false, 2)
+            })
+        })
+
+        document.querySelector('.background').addEventListener('click', e => {
+            openPopup(false)
+        })
+    </script>
+  </body>
+</html>

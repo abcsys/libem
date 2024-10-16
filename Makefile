@@ -138,10 +138,14 @@ data:
 # libem serve
 .PHONY: serve build
 serve:
-	python -m serve.run
+	python serve/serve/run.py
 build:
-	docker build -t silveryfu/libem-serve:0.0.21 -f serve/deploy/Dockerfile . && \
-	docker push silveryfu/libem-serve:0.0.21
+ifndef tag
+	docker build -f serve/serve/Dockerfile .
+else
+	docker build -t $(tag) -f serve/serve/Dockerfile .
+	docker push $(tag)
+endif
 
 # libem apps
 .PHONY: cluster dedupe link

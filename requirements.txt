@@ -14,10 +14,6 @@ numpy
 pandas
 tabulate
 bs4
-flask
-uvicorn
-requests
-fastapi
 tqdm
 recordlinkage
 duckdb
