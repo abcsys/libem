@@ -8,7 +8,7 @@ WORKDIR /serve
 ADD serve /serve
 
 # copy .env file
-COPY arena.env ../
+COPY arena.env /
 
 # install libem and clone libem-sample-data
 RUN pip install -r requirements.txt && \

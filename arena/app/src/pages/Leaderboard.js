@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react"
-import { baseURL, init } from "../Common"
+import { fetchURL, init } from "../Common"
 import "./Leaderboard.css"
 import { useNavigate, useParams } from "react-router-dom"
 import ErrorPopup from "../components/ErrorPopup"
+import Select from "../components/Select"
 
-const LBEntry = ({ uuid, name, score, time, highlight }) => {
+const LBEntry = ({ name, score, time, highlight, type }) => {
     const hashStr = str => {
         let hash = 0;
         str.split('').forEach(char => {
@@ -13,9 +14,10 @@ const LBEntry = ({ uuid, name, score, time, highlight }) => {
         return hash
     }
 
-    if (highlight) name = "You"
+    if (highlight && type !== "Model") name = "You"
     const className = highlight ? "center-text bold" : "center-text"
-    const iconLetter = uuid === '1' || uuid === '2' ? name.split(' ').at(-1)[0] : name[0]
+    const iconLetter = name === "Users Best" || name === "Users Avg" 
+                        ? name.split(' ').at(-1)[0] : name[0]
 
     return (
         <div className="lb-entry">
@@ -32,24 +34,55 @@ const LBEntry = ({ uuid, name, score, time, highlight }) => {
 
 const Leaderboard = () => {
     const [error, setError] = useState(false)
+    const [benchmarks, setBenchmarks] = useState([])
     const { dataset } = useParams()
     const uuid = useRef()
+    const type = useRef()
     const [leaderboard, setLeaderboard] = useState([])
+    const [animate, setAnimate] = useState(true)
     const navigate = useNavigate()
+
+    const fetchLB = (benchmark) => {
+        fetchURL(`/leaderboard?benchmark=${benchmark}`)
+        .then(r => r.json())
+        .then(r => setLeaderboard(r))
+        .catch(r => setError(true))
+    }
     
     const returnHome = () => {
         navigate("/")
     }
-    
 
+    const setBenchmark = (benchmark) => {
+        if (benchmarks.includes(benchmark))
+            navigate(`/leaderboard/${benchmark}`)
+        else
+            navigate(`/leaderboard/${benchmarks[0]}`)
+    }
+    
+    useEffect(() => {
+        if (dataset) {
+            // Re-trigger fade in animations
+            setAnimate(false)
+            setTimeout(() => {
+                fetchLB(dataset)
+                setAnimate(true)
+            }, 200)
+        }
+    }, [dataset])
+    
     useEffect(() => {
         init()
         .then(r => {
-            uuid.current = r['uuid']
-            return fetch(`${baseURL}/leaderboard?benchmark=${dataset}&uuid=${uuid.current}`)
+            uuid.current = r['id']
+            type.current = r['type']
+            const bm = Object.keys(r['benchmarks'])
+            setBenchmarks(bm)
+            if (!bm.includes(dataset))
+                navigate(`/leaderboard/${bm[0]}`)
+            else
+                fetchLB(dataset)
         })
-        .then(r => r.json())
-        .then(r => setLeaderboard(r))
         .catch(r => setError(true))
     }, [])
 
@@ -60,8 +93,9 @@ const Leaderboard = () => {
             <div className="vstack">
                 <div className="pad"></div>
                 <h1 className="text-color fade-in-top">Leaderboard</h1>
-                <div className="textbox fade-in-left">{dataset}</div>
-                <div className="lb-box fade-in-right">
+                <Select className="fade-in-left" options={benchmarks} 
+                        defaultValue={dataset} onChange={setBenchmark} />
+                <div className={`lb-box ${animate ? "fade-in-right" : "hide"}`}>
                     <div className="lb-entries">
                         <div className="lb-entry sticky">
                             <div></div>
@@ -70,12 +104,13 @@ const Leaderboard = () => {
                             <div className="center-text">Avg. Time</div>
                         </div>
                         {leaderboard.map((k, i) => 
-                            <LBEntry uuid={k['uuid']} key={i} name={k['name']} score={k['score']} 
-                                     time={k['avg_time']} highlight={k['uuid'] === uuid.current} />
+                            <LBEntry key={i} name={k['name']} score={k['score']} type={type.current}
+                                     time={k['avg_time']} highlight={k['id'] === uuid.current} />
                             )}
                     </div>
                 </div>
-                <div className="button rect fade-in-bottom" onClick={returnHome}>Home</div>
+                <div className={`button rect ${animate ? "fade-in-bottom" : "hide"}`} 
+                     onClick={returnHome}>Home</div>
                 <div className="pad"></div>
             </div>
         </>

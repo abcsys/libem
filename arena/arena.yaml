@@ -16,17 +16,21 @@ spec:
       - name: libem-arena-app
         image: daiwaid/libem-arena:latest
         ports:
-        - containerPort: 5000
+          - containerPort: 5000
       - name: libem-arena-serve
         image: daiwaid/libem-arena-serve:latest
         ports:
-        - containerPort: 8000
+          - containerPort: 8000
+        # envFrom:
+        #   - secretRef:
+        #       name: arena-env-vars
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: libem-arena-service
 spec:
+  # type: NodePort
   selector:
     app: libem-arena
   ports:
@@ -34,10 +38,12 @@ spec:
       name: tcp-5000
       port: 5000
       targetPort: 5000
+      # nodePort: 30050
     - protocol: TCP
       name: tcp-8000
       port: 8000
       targetPort: 8000
+      # nodePort: 30080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

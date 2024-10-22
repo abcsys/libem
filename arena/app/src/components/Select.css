@@ -1,0 +1,12 @@
+.custom-select {
+    padding: 0.5em;
+    text-align: center;
+    width: clamp(15rem, 50vw,20rem);
+    background-color: #007BFF;
+    color: #d9d9d9;
+    border-color: #d9d9d9;
+    border-radius: 10px;
+    border-style: solid;
+    font-size: inherit;
+    cursor: pointer;
+}

@@ -1,5 +1,7 @@
 uvicorn
 requests
 fastapi
-mysql-connector-python
+itsdangerous
 python-dotenv
+fastapi-login
+authlib
