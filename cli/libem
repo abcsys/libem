@@ -5,6 +5,7 @@ import yaml
 import ast
 import argparse
 import pprint
+import requests
 
 import libem
 import libem.prepare.datasets as datasets
@@ -138,6 +139,15 @@ def entry():
     extract_parser = subparsers.add_parser('extract', help='Perform entity extraction')
     extract_parser.add_argument('desc', type=str, help='Description')
     add_common_arguments(extract_parser)
+    
+    # compete
+    compete_parser = subparsers.add_parser('compete', help='Perform Arena/Serve interaction')
+    compete_parser.add_argument('dataset', type=str, nargs='?', help='')
+    compete_parser.add_argument('pairs', type=int, nargs='?', help='Number of pairs to match')
+    compete_parser.add_argument('arena_url', type=str, nargs='?', help='URL to Libem Arena')
+    compete_parser.add_argument('serve_url', type=str, nargs='?', help='URL to Libem Serve')
+    compete_parser.add_argument('arena_token', type=str, nargs='?', help='Libem Arena token')
+    compete_parser.add_argument('serve_token', type=str, nargs='?', help='Libem Serve token')
 
     ...
 
@@ -152,6 +162,8 @@ def entry():
             match(args)
         case 'extract':
             extract(args)
+        case 'compete':
+            compete(args)
         case _:
             parser.print_help()
 
@@ -193,6 +205,73 @@ def match(args):
     if args.stats:
         pp = pprint.PrettyPrinter(sort_dicts=False)
         pp.pprint(t.stats())
+
+
+def compete(args):
+    arena_url = args.arena_url or 'https://arena.libem.org'
+    serve_url = args.serve_url or 'https://serve.libem.org'
+    
+    pairs = args.pairs or 5
+    
+    if args.arena_token:
+        arena_token = args.arena_token
+    else:
+        arena_token = input(f"Login at {arena_url}/login and paste the access token: ")
+    if args.serve_token:
+        serve_token = args.serve_token
+    else:
+        serve_token = input(f"Login at {serve_url}/login and paste the access token: ")
+        
+    def fetch(base_url, token, url, method='GET', json=None):
+        if method == 'GET':
+            return requests.get(f"{base_url}{url}",
+                                headers={
+                                    "Authorization": f"Bearer {token}"
+                                })
+        else:
+            return requests.post(f"{base_url}{url}",
+                                headers={
+                                    "Authorization": f"Bearer {token}"
+                                },
+                                json=json)
+    
+    def fetchArena(url, method='GET', json=None):
+        return fetch(arena_url, arena_token, url, method, json)
+    
+    def fetchServe(url, method='GET', json=None):
+        return fetch(serve_url, serve_token, url, method, json)
+    
+    
+    user = fetchArena('/init?type=Model').json()
+    dataset = args.dataset or 'Abt-Buy'
+    print(f"Matching {pairs} pairs from {dataset}:")
+    
+    for i in range(pairs):
+        # get pair from arena
+        pair = fetchArena(f'/matchone?benchmark={dataset}').json()
+        print(f"Pair {i}:\nLeft: {pair['left']}\nRight: {pair['right']}")
+        
+        # match with serve
+        answer = fetchServe('/match', method='POST', 
+                            json={'left': str(pair['left']), 'right': str(pair['right'])}).json()
+        print(f"Answer: {answer['response']['answer']}\n")
+        
+        # submit answer to arena
+        fetchArena(f'/submitone?benchmark={dataset}', method='POST',
+                json={'benchmark': dataset, 'answer': answer['response']['answer']})
+    
+    # get arena leaderboard
+    leaderboard = fetchArena(f'/leaderboard?benchmark={dataset}').json()
+    for l in leaderboard:
+        if l['id'] == user['id']:
+            user_lb_entry = l
+            break
+    
+    print(f"Finished {pairs} pairs.\n"
+          f"final F1 score: {user_lb_entry['score']}, avg time: {user_lb_entry['avg_time']}")
+    
+    # delete user from arena
+    fetchArena('/deleteuser', method='POST')
 
 
 def extract(args):
