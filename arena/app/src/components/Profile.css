@@ -1,0 +1,77 @@
+.profile {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    border: 1px solid #000;
+    background-color: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.profile img {
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+.invis-background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.profile-dropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    right: 5px;
+    top: 5px;
+    max-width: 20rem;
+    max-height: 1000px;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    padding: 5px;
+    transform: scale(1);
+    transform-origin: 90% 20%;
+    transition-property: transform;
+    transition-duration: 250ms;
+    opacity: 1;
+}
+
+.profile-dropdown.tiny {
+    transform: scale(0);
+    transform-origin: 90% 20%;
+    transition-property: transform;
+    transition-duration: 250ms;
+}
+
+.profile-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 55px;
+}
+
+.profile-name {
+    margin: 20px 10px 0 10px;
+    padding-bottom: 10px;
+    max-width: 200px;
+    overflow: scroll;
+}
+
+.rect.small {
+    font-size: large;
+    width: 200px;
+    max-width: 60vw;
+}
