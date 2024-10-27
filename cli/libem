@@ -140,14 +140,14 @@ def entry():
     extract_parser.add_argument('desc', type=str, help='Description')
     add_common_arguments(extract_parser)
     
-    # compete
-    compete_parser = subparsers.add_parser('compete', help='Perform Arena/Serve interaction')
-    compete_parser.add_argument('dataset', type=str, nargs='?', help='')
-    compete_parser.add_argument('pairs', type=int, nargs='?', help='Number of pairs to match')
-    compete_parser.add_argument('arena_url', type=str, nargs='?', help='URL to Libem Arena')
-    compete_parser.add_argument('serve_url', type=str, nargs='?', help='URL to Libem Serve')
-    compete_parser.add_argument('arena_token', type=str, nargs='?', help='Libem Arena token')
-    compete_parser.add_argument('serve_token', type=str, nargs='?', help='Libem Serve token')
+    # live
+    live_parser = subparsers.add_parser('live', help='Perform Arena/Serve interaction')
+    live_parser.add_argument('dataset', type=str, nargs='?', help='')
+    live_parser.add_argument('pairs', type=int, nargs='?', help='Number of pairs to match')
+    live_parser.add_argument('arena_url', type=str, nargs='?', help='URL to Libem Arena')
+    live_parser.add_argument('serve_url', type=str, nargs='?', help='URL to Libem Serve')
+    live_parser.add_argument('arena_token', type=str, nargs='?', help='Libem Arena token')
+    live_parser.add_argument('serve_token', type=str, nargs='?', help='Libem Serve token')
 
     ...
 
@@ -162,8 +162,8 @@ def entry():
             match(args)
         case 'extract':
             extract(args)
-        case 'compete':
-            compete(args)
+        case 'live':
+            live(args)
         case _:
             parser.print_help()
 
@@ -207,8 +207,8 @@ def match(args):
         pp.pprint(t.stats())
 
 
-def compete(args):
-    arena_url = args.arena_url or 'https://arena.libem.org'
+def live(args):
+    arena_url = args.arena_url or 'https://arena.libem.org/api'
     serve_url = args.serve_url or 'https://serve.libem.org'
     
     pairs = args.pairs or 5

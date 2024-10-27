@@ -21,3 +21,4 @@ pymongo
 anthropic
 aiolimiter
 seaborn
+requests
