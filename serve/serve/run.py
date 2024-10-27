@@ -1,9 +1,8 @@
 """Web service for libem"""
 
 import os
-import sqlite3
 import uvicorn
-# import mysql.connector
+import mysql.connector
 
 from datetime import timedelta
 from fastapi import FastAPI, HTTPException, Depends, Request
@@ -36,11 +35,15 @@ class RunSql(BaseModel):
 # SQL DB
 #####################
 
-con = sqlite3.connect("users.db")
-con.row_factory = sqlite3.Row
+def connect_sql():
+    return mysql.connector.connect(user='mysql', password='password',
+                                   host=os.getenv('MYSQL_IP'),
+                                   database='serve')
+
+con = connect_sql()
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS users("
-            "id int NOT null PRIMARY KEY, "
+            "id varchar(30) NOT null PRIMARY KEY, "
             "email varchar(200), "
             "name varchar(200), "
             "avatar varchar(200), "
@@ -55,7 +58,7 @@ cur.close()
 # load .env if needed
 if not os.getenv('SECRET'):
     from dotenv import load_dotenv
-    env_path = os.path.join(os.path.dirname(file_path), '.env')
+    env_path = os.path.join(os.path.dirname(file_path), 'serve.env')
     load_dotenv(env_path)
 
 oauth = OAuth()
@@ -74,6 +77,32 @@ manager = LoginManager(SECRET, token_url='/login', use_cookie=True)
 
 class NotAuthenticatedException(Exception):
     pass
+
+
+#####################
+# Helpers
+#####################
+
+def register_user(user: dict):
+    sub = user['sub']
+    
+    # add user to db
+    cur = con.cursor()
+    cur.execute("SELECT * FROM users WHERE id = %s", (sub,))
+    existing = cur.fetchall()
+    if len(existing) == 0:
+        cur.execute("INSERT INTO users(id, name, email, avatar, credits) VALUES(%s, %s, %s, %s, %s)",
+                    (sub, user['name'], user['email'], user['picture'], os.getenv('TRIAL_CREDITS')))
+        con.commit()
+    cur.close()
+    
+    # generate access token
+    access_token = manager.create_access_token(
+        data=dict(sub=sub),
+        expires=timedelta(days=30)
+    )
+    
+    return access_token
 
 
 #####################
@@ -106,16 +135,16 @@ app.add_middleware(
 # fetch user data once authenticated
 @manager.user_loader()
 def load_user(user_id: str):
-    con = sqlite3.connect("users.db")
-    con.row_factory = sqlite3.Row
-    cur = con.cursor()
-    user = cur.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchall()
+    con = connect_sql()
+    cur = con.cursor(dictionary=True)
+    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cur.fetchall()
     cur.close()
     
     if len(user) == 0:
         return None
     
-    return dict(user[0])
+    return user[0]
 
 
 @app.exception_handler(NotAuthenticatedException)
@@ -140,9 +169,28 @@ async def favicon():
 
 @app.get("/login", tags=["Authentication"])
 async def login(request: Request):
-    # absolute url for callback
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    if os.getenv('OFFLINE_MODE') == 'true':
+        # generate 'fake' user info
+        cur = con.cursor(dictionary=True)
+        cur.execute("SELECT COUNT(*) AS count FROM users")
+        user_count = cur.fetchall()[0]
+        con.commit()
+        cur.close()
+        
+        user_id = user_count['count'] + 1
+        user = {
+            'sub': user_id,
+            'name': f'Offline User {user_id}',
+            'email': f'offline_user{user_id}@example.com',
+            'picture': None,
+        }
+        
+        access_token = register_user(user)
+        return RedirectResponse(f'/?auth={access_token}')
+    else:
+        # absolute url for callback
+        redirect_uri = request.url_for('auth')
+        return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
 @app.get("/auth", include_in_schema=False)
@@ -151,25 +199,9 @@ async def auth(request: Request):
         token = await oauth.google.authorize_access_token(request)
     except OAuthError as error:
         return RedirectResponse(f'/')
+    
     user = token.get('userinfo')
-    sub = user['sub']
-    
-    # generate access token
-    access_token = manager.create_access_token(
-        data=dict(sub=sub),
-        expires=timedelta(days=30)
-    )
-    
-    # add user to db
-    con = sqlite3.connect("users.db")
-    cur = con.cursor()
-    existing = cur.execute("SELECT * FROM users WHERE id = ?",
-              (sub,)).fetchall()
-    if len(existing) == 0:
-        cur.execute("INSERT INTO users(id, name, email, avatar, credits) VALUES(?, ?, ?, ?, ?)",
-                    (sub, user['name'], user['email'], user['picture'], os.getenv('TRIAL_CREDITS')))
-        con.commit()
-    cur.close()
+    access_token = register_user(user)
     
     return RedirectResponse(f'/?auth={access_token}')
 
@@ -225,9 +257,8 @@ def match(data: Match, user=Depends(manager)):
             tokens_used += model_usage['num_input_tokens'] + model_usage['num_output_tokens']
         
         # update user toekns
-        con = sqlite3.connect("users.db")
         cur = con.cursor()
-        cur.execute("UPDATE users SET credits = ? WHERE id = ?", 
+        cur.execute("UPDATE users SET credits = %s WHERE id = %s", 
                     (user['credits'] - tokens_used, user['id']))
         con.commit()
         cur.close()
@@ -241,7 +272,8 @@ def match(data: Match, user=Depends(manager)):
                 "remaining": user['credits'] - tokens_used
                 }
             }
-    
+
+
 @app.post('/runsql', include_in_schema=False)
 async def run_sql(data: RunSql, user=Depends(manager)):
     ''' Run a SQL query. Requires a password. '''
@@ -250,13 +282,17 @@ async def run_sql(data: RunSql, user=Depends(manager)):
         raise HTTPException(status_code=422, 
                             detail='Password is not correct. Your attempt has been logged.')
     
-    cur = con.cursor()
-    output = cur.execute(data.query).fetchall()
-    results = [dict(i) for i in output]
-    con.commit()
-    cur.close()
+    cur = con.cursor(dictionary=True)
+    try:
+        cur.execute(data.query)
+        results = cur.fetchall()
+        con.commit()
+        cur.close()
     
-    return results
+        return results
+    except mysql.connector.Error as err:
+        cur.close()
+        raise HTTPException(status_code=500, detail=str(err))
 
 
 # run the API

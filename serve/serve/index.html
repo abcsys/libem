@@ -43,10 +43,11 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            background-color: #ccc;
         }
         .avatar img {
-            min-width: 100%;
-            min-height: 100%;
+            min-width: 110%;
+            min-height: 110%;
             width: auto;
             height: auto;
         }
@@ -280,18 +281,18 @@
                     </div>
                     <div>Include the access token as part of the authorization request header:</div>
                     <div class="tokenbox code">
-                        Authorization: Bearer &ltACCESS TOKEN&gt
+                        Authorization: Bearer &lt;ACCESS TOKEN&gt;
                     </div>
                     <div class="pad"></div>
                     <div>Python example:</div>
                     <div class="tokenbox code">
-                        requests.get("https://serve.arena.org/credits",<br>
-                        &emsp;&emsp;headers={<br>&emsp;&emsp;&emsp;&emsp;"Authorization": "Bearer &ltACCESS TOKEN&gt"<br>&emsp;&emsp;}<br>)
+                        requests.get("https://serve.libem.org/credits",<br>
+                        &emsp;&emsp;headers={<br>&emsp;&emsp;&emsp;&emsp;"Authorization": "Bearer &lt;ACCESS TOKEN&gt;"<br>&emsp;&emsp;}<br>)
                     </div>
                     <div class="pad"></div>
                     <div>Curl example:</div>
                     <div class="tokenbox code">
-                        curl https://serve.arena.org/credits -H "Authorization: Bearer &ltACCESS TOKEN&gt"
+                        curl https://serve.libem.org/credits -H "Authorization: Bearer &lt;ACCESS TOKEN&gt;"
                     </div>
                 </div>
             </div>
@@ -376,6 +377,15 @@
             }
         }
 
+        const copied = (auth_token) => {
+            accessToken.innerHTML = "Copied"
+            accessToken.style.textAlign = "center"
+            setTimeout(() => {
+                accessToken.innerHTML = auth_token
+                accessToken.style.textAlign = "left"
+            }, 2000)
+        }
+
         // first check if url contains token
         const cookieName = 'auth='
         const urlParams = new URLSearchParams(window.location.search)
@@ -412,7 +422,8 @@
             else
                 return r.json()
         }).then((r) => {
-            avatarImg.src = r['avatar']
+            if (r['avatar'])
+                avatarImg.src = r['avatar']
             loginMessage.innerHTML = r['name']
             profileMessage.innerHTML = `<h3>Credits:</h3><div>${r['credits']}</div>`
             accessToken.innerHTML = auth_token
@@ -431,6 +442,7 @@
         document.getElementById('copy-btn').addEventListener('click', e => {
             if (auth_token) {
                 navigator.clipboard.writeText(auth_token)
+                copied(auth_token)
             }
         })
 
@@ -460,6 +472,12 @@
             .then((r) => {
                 outputText.innerHTML = JSON.stringify(r['response'])
                 profileMessage.innerHTML = `<h3>Credits:</h3><div>${r['credits']['remaining']}</div>`
+                e.target.innerHTML = "Submit"
+                setInactive(false, 1)
+                setInactive(false, 2)
+            })
+            .catch((r) => {
+                outputText.innerHTML = JSON.stringify(r)
                 e.target.innerHTML = "Submit"
                 setInactive(false, 1)
                 setInactive(false, 2)

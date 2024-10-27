@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: libem-web-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: libem-web-service
+  template:
+    metadata:
+      labels:
+        app: libem-web-service
+    spec:
+      containers:
+      - name: libem-web-service
+        image: daiwaid/libem-serve:latest
+        ports:
+          - containerPort: 8080
+        envFrom:
+          - secretRef:
+              name: env-vars
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libem-web-service
+spec:
+  type: NodePort
+  selector:
+    app: libem-web-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+   matchLabels:
+     app: mysql
+  template:
+   metadata:
+     labels:
+      app: mysql
+   spec:
+    containers:
+    - name: mysql
+      image: mysql:latest
+      env:
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: env-vars
+            key: MYSQL_ROOT_PASSWORD
+      ports:
+      - containerPort: 3306
+      volumeMounts:
+      - name: mysql-persistent-storage
+        mountPath: /var/lib/mysql
+      - name: mysql-initdb
+        mountPath: /docker-entrypoint-initdb.d
+    volumes:
+    - name: mysql-persistent-storage
+      persistentVolumeClaim:
+        claimName: mysql-pvc
+    - name: mysql-initdb
+      configMap:
+        name: initdb
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: initdb
+data:
+  initdb.sql: |-
+    CREATE DATABASE serve;
+    CREATE USER 'mysql'@'%' IDENTIFIED BY 'password';
+    GRANT CREATE, INSERT, UPDATE, DELETE, SELECT ON serve.* TO 'mysql'@'%';
+    FLUSH PRIVILEGES;
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306
