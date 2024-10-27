@@ -2,9 +2,9 @@ import os
 import json
 import random
 import pathlib
-import sqlite3
 import time
 import uvicorn
+import mysql.connector
 from datetime import timedelta
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -37,6 +37,7 @@ class SubmitOne(BaseModel):
     benchmark: str
     answer: bool
     time: float | None = None
+    display_name: str | None = None
 class RunSql(BaseModel):
     query: str
     password: str
@@ -94,8 +95,8 @@ libem_results = {
 }
 
 user_types = {
-    'Human': {'description': 'Regular user.'},
-    'Model': {'description': 'Any use of computer algorithms or artificial intelligence.'},
+    'h': 'human',
+    'm': 'model',
 }
 
 
@@ -103,28 +104,31 @@ user_types = {
 # SQL DB
 #####################
 
-con = sqlite3.connect("results.db")
-con.row_factory = sqlite3.Row
-cur = con.cursor()
+def connect_sql():
+    return mysql.connector.connect(user='mysql', password='password',
+                                   host=os.getenv('MYSQL_IP'),
+                                   database='arenadb')
+
+con = connect_sql()
+cur = con.cursor(dictionary=True)
 cur.execute("CREATE TABLE IF NOT EXISTS users("
-            "id int NOT null PRIMARY KEY, "
+            "id varchar(30) NOT null PRIMARY KEY, "
             "name varchar(200), "
             "email varchar(200), "
             "avatar varchar(200), "
-            "type varchar(20), "
             "seed int, "
             "matching int, "
             "benchmark varchar(50), "
-            "timestamp float)")
+            "timestamp double)")
 cur.execute("CREATE TABLE IF NOT EXISTS matches("
-            "id int NOT null, "
+            "id varchar(30) NOT null, "
             "type varchar(20) Not null, "
             "entity_1 varchar(5000), "
             "entity_2 varchar(5000), "
             "pred int NOT null, "
             "label int NOT null)")
 cur.execute("CREATE TABLE IF NOT EXISTS leaderboard("
-            "id int NOT null, "
+            "id varchar(30) NOT null, "
             "type varchar(20) NOT null, "
             "name varchar(100), "
             "benchmark varchar(50) NOT null, "
@@ -134,13 +138,14 @@ cur.execute("CREATE TABLE IF NOT EXISTS leaderboard("
             "tn int NOT null, "
             "fn int NOT null, "
             "score float NOT null, "
-            "avg_time float NOT null)")
+            "avg_time double NOT null)")
 
-res = cur.execute("SELECT * FROM leaderboard WHERE name='Libem'")
-if res.fetchone() is None:
+cur.execute("SELECT * FROM leaderboard WHERE name='Libem'")
+res = cur.fetchall()
+if not res:
     # add libem results to leaderboard
-    cur.executemany("INSERT INTO leaderboard VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [(
-                        0, "Model", "Libem", name, metadata[name]['size'], 
+    cur.executemany("INSERT INTO leaderboard VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", [(
+                        0, "model", "Libem", name, metadata[name]['size'], 
                         libem_results[name]['stats']['confusion_matrix']['tp'], 
                         libem_results[name]['stats']['confusion_matrix']['fp'], 
                         libem_results[name]['stats']['confusion_matrix']['tn'], 
@@ -193,21 +198,25 @@ def register_user(user: dict):
     
     # add user to db
     cur = con.cursor()
-    existing = cur.execute("SELECT * FROM users WHERE id = ?",
-              (sub,)).fetchall()
+    cur.execute("SELECT * FROM users WHERE id = %s", (sub,))
+    existing = cur.fetchall()
     if len(existing) == 0:
-        cur.execute("INSERT INTO users(id, name, email, avatar) VALUES(?, ?, ?, ?)",
-                    (sub, user['name'], user['email'], user['picture']))
+        cur.execute("INSERT INTO users(id, name, email, avatar, seed, matching) VALUES(%s, %s, %s, %s, %s, %s)",
+                    (sub, user['name'], user['email'], user['picture'], random.randint(0, 0xfffffff), 0))
         con.commit()
     cur.close()
     
-    # generate access token
-    access_token = manager.create_access_token(
-        data=dict(sub=sub),
+    # generate access tokens
+    user_token = manager.create_access_token(
+        data=dict(sub=f'{sub}h'),
+        expires=timedelta(days=30)
+    )
+    model_token = manager.create_access_token(
+        data=dict(sub=f'{sub}m'),
         expires=timedelta(days=30)
     )
     
-    return access_token
+    return user_token, model_token
 
 
 #####################
@@ -222,7 +231,7 @@ Libem Arena supports benchmarking both users (preferably through the frontend) a
 tags_metadata = [
     {
         "name": "Init",
-        "description": "The entry point to the API."
+        "description": "The entry points to the API."
     },
     {
         "name": "Model Only",
@@ -264,16 +273,23 @@ app.add_middleware(
 # fetch user data once authenticated
 @manager.user_loader()
 def load_user(user_id: str):
-    con = sqlite3.connect("results.db")
-    con.row_factory = sqlite3.Row
-    cur = con.cursor()
-    user = cur.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchall()
+    # separate user type identifier
+    sub = user_id[:-1]
+    user_type = user_id[-1]
+    
+    con = connect_sql()
+    cur = con.cursor(dictionary=True)
+    cur.execute("SELECT * FROM users WHERE id = %s", (sub,))
+    user = cur.fetchall()
     cur.close()
     
-    if len(user) == 0:
+    if len(user) == 0 or user_type not in user_types:
         return None
     
-    return dict(user[0])
+    user = user[0]
+    user['type'] = user_types[user_id[-1]]
+    
+    return user
 
 @app.exception_handler(NotAuthenticatedException)
 def auth_exception_handler(request: Request, exc: NotAuthenticatedException):
@@ -288,8 +304,9 @@ def auth_exception_handler(request: Request, exc: NotAuthenticatedException):
 async def login(request: Request):
     if os.getenv('OFFLINE_MODE') == 'true':
         # generate 'fake' user info
-        cur = con.cursor()
-        user_count = cur.execute("SELECT COUNT(*) AS count FROM users").fetchall()[0]
+        cur = con.cursor(dictionary=True)
+        cur.execute("SELECT COUNT(*) AS count FROM users")
+        user_count = cur.fetchall()[0]
         con.commit()
         cur.close()
         
@@ -301,8 +318,8 @@ async def login(request: Request):
             'picture': None,
         }
         
-        access_token = register_user(user)
-        return RedirectResponse(f'{os.getenv("FRONTEND_URL")}/?auth={access_token}')
+        user_token, model_token = register_user(user)
+        return RedirectResponse(f'{os.getenv("FRONTEND_URL")}/?auth={user_token}&token={model_token}')
     else:
         # absolute url for callback
         redirect_uri = request.url_for('auth')
@@ -316,40 +333,28 @@ async def auth(request: Request):
         return RedirectResponse(os.getenv('FRONTEND_URL'))
     
     user = token.get('userinfo')
-    access_token = register_user(user)
+    user_token, model_token = register_user(user)
     
-    return RedirectResponse(f'{os.getenv("FRONTEND_URL")}/?auth={access_token}')
+    return RedirectResponse(f'{os.getenv("FRONTEND_URL")}/?auth={user_token}&token={model_token}')
 
-@app.get("/init", tags=["Init"])
-async def init(user=Depends(manager.optional), type: str = ''):
-    ''' Return benchmark info and updates user type if given. '''
+@app.get("/info", tags=["Init"])
+async def info(user=Depends(manager.optional)):
+    ''' Return user info and available benchmarks. '''
     
     if user:
-        if type in user_types and user['type'] != type:
-            cur = con.cursor()
-            cur.execute("UPDATE users SET type = ?, seed = ?, matching = ? "
-                        "WHERE id = ?", 
-                        (type, random.randint(0, 0xffffffff), 0, user['id']))
-            con.commit()
-            cur.close()
-        else:
-            type = user['type']
-        
         return JSONResponse({
             'auth': True,
             'id': user['id'],
             'name': user['name'],
-            'type': type,
+            'type': user['type'],
             'avatar': user['avatar'],
-            'user_types': user_types,
             'benchmarks': metadata,
             })
-    
-    return JSONResponse({
-        'auth': False,
-        'user_types': user_types,
-        'benchmarks': metadata,
-    })
+    else:
+        return JSONResponse({
+            'auth': False,
+            'benchmarks': metadata,
+        })
 
 @app.get("/match", tags=["Model"])
 async def match(benchmark: str, user=Depends(manager)):
@@ -357,10 +362,7 @@ async def match(benchmark: str, user=Depends(manager)):
     
     validate(benchmark)
     
-    if not user['type']:
-        raise HTTPException(status_code=403,
-                            detail="User type not set. Call /init first to set the user type.")
-    if user['type'] != 'Model':
+    if user['type'] != 'model':
         raise HTTPException(status_code=403, 
                             detail="User type not allowed. Use /match_one instead "
                                    "or call /init again with a different token.")
@@ -370,16 +372,12 @@ async def match(benchmark: str, user=Depends(manager)):
                             detail="Sumbit the previous matching request first "
                                    "or call /init again to reset.")
     
-    # shuffle all pairs
-    random.seed(user['seed'])
-    indices = random.sample(range(0, metadata[benchmark]['size']), metadata[benchmark]['size'])
-    bm = benchmarks[benchmark]['benchmark']
-    pairs = [{'left': bm[i]['left'], 'right': bm[i]['right']} for i in indices]
+    pairs = [{'left': bm['left'], 'right': bm['right']} for bm in benchmarks[benchmark]['benchmark']]
     
     # update user info
     cur = con.cursor()
-    cur.execute("UPDATE users SET matching = ?, benchmark = ?, timestamp = ? "
-                "WHERE id = ?", 
+    cur.execute("UPDATE users SET matching = %s, benchmark = %s, timestamp = %s "
+                "WHERE id = %s", 
                 (1, benchmark, time.time(), user['id']))
     con.commit()
     cur.close()
@@ -396,10 +394,7 @@ async def submit(data: Submit, user=Depends(manager)):
     submit_time = time.time()
     benchmark = user['benchmark']
     
-    if not user['type']:
-        raise HTTPException(status_code=403,
-                            detail="User type not set. Call /init first to set the user type.")
-    if user['type'] != 'Model':
+    if user['type'] != 'model':
         raise HTTPException(status_code=403, 
                             detail="User type not allowed. Use /submit_one instead "
                                    "or call /init again with a different token.")
@@ -410,8 +405,8 @@ async def submit(data: Submit, user=Depends(manager)):
     
     # set matching to false
     cur = con.cursor()
-    cur.execute("UPDATE users SET matching = ? "
-                "WHERE id = ?", 
+    cur.execute("UPDATE users SET matching = %s "
+                "WHERE id = %s", 
                 (0, user['id']))
     con.commit()
     cur.close()
@@ -420,13 +415,8 @@ async def submit(data: Submit, user=Depends(manager)):
     if len(data.answers) != metadata[benchmark]['size']:
         raise HTTPException(status_code=400, detail='Number of entries do not match.')
     
-    # get shuffled order
-    random.seed(user['seed'])
-    indices = random.sample(range(0, metadata[benchmark]['size']), metadata[benchmark]['size'])
-    
     tp, fp, tn, fn = 0, 0, 0, 0
-    for i, index in enumerate(indices):
-        pair = benchmarks[benchmark]['benchmark'][index]
+    for i, pair in enumerate(benchmarks[benchmark]['benchmark']):
         answer = data.answers[i]
         
         if pair['label'] == 1:
@@ -448,20 +438,21 @@ async def submit(data: Submit, user=Depends(manager)):
     cur = con.cursor()
     
     # get current leaderboard entry
-    lb_entry = cur.execute("SELECT * FROM leaderboard "
-                      "WHERE benchmark = ? AND id = ? AND type = ? AND name = ?",
-                      (benchmark, user['id'], user['type'], data.display_name)).fetchall()
+    cur.execute("SELECT * FROM leaderboard "
+                "WHERE benchmark = %s AND id = %s AND type = %s AND name = %s",
+                (benchmark, user['id'], user['type'], data.display_name))
+    lb_entry = cur.fetchall()
     
     # if leaderboard entry does not exist, create entry, otherwise update entry
     if len(lb_entry) == 0:
         cur.execute("INSERT INTO leaderboard(id, type, name, benchmark, pairs, tp, fp, tn, fn, score, avg_time) "
-                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                    "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
                     (user['id'], user['type'], data.display_name, benchmark, 
                      len(data.answers), tp, fp, tn, fn, f1, avg_time))
     elif lb_entry[0]['score'] < f1:
         cur.execute("UPDATE leaderboard "
-                    "SET pairs = ?, tp = ?, fp = ?, tn = ?, fn = ?, score = ?, avg_time = ? "
-                    "WHERE id = ? AND benchmark = ? AND name = ?", 
+                    "SET pairs = %s, tp = %s, fp = %s, tn = %s, fn = %s, score = %s, avg_time = %s "
+                    "WHERE id = %s AND benchmark = %s AND name = %s", 
                     (len(data.answers), tp, fp, tn, fn, f1, avg_time, user['id'], benchmark, data.display_name))
         
     con.commit()
@@ -479,22 +470,19 @@ async def match_one(benchmark: str, user=Depends(manager)):
     
     validate(benchmark)
     
-    if not user['type']:
-        raise HTTPException(status_code=403,
-                            detail="User type not set. Call /init first to set the user type.")
-    
     # get current number of pairs matched from leaderboard
-    cur = con.cursor()
-    lb_entry = cur.execute("SELECT * FROM leaderboard "
-                      "WHERE benchmark = ? AND id = ? AND type = ?",
-                      (benchmark, user['id'], user['type'])).fetchall()
+    cur = con.cursor(dictionary=True)
+    cur.execute("SELECT * FROM leaderboard "
+                "WHERE benchmark = %s AND id = %s AND type = %s",
+                (benchmark, user['id'], user['type']))
+    lb_entry = cur.fetchall()
     cur.close()
     
     # get the last matched pair
     if len(lb_entry) == 0:
         lb_entry = {}
     else:
-        lb_entry = dict(lb_entry[0])
+        lb_entry = lb_entry[0]
     pairs = lb_entry.get('pairs', 0)
     
     # if no more pairs, return error
@@ -505,12 +493,13 @@ async def match_one(benchmark: str, user=Depends(manager)):
     random.seed(user['seed'])
     index = random.sample(range(0, metadata[benchmark]['size']), pairs + 1)[-1]
     pair = benchmarks[benchmark]['benchmark'][index]
+    timestamp = time.time()
     
     # update user info
     cur = con.cursor()
-    cur.execute("UPDATE users SET matching = ?, benchmark = ?, timestamp = ? "
-                "WHERE id = ?", 
-                (1, benchmark, time.time(), user['id']))
+    cur.execute("UPDATE users SET matching = %s, benchmark = %s, timestamp = %s "
+                "WHERE id = %s", 
+                (1, benchmark, timestamp, user['id']))
     con.commit()
     cur.close()
     
@@ -526,26 +515,23 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
     
     submit_time = time.time()
     
-    if not user['type']:
-        raise HTTPException(status_code=403,
-                            detail="User type not set. Call /init first to set the user type.")
-    
     if user['matching'] == 0:
         raise HTTPException(status_code=403, 
                             detail="Request a new pair with /matchone first.")
     
     # get current leaderboard entry
-    cur = con.cursor()
-    lb_entry = cur.execute("SELECT * FROM leaderboard "
-                      "WHERE benchmark = ? AND id = ? AND type = ?",
-                      (data.benchmark, user['id'], user['type'])).fetchall()
+    cur = con.cursor(dictionary=True)
+    cur.execute("SELECT * FROM leaderboard "
+                "WHERE benchmark = %s AND id = %s AND type = %s",
+                (data.benchmark, user['id'], user['type']))
+    lb_entry = cur.fetchall()
     cur.close()
     
     # get the last matched pair
     if len(lb_entry) == 0:
         lb_entry = {}
     else:
-        lb_entry = dict(lb_entry[0])
+        lb_entry = lb_entry[0]
     pairs = lb_entry.get('pairs', 0)
         
     random.seed(user['seed'])
@@ -554,11 +540,11 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
     
     # add submission to matches db and update user info
     cur = con.cursor()
-    cur.execute("INSERT INTO matches VALUES(?, ?, ?, ?, ?, ?)", (
+    cur.execute("INSERT INTO matches VALUES(%s, %s, %s, %s, %s, %s)", (
         user['id'], user['type'], json.dumps(pair['left']), json.dumps(pair['right']), 
         data.answer, pair['label']))
-    cur.execute("UPDATE users SET matching = ? "
-                "WHERE id = ?", 
+    cur.execute("UPDATE users SET matching = %s "
+                "WHERE id = %s", 
                 (0, user['id']))
     
     # verify answer
@@ -578,19 +564,19 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
     
     # verify reported time is close to server-tracked time
     time_taken = submit_time - user['timestamp']
-    if data.time is not None and data.time > 0 and time_taken - 5 <= data.time <= time_taken:
+    if data.time is not None and time_taken - 2 <= data.time <= time_taken + 2 or time_taken < 0:
         time_taken = data.time
     
     # if leaderboard entry does not exist, create entry, otherwise update entry
     if len(lb_entry) == 0:
-        cur.execute("INSERT INTO leaderboard(id, type, benchmark, pairs, tp, fp, tn, fn, score, avg_time) "
-                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                    (user['id'], user['type'], data.benchmark, 1, tp, fp, tn, fn, f1, time_taken))
+        cur.execute("INSERT INTO leaderboard(id, type, name, benchmark, pairs, tp, fp, tn, fn, score, avg_time) "
+                    "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                    (user['id'], user['type'], data.display_name, data.benchmark, 1, tp, fp, tn, fn, f1, time_taken))
     else:
         avg_time = (lb_entry['avg_time'] * pairs + time_taken) / (pairs + 1)
         cur.execute("UPDATE leaderboard "
-                    "SET pairs = ?, tp = ?, fp = ?, tn = ?, fn = ?, score = ?, avg_time = ? "
-                    "WHERE id = ? AND benchmark = ?", 
+                    "SET pairs = %s, tp = %s, fp = %s, tn = %s, fn = %s, score = %s, avg_time = %s "
+                    "WHERE id = %s AND benchmark = %s", 
                     (pairs + 1, tp, fp, tn, fn, f1, avg_time, user['id'], data.benchmark))
     
     con.commit()
@@ -609,30 +595,34 @@ async def get_leaderboard(benchmark: str, user=Depends(manager.optional)):
     ''' Get the leaderboard for a benchmark. '''
     
     validate(benchmark)
-    cur = con.cursor()
+    cur = con.cursor(dictionary=True)
     
-    model_lb = cur.execute("SELECT * FROM leaderboard WHERE benchmark = ? AND type = ? ORDER BY score DESC",
-                           (benchmark, 'Model')).fetchall()
-    human_best = cur.execute(f"SELECT '1' as id, 'Users Best' as name, '{benchmark}' as benchmark, "
+    cur.execute("SELECT * FROM leaderboard WHERE benchmark = %s AND type = %s ORDER BY score DESC",
+                           (benchmark, 'model'))
+    model_lb = cur.fetchall()
+    cur.execute(f"SELECT '1' as id, 'Users Best' as name, '{benchmark}' as benchmark, "
                        "COALESCE(MAX(pairs), 0) as pairs, COALESCE(MAX(score), 0) as score, "
                        "COALESCE(MAX(avg_time), 0) as avg_time "
-                       "FROM leaderboard WHERE benchmark = ? AND type = ? ORDER BY score DESC LIMIT 1", 
-                       (benchmark, "Human")).fetchall()
-    human_avg = cur.execute(f"SELECT '2' as id, 'Users Avg' as name, '{benchmark}' as benchmark, "
+                       "FROM leaderboard WHERE benchmark = %s AND type = %s ORDER BY score DESC LIMIT 1", 
+                       (benchmark, "human"))
+    human_best = cur.fetchall()
+    cur.execute(f"SELECT '2' as id, 'Users Avg' as name, '{benchmark}' as benchmark, "
                       "COALESCE(AVG(pairs), 0) as pairs, COALESCE(AVG(score), 0) as score, "
                       "COALESCE(AVG(avg_time), 0) as avg_time "
-                      "FROM leaderboard WHERE benchmark = ? AND type = ?",
-                      (benchmark, "Human")).fetchall()
-    if user is not None and user['type'] == 'Human':
-        human = cur.execute("SELECT * FROM leaderboard WHERE benchmark = ? AND id = ? AND type = ?",
-                            (benchmark, user['id'], "Human")).fetchall()
+                      "FROM leaderboard WHERE benchmark = %s AND type = %s",
+                      (benchmark, "human"))
+    human_avg = cur.fetchall()
+    if user is not None and user['type'] == 'human':
+        cur.execute("SELECT * FROM leaderboard WHERE benchmark = %s AND id = %s AND type = %s",
+                            (benchmark, user['id'], "human"))
+        human = cur.fetchall()
     
     cur.close()
     
-    filtered_lb = [dict(m) for m in model_lb]
-    filtered_lb.extend([dict(human_best[0]), dict(human_avg[0])])
-    if user is not None and user['type'] == 'Human':
-        filtered_lb.extend([dict(u) for u in human])
+    filtered_lb = model_lb
+    filtered_lb.extend([human_best[0], human_avg[0]])
+    if user is not None and user['type'] == 'human':
+        filtered_lb.extend(human)
     return sorted(filtered_lb, key=cmp_to_key(compare), reverse=True)
 
 @app.post('/deleteuser', tags=["Misc"])
@@ -641,7 +631,7 @@ async def delete_user(user=Depends(manager)):
     
     cur = con.cursor()
     for table in ['users', 'matches', 'leaderboard']:
-        cur.execute(f"DELETE FROM {table} WHERE id = ?",
+        cur.execute(f"DELETE FROM {table} WHERE id = %s",
                     (user['id'],))
     con.commit()
     cur.close()
@@ -655,12 +645,17 @@ async def run_sql(data: RunSql, user=Depends(manager)):
                             detail='Password is not correct. Your attempt has been logged.')
     
     cur = con.cursor()
-    output = cur.execute(data.query).fetchall()
-    results = [dict(i) for i in output]
-    con.commit()
-    cur.close()
-    
-    return results
+    try:
+        cur.execute(data.query)
+        output = cur.fetchall()
+        results = output
+        con.commit()
+        cur.close()
+        
+        return results
+    except mysql.connector.Error as err:
+        cur.close()
+        raise HTTPException(status_code=500, detail=str(err))
 
 # run the API
 if __name__ == "__main__":

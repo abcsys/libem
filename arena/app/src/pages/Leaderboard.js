@@ -14,7 +14,9 @@ const LBEntry = ({ name, score, time, highlight, type }) => {
         return hash
     }
 
-    if (highlight && type !== "Model") name = "You"
+    if (type === "model" && name === null) return
+
+    if (highlight && type !== "model") name = "You"
     const className = highlight ? "center-text bold" : "center-text"
     const iconLetter = name === "Users Best" || name === "Users Avg" 
                         ? name.split(' ').at(-1)[0] : name[0]
@@ -61,27 +63,26 @@ const Leaderboard = () => {
     }
     
     useEffect(() => {
-        if (dataset) {
-            // Re-trigger fade in animations
-            setAnimate(false)
-            setTimeout(() => {
-                fetchLB(dataset)
-                setAnimate(true)
-            }, 200)
+        if (benchmarks.length > 0 && dataset != null) {
+            if (!benchmarks.includes(dataset))
+                navigate(`/leaderboard/${benchmarks[0]}`)
+            else {
+                // Re-trigger fade in animations
+                setAnimate(false)
+                setTimeout(() => {
+                    fetchLB(dataset)
+                    setAnimate(true)
+                }, 200)
+            }
         }
-    }, [dataset])
+    }, [dataset, benchmarks])
     
     useEffect(() => {
         init()
         .then(r => {
             uuid.current = r['id']
-            type.current = r['type']
             const bm = Object.keys(r['benchmarks'])
             setBenchmarks(bm)
-            if (!bm.includes(dataset))
-                navigate(`/leaderboard/${bm[0]}`)
-            else
-                fetchLB(dataset)
         })
         .catch(r => setError(true))
     }, [])
@@ -104,7 +105,7 @@ const Leaderboard = () => {
                             <div className="center-text">Avg. Time</div>
                         </div>
                         {leaderboard.map((k, i) => 
-                            <LBEntry key={i} name={k['name']} score={k['score']} type={type.current}
+                            <LBEntry key={i} name={k['name']} score={k['score']} type={k['type']}
                                      time={k['avg_time']} highlight={k['id'] === uuid.current} />
                             )}
                     </div>

@@ -26,7 +26,10 @@ const Timer = ({ active, timeElapsed }) => {
 
             return () => clearInterval(interval)
         }
-        
+        else {
+            if (start.current > 0)
+                getTime()
+        }
     }, [active])
 
     return (

@@ -5,3 +5,4 @@ itsdangerous
 python-dotenv
 fastapi-login
 authlib
+mysql-connector-python

@@ -130,6 +130,7 @@ const Match = () => {
 
     const [timer, setTimer] = useState(false)
     const timeElapsed = useRef(0)
+    const totalTime = useRef(0)
     const startTime = useRef(0)
     const navigate = useNavigate()
 
@@ -186,6 +187,10 @@ const Match = () => {
     }
 
     const match = (answer) => {
+        const timeTaken = Date.now() - startTime.current
+        totalTime.current += timeTaken
+        timeElapsed.current = totalTime.current
+
         fetchURL('/submitone',
             "POST",
             {
@@ -195,7 +200,7 @@ const Match = () => {
             JSON.stringify({
                 benchmark: dataset,
                 answer: answer,
-                time: (Date.now() - startTime.current) / 1000
+                time: timeTaken / 1000
             }))
         .then(r => r.json())
         .then(r => {
@@ -227,7 +232,7 @@ const Match = () => {
 
             {endScreen
                 ? <EndScreen uuid={uuid.current} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
-                             userTime={timeElapsed.current / 1000} libemTime={libemTime.current} 
+                             userTime={totalTime.current / 1000} libemTime={libemTime.current} 
                              labels={labels.current} returnHome={returnHome} openLB={openLB} />
                 : <div className="selection">
                     {pair === null 

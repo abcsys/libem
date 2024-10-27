@@ -38,7 +38,8 @@
     align-items: center;
     right: 5px;
     top: 5px;
-    max-width: 20rem;
+    width: 20rem;
+    max-width: 90vw;
     max-height: 1000px;
     background-color: #d9d9d9;
     border-radius: 10px;
@@ -64,14 +65,93 @@
 }
 
 .profile-name {
-    margin: 20px 10px 0 10px;
+    padding: 20px 10px 0 10px;
     padding-bottom: 10px;
-    max-width: 200px;
-    overflow: scroll;
+    width: 90%;
+    white-space: nowrap;
+    overflow-x: scroll;
+    font-size: larger;
 }
 
 .rect.small {
     font-size: large;
     width: 200px;
     max-width: 60vw;
+}
+
+.left-align {
+    width: 100%;
+    text-align: left;
+    align-items: left;
+}
+
+.center-align {
+    text-align: center;
+}
+
+.title-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    justify-content: start;
+}
+
+.tokenbox {
+    width: 100%;
+    box-sizing: border-box;
+    border: #333 1px solid;
+    border-radius: 5px;
+    overflow-x: auto;
+    padding: 10px;
+    min-height: 2rem;
+    white-space: nowrap;
+    color: #333;
+}
+
+.code {
+    font-family: 'Courier New', Courier, monospace;
+    color: #000;
+    border: #aaa 1px solid;
+}
+
+.copy-svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    stroke: #333;
+    stroke-width: 5;
+}
+
+.help-svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: #333;
+}
+
+.close-svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    fill: #333;
+}
+
+.svg-btn {
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    cursor: pointer;
+    transition: 200ms;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .copy-svg:hover,.help-svg:hover {
+        transition: 200ms;
+        transform: scale(1.06);
+        fill: #000;
+        stroke: #000;
+    }
+    .close-svg:hover {
+        transition: 200ms;
+        transform: scale(1.06);
+        fill: #000;
+    }
 }

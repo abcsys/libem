@@ -7,10 +7,10 @@
     border-radius: 10px;
     font-size: smaller;
     overflow: hidden;
+    padding: 1rem 2rem 2rem 2rem;
 }
 
 .lb-entries {
-    margin: 2em;
     overflow: auto;
     height: 100%;
     display: flex;
