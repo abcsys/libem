@@ -600,13 +600,13 @@ async def get_leaderboard(benchmark: str, user=Depends(manager.optional)):
     cur.execute("SELECT * FROM leaderboard WHERE benchmark = %s AND type = %s ORDER BY score DESC",
                            (benchmark, 'model'))
     model_lb = cur.fetchall()
-    cur.execute(f"SELECT '1' as id, 'Users Best' as name, '{benchmark}' as benchmark, "
+    cur.execute(f"SELECT '-1' as id, 'Users Best' as name, '{benchmark}' as benchmark, "
                        "COALESCE(MAX(pairs), 0) as pairs, COALESCE(MAX(score), 0) as score, "
                        "COALESCE(MAX(avg_time), 0) as avg_time "
                        "FROM leaderboard WHERE benchmark = %s AND type = %s ORDER BY score DESC LIMIT 1", 
                        (benchmark, "human"))
     human_best = cur.fetchall()
-    cur.execute(f"SELECT '2' as id, 'Users Avg' as name, '{benchmark}' as benchmark, "
+    cur.execute(f"SELECT '-2' as id, 'Users Avg' as name, '{benchmark}' as benchmark, "
                       "COALESCE(AVG(pairs), 0) as pairs, COALESCE(AVG(score), 0) as score, "
                       "COALESCE(AVG(avg_time), 0) as avg_time "
                       "FROM leaderboard WHERE benchmark = %s AND type = %s",
