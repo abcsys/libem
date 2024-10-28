@@ -1,0 +1,42 @@
+.options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.description {
+    font-size: 0.7em;
+    color: #666;
+    margin: 0.5em 0.5em 0 0.5em;
+}
+
+.option-box {
+    margin: 3px 5px;
+    text-align: center;
+    width: 25rem;
+    max-width: 80vw;
+    padding: 10px 15px;
+    background-color: #d9d9d9;
+    color: #000;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-property: background-color;
+    transition-duration: 250ms;
+}
+
+.option-box.selected {
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.red-text {
+    color: #c90000;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    .option-box:hover {
+        transition-duration: 250ms;
+        background-color: #fff;
+    }
+}

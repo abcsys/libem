@@ -4,6 +4,7 @@ body {
     margin: 0;
     font-size: larger;
     overflow: auto;
+    text-align: center;
 }
 
 .logo {
@@ -24,14 +25,14 @@ body {
     margin: 1rem 1em;
     cursor: pointer;
     transition-duration: 250ms;
+    text-align: center;
 }
 
 .rect {
-    padding: 0.5em 0;
+    padding: 0.7em 0;
     font-size: x-large;
     width: 200px;
     max-width: 60vw;
-    height: 1.5em;
     background-color: #ffc400;
     color: #000;
     border-radius: 10px;
@@ -58,7 +59,7 @@ body {
 }
 
 .green {
-    background-color: #12b500;
+    background-color: #13c200;
 }
 
 .red {
@@ -96,7 +97,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 70vw;
+    max-width: clamp(10rem, 60vw, 50rem);
     height: auto;
     background-color: #d9d9d9;
     border-radius: 10px;
@@ -218,7 +219,8 @@ body {
 		opacity: 1;
         transform: translateY(0);
 	}
-}@keyframes fadeInBottom {
+}
+@keyframes fadeInBottom {
     0% {
 		opacity: 0;
         transform: translateY(-5px);
@@ -235,7 +237,7 @@ body {
 
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
-    .button:hover {
+    .button:not(.inactive):not(.inactive-green):hover {
         transition: 250ms;
         transform: scale(1.04);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);

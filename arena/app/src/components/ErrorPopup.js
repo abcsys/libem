@@ -8,7 +8,7 @@ const ErrorPopup = ({ show, message }) => {
                 <div className={"popup"} >
                     <h2>Error</h2>
                     <p>{message}</p>
-                    <p style={{color: '#666'}}>Please reload the page to try again.</p>
+                    <p style={{color: '#666'}}>Please try again later.</p>
                 </div>
             </>
         )

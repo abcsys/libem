@@ -6,6 +6,9 @@ arena/app/node_modules
 arena/kubectl.exe
 !arena/arena.env
 
+# kubernetes secret env vars
+env-vars.yaml
+
 libem/tune/catalog.db
 
 # Byte-compiled / optimized / DLL files

@@ -1,13 +1,13 @@
 .lb-box {
-    padding: 2em;
     text-align: left;
-    width: 40rem;
-    max-width: 70vw;
-    height: 20rem;
+    width: clamp(15rem, 70vw, 50rem);
+    height: clamp(20rem, 50vh, 50rem);
     background-color: #d9d9d9;
     color: #000;
     border-radius: 10px;
     font-size: smaller;
+    overflow: hidden;
+    padding: 1rem 2rem 2rem 2rem;
 }
 
 .lb-entries {
@@ -64,21 +64,7 @@
     align-items: center;
 }
 
-.fade-in {
-    opacity: 1;
-	animation-name: fadeIn;
-	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration: 750ms;
-}
-
-@keyframes fadeIn {
-	0% {
-		opacity: 0;
-        transform: translate(-50%, -80%);
-	}
-	50% {
-		opacity: 1;
-        transform: translate(-50%, -50%);
-	}
+.hide {
+    opacity: 0;
+    transition-duration: 200ms;
 }

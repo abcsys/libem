@@ -22,23 +22,32 @@ The API is available to try out at https://arena.libem.org/api/.
 
 To benchmark Libem using Libem Arena:
 
+First login at https://arena.libem.org
+and copy the access token in the profile dropdown
+
 ```
 import requests
 import libem
 
-# First call /init to get a session UUID, 
-# make sure to pass in token=model
-response = requests.get('arena.libem.org/api/init?token=model').json()
-uuid, benchmarks = response['uuid'], response['benchmarks']
+access_token = '' # Paste access token here
 
-# Then call /match with the UUID to get the pairs from the first benchmark
-response = requests.get(f'arena.libem.org/api/match?
-                          uuid={uuid}&
-                          benchmark={benchmarks[0]}').json()
+# Call /info to get the available benchmarks
+response = requests.get('https://arena.libem.org/api/info').json()
+benchmarks = response['benchmarks']
+
+# Get the first benchmark name
+benchmark = list(response1['benchmarks'].keys())[0]
+
+# Then call /match with the benchmark name
+response = requests.get(
+                f'https://arena.libem.org/api/match?benchmark={benchmark}',
+                headers={
+                    'Authorization': f'Bearer {access_token}'
+                }).json()
 pairs = response['pairs']
 
-# Separate the pairs into 'left' and 'right' 
-# then call Libem to get the answers
+# Separate the pairs into 'left' and 'right',
+# then use Libem to get the answers
 left, right = [], []
 for pair in pairs:
     left.append(pair['left'])
@@ -46,29 +55,38 @@ for pair in pairs:
 answers = libem.match(left, right)
 
 # Call /submit with the list of answers to get the score and time
-response = requests.post(f'arena.libem.org/api/submit', 
-                         json={'uuid': uuid, 
-                               'answers': answers, 
-                               'display_name': 'Test'}).json()
+response = requests.post(
+                f'arena.libem.org/api/submit', 
+                headers={
+                    'Authorization': f'Bearer {access_token}'
+                },
+                json={'answers': answers, 
+                      'display_name': 'Demo'}).json()
 score, time = response['score'], response['time']
 ```
 
 ## Local setup
 
-#### Docker
+#### Kubernetes
 
-To host both the frontend and backend through docker:
+To host Arena through kubernetes:
 
 ```
-libem/arena> make docker-up
+libem/arena> make up
 ```
 
-The frontend will be hosted at http://localhost:5000/ and the backend will be at http://localhost:8000/.
+The frontend will be hosted at http://localhost and the API will be at http://localhost/api.
 
 To stop hosting:
 
 ```
-libem/arena> make docker-down
+libem/arena> make down
+```
+
+To remove PVC storage:
+
+```
+libem/arena> make delete
 ```
 
 ## Screenshots

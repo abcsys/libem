@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import EndScreen from "../components/EndScreen"
 import Timer from "../components/Timer"
-import { baseURL, init } from "../Common"
+import { fetchURL, init } from "../Common"
 import "./Match.css"
 import { useNavigate, useParams } from "react-router-dom"
 import ErrorPopup from "../components/ErrorPopup"
@@ -130,6 +130,7 @@ const Match = () => {
 
     const [timer, setTimer] = useState(false)
     const timeElapsed = useRef(0)
+    const totalTime = useRef(0)
     const startTime = useRef(0)
     const navigate = useNavigate()
 
@@ -152,11 +153,12 @@ const Match = () => {
 
     const fetchNext = () => {
         if (index >= 0) {
-            fetch(`${baseURL}/matchone?uuid=${uuid.current}&benchmark=${dataset}&`)
+            fetchURL(`/matchone?benchmark=${dataset}`)
             .then(r => {
-                if (r.status === 204) {
+                if (r.status === 204)
                     throw Error("No content")
-                }
+                else if (r.status === 401)
+                    throw Error("Not authorized")
                 return r.json()
             })
             .then(r => {
@@ -171,6 +173,8 @@ const Match = () => {
             .catch(r => {
                 if (r.message === "No content")
                     setNoContent(true)
+                else if (r.message === "Not authorized")
+                    returnHome()
                 else
                     setError(true)
             })
@@ -183,19 +187,21 @@ const Match = () => {
     }
 
     const match = (answer) => {
-        fetch(`${baseURL}/submitone`, {
-            method: "POST",
-            headers: {
+        const timeTaken = Date.now() - startTime.current
+        totalTime.current += timeTaken
+        timeElapsed.current = totalTime.current
+
+        fetchURL('/submitone',
+            "POST",
+            {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                uuid: uuid.current,
+            JSON.stringify({
                 benchmark: dataset,
                 answer: answer,
-                time: (Date.now() - startTime.current) / 1000
-            })
-        })
+                time: timeTaken / 1000
+            }))
         .then(r => r.json())
         .then(r => {
             userAns.current.push(answer)
@@ -211,7 +217,7 @@ const Match = () => {
     useEffect(() => {
         init()
         .then(r => {
-            uuid.current = r['uuid']
+            uuid.current = r['id']
             setnumPairs(r['benchmarks'][dataset]['size'])
             fetchNext()
         })
@@ -226,7 +232,7 @@ const Match = () => {
 
             {endScreen
                 ? <EndScreen uuid={uuid.current} dataset={dataset} userAns={userAns.current} libemAns={libemAns.current} 
-                             userTime={timeElapsed.current / 1000} libemTime={libemTime.current} 
+                             userTime={totalTime.current / 1000} libemTime={libemTime.current} 
                              labels={labels.current} returnHome={returnHome} openLB={openLB} />
                 : <div className="selection">
                     {pair === null 

@@ -13,14 +13,12 @@ else
 	docker push $(serve)
 endif
 
-.PHONY: docker-up docker-down
-docker-up:
-	docker compose up --build -d
-docker-down:
-	docker compose down
-
-.PHONY: kuber-up kuber-down
-kuber-up:
+.PHONY: up down delete
+up:
+	kubectl apply -f mysql
 	kubectl apply -f arena.yaml
-kuber-down:
+down:
+	kubectl delete -f arena.yaml
+delete:
+	kubectl delete -f mysql
 	kubectl delete -f arena.yaml

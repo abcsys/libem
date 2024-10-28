@@ -1,46 +1,62 @@
 import React, { useState, useEffect } from "react"
-import "./MainMenu.css"
 import { useNavigate } from "react-router-dom"
 import ErrorPopup from "../components/ErrorPopup"
-import { init } from "../Common"
+import { deleteTokens, init } from "../Common"
 import libby from "../../public/libby.png"
-
-const MenuChild = ({ name, metadata, selected }) => {
-    const className = name === "Challenging" ? "dataset-name red-text" : "dataset-name"
-    return (
-        <>
-            <div className={className}>{name}</div>
-            {selected ? <div className="description">{metadata["description"]}</div>
-            : <div></div>
-            }
-        </>
-        
-    )
-}
+import MenuOptions from "../components/MenuOptions"
+import Profile from "../components/Profile"
 
 const MainMenu = () => {
     const [error, setError] = useState(false)
-    const [datasets, setDatasets] = useState([])
+    const [loggedin, setLoggedin] = useState(false)
+    const [user, setUser] = useState({})
+    const [datasets, setDatasets] = useState()
     const [selected, setSelected] = useState(null)
     const navigate = useNavigate()
 
+    const login = () => {
+        window.location.href = `${process.env.BACKEND_URL}/login`
+    }
+
+    const logout = () => {
+        deleteTokens()
+        navigate("/")
+        location.reload()
+    }
+
     const openLB = () => {
-        navigate(`/leaderboard/${selected}`)
+        if (selected)
+            navigate(`/leaderboard/${selected}`)
     }
 
     const openMatch = () => {
-        navigate(`/match/${selected}`)
+        if (selected)
+            navigate(`/match/${selected}`)
     }
 
     useEffect(() => {
         init()
-        .then(r => setDatasets(r['benchmarks']))
+        .then(r => {
+            if (r['auth']) {
+                setLoggedin(true)
+                setUser(r)
+                setDatasets(r['benchmarks'])
+            }
+            else
+                setSelected("0")
+        })
         .catch(r => setError(true))
     }, [])
     
     return (
         <>
-            <ErrorPopup show={error} message={"Network error encountered."} /> 
+            <ErrorPopup show={error} message={"Network error encountered."} />
+
+            {loggedin
+                ? <Profile name={user['name']} picture={user['avatar']} 
+                           token={user['token']} logout={logout} />
+                : <></>
+            }
 
             <div className="vstack">
                 <div className="pad"></div>
@@ -49,19 +65,22 @@ const MainMenu = () => {
                     <div className="logo" style={{color: "#fff"}}>Libem Arena</div>
                 </div>
                 <div className="textbox fade-in-left">
-                    Libem is an open-source compound AI toolchain for fast and accurate entity matching, powered by LLMs.
+                    A benchmarking tool for humans and models on entity matching.
                 </div>
-                <div className="textbox fade-in-left">
-                    Do you think you can outperform Libem? <br></br> Select a dataset, then click start to find out.
-                </div>
-                <div className="options fade-in-right">
-                    {datasets !== null 
-                        ? Object.keys(datasets).map(key => 
-                            <div key={key} className={selected === key ? "dataset-box selected" : "dataset-box"} onClick={() => setSelected(key)}>
-                                <MenuChild name={key} metadata={datasets[key]} selected={selected === key} />
-                            </div>)
-                        : <></>}
-                </div>
+                {loggedin 
+                    ? <>
+                        <div className="textbox fade-in-left" key="human-text">
+                            Do you think you can outperform Libem? <br></br> Select a dataset, then click start to find out.
+                        </div>
+                        {datasets
+                            ? <MenuOptions className="fade-in-right" key="datasets" options={datasets} 
+                                            selected={selected} setSelected={setSelected} />
+                            : <></>}
+                    </>
+                    : <div className="textbox fade-in-right">
+                        You are not logged in.
+                    </div>}
+                
                 <div className="adaptive-stack" style={{minHeight: "8em"}}>
                     <div className={selected !== null 
                                         ? "button rect green fade-in-bottom" 
@@ -69,12 +88,16 @@ const MainMenu = () => {
                             onClick={openLB}>
                         Leaderboard
                     </div>
-                    <div className={selected !== null 
-                                        ? "button rect fade-in-bottom" 
-                                        : "button rect fade-in-bottom inactive"} 
-                            onClick={openMatch}>
-                        START
-                    </div>
+                    {loggedin
+                        ? <div className={selected !== null 
+                                            ? "button rect fade-in-bottom" 
+                                            : "button rect fade-in-bottom inactive"} 
+                                onClick={openMatch}>
+                            START
+                        </div>
+                        : <div className="button rect fade-in-bottom" style={{width: '300px'}}
+                         onClick={login}>Login with Google
+                        </div>}
                 </div>
                 
                 <div className="pad"></div>
