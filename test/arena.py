@@ -56,7 +56,7 @@ assert response1['benchmarks'] == response2['benchmarks'], "Nondeterministic ret
 
 # call /submit without /match, expect fail
 response = fetchURL('/submit', method='POST',
-                    json={'answers': [1 for _ in range(benchmark_size)], 
+                    json={'answers': [0 for _ in range(benchmark_size)], 
                           'display_name': 'Test'})
 assert response.status_code == 403, "Call /submit without /match"
 
@@ -70,11 +70,11 @@ assert len(dataset) == benchmark_size
 response = fetchURL(f'/match?&benchmark={benchmark}')
 assert response.status_code == 403, "Multiple calls allowed for /match"
 
-time.sleep(3)
+time.sleep(3.5)
 
 # call /submit, expect normal return
 response = fetchURL('/submit', method='POST',
-                    json={'answers': [1 for _ in range(benchmark_size)], 
+                    json={'answers': [0 for _ in range(benchmark_size)], 
                           'display_name': 'Test'})
 assert response.ok, f"Server error for /submit: {response.content}"
 submit = response.json()
@@ -116,6 +116,73 @@ response = fetchURL('/submit', method='POST',
                           'display_name': 'Test'})
 assert response.status_code == 400, "Call /submit with wrong answers length"
 
+# call /match and /submit with same name, expect normal return
+response = fetchURL(f'/match?benchmark={benchmark}')
+assert response.ok, f"Server error for /match: {response.content}"
+dataset = response.json()['pairs']
+assert len(dataset) == benchmark_size, "Wrong returned length for /match"
+
+time.sleep(1.5)
+
+response = fetchURL('/submit', method='POST',
+                    json={'answers': [1 for _ in range(benchmark_size)], 
+                          'display_name': 'Test'})
+assert response.ok, f"Server error for /submit: {response.content}"
+submit = response.json()
+assert 'score' in submit, "Wrong return for /submit"
+assert 'time' in submit and 1 <= submit['time'] <= 3, f"Wrong time: {submit['time']}"
+
+avg_time = round(submit['time'] / benchmark_size, 3)
+
+# call /leaderboard, expect one entry
+response = fetchURL(f'/leaderboard?benchmark={benchmark}')
+assert response.ok, f"Server error for /leaderboard: {response.content}"
+leaderboard = response.json()
+seen = 0
+for l in leaderboard:
+    if l['id'] == user_id:
+        seen += 1
+        if seen == 1:
+            assert l['pairs'] == benchmark_size, f"Wrong leaderboard pairs: {l['pairs']}"
+            assert l['name'] == 'Test', "Wrong leaderboard name"
+            assert avg_time == round(l['avg_time'], 3), "Wrong leaderboard time"
+assert seen >= 1, "ID not in leaderboard"
+assert seen == 1, "Multiple entries in leaderboard"
+
+# call /match and /submit with different name, expect normal return
+response = fetchURL(f'/match?benchmark={benchmark}')
+assert response.ok, f"Server error for /match: {response.content}"
+dataset = response.json()['pairs']
+assert len(dataset) == benchmark_size, "Wrong returned length for /match"
+
+time.sleep(2.5)
+
+response = fetchURL('/submit', method='POST',
+                    json={'answers': [1 for _ in range(benchmark_size)], 
+                          'display_name': 'Test1'})
+assert response.ok, f"Server error for /submit: {response.content}"
+submit = response.json()
+assert 'score' in submit, "Wrong return for /submit"
+assert 'time' in submit and 1 <= submit['time'] <= 3, f"Wrong time: {submit['time']}"
+
+avg_time1 = round(submit['time'] / benchmark_size, 3)
+
+# call /leaderboard, expect two entries
+response = fetchURL(f'/leaderboard?benchmark={benchmark}')
+assert response.ok, f"Server error for /leaderboard: {response.content}"
+leaderboard = response.json()
+seen = 0
+for l in leaderboard:
+    if l['id'] == user_id:
+        seen += 1
+        if l['name'] == 'Test1':
+            assert l['pairs'] == benchmark_size, f"Wrong leaderboard pairs: {l['pairs']}"
+            assert avg_time1 == round(l['avg_time'], 3), "Wrong leaderboard time"
+        elif l['name'] == 'Test':
+            assert avg_time == round(l['avg_time'], 3), "Wrong leaderboard time"
+assert seen > 1, "ID not in leaderboard"
+assert seen == 2, "Too many entries in leaderboard"
+
 benchmark = benchmark1
 
 # call /matchone, expect normal return
@@ -149,7 +216,7 @@ for l in leaderboard:
         seen += 1
         if seen == 1:
             assert l['pairs'] == 1, f"Wrong leaderboard pairs: {l['pairs']}"
-            # assert round(l['avg_time'], 2) == 1.01, f"Wrong leaderboard time: {l['avg_time']}"
+            assert round(l['avg_time'], 2) == 1.01, f"Wrong leaderboard time: {l['avg_time']}"
 assert seen >= 1, "ID not in leaderboard"
 assert seen == 1, "Extra entries in leaderboard"
 
