@@ -110,6 +110,17 @@ def connect_sql():
                                    database='arenadb')
 
 con = connect_sql()
+
+def get_cursor(dictionary=None):
+    global con
+    
+    # reconnect to db if timeout reached (8hr)
+    try:
+        return con.cursor(dictionary=dictionary)
+    except mysql.connector.errors.OperationalError as e:
+        con = connect_sql()
+        return con.cursor(dictionary=dictionary)
+
 cur = con.cursor(dictionary=True)
 cur.execute("CREATE TABLE IF NOT EXISTS users("
             "id varchar(30) NOT null PRIMARY KEY, "
@@ -197,7 +208,7 @@ def register_user(user: dict):
     sub = user['sub']
     
     # add user to db
-    cur = con.cursor()
+    cur = get_cursor()
     cur.execute("SELECT * FROM users WHERE id = %s", (sub,))
     existing = cur.fetchall()
     if len(existing) == 0:
@@ -277,8 +288,7 @@ def load_user(user_id: str):
     sub = user_id[:-1]
     user_type = user_id[-1]
     
-    con = connect_sql()
-    cur = con.cursor(dictionary=True)
+    cur = get_cursor(dictionary=True)
     cur.execute("SELECT * FROM users WHERE id = %s", (sub,))
     user = cur.fetchall()
     cur.close()
@@ -304,7 +314,7 @@ def auth_exception_handler(request: Request, exc: NotAuthenticatedException):
 async def login(request: Request):
     if os.getenv('OFFLINE_MODE') == 'true':
         # generate 'fake' user info
-        cur = con.cursor(dictionary=True)
+        cur = get_cursor(dictionary=True)
         cur.execute("SELECT COUNT(*) AS count FROM users")
         user_count = cur.fetchall()[0]
         con.commit()
@@ -375,7 +385,7 @@ async def match(benchmark: str, user=Depends(manager)):
     pairs = [{'left': bm['left'], 'right': bm['right']} for bm in benchmarks[benchmark]['benchmark']]
     
     # update user info
-    cur = con.cursor()
+    cur = get_cursor()
     cur.execute("UPDATE users SET matching = %s, benchmark = %s, timestamp = %s "
                 "WHERE id = %s", 
                 (1, benchmark, time.time(), user['id']))
@@ -404,7 +414,7 @@ async def submit(data: Submit, user=Depends(manager)):
                             detail="Request a new benchmark with /match first.")
     
     # set matching to false
-    cur = con.cursor()
+    cur = get_cursor()
     cur.execute("UPDATE users SET matching = %s "
                 "WHERE id = %s", 
                 (0, user['id']))
@@ -435,11 +445,11 @@ async def submit(data: Submit, user=Depends(manager)):
     time_taken = submit_time - user['timestamp']
     avg_time = time_taken / len(data.answers)
     
-    cur = con.cursor()
+    cur = get_cursor(dictionary=True)
     
     # get current leaderboard entry
     cur.execute("SELECT * FROM leaderboard "
-                "WHERE benchmark = %s AND id = %s AND type = %s AND name = %s",
+                "WHERE benchmark = %s AND id = %s AND type = %s AND name <=> %s",
                 (benchmark, user['id'], user['type'], data.display_name))
     lb_entry = cur.fetchall()
     
@@ -449,10 +459,11 @@ async def submit(data: Submit, user=Depends(manager)):
                     "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
                     (user['id'], user['type'], data.display_name, benchmark, 
                      len(data.answers), tp, fp, tn, fn, f1, avg_time))
+    # replace entry only if better score
     elif lb_entry[0]['score'] < f1:
         cur.execute("UPDATE leaderboard "
                     "SET pairs = %s, tp = %s, fp = %s, tn = %s, fn = %s, score = %s, avg_time = %s "
-                    "WHERE id = %s AND benchmark = %s AND name = %s", 
+                    "WHERE id = %s AND benchmark = %s AND name <=> %s", 
                     (len(data.answers), tp, fp, tn, fn, f1, avg_time, user['id'], benchmark, data.display_name))
         
     con.commit()
@@ -471,7 +482,7 @@ async def match_one(benchmark: str, user=Depends(manager)):
     validate(benchmark)
     
     # get current number of pairs matched from leaderboard
-    cur = con.cursor(dictionary=True)
+    cur = get_cursor(dictionary=True)
     cur.execute("SELECT * FROM leaderboard "
                 "WHERE benchmark = %s AND id = %s AND type = %s",
                 (benchmark, user['id'], user['type']))
@@ -496,7 +507,7 @@ async def match_one(benchmark: str, user=Depends(manager)):
     timestamp = time.time()
     
     # update user info
-    cur = con.cursor()
+    cur = get_cursor()
     cur.execute("UPDATE users SET matching = %s, benchmark = %s, timestamp = %s "
                 "WHERE id = %s", 
                 (1, benchmark, timestamp, user['id']))
@@ -520,12 +531,11 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
                             detail="Request a new pair with /matchone first.")
     
     # get current leaderboard entry
-    cur = con.cursor(dictionary=True)
+    cur = get_cursor(dictionary=True)
     cur.execute("SELECT * FROM leaderboard "
-                "WHERE benchmark = %s AND id = %s AND type = %s",
-                (data.benchmark, user['id'], user['type']))
+                "WHERE benchmark = %s AND id = %s AND type = %s AND name <=> %s",
+                (data.benchmark, user['id'], user['type'], data.display_name))
     lb_entry = cur.fetchall()
-    cur.close()
     
     # get the last matched pair
     if len(lb_entry) == 0:
@@ -539,7 +549,6 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
     pair = benchmarks[data.benchmark]['benchmark'][index]
     
     # add submission to matches db and update user info
-    cur = con.cursor()
     cur.execute("INSERT INTO matches VALUES(%s, %s, %s, %s, %s, %s)", (
         user['id'], user['type'], json.dumps(pair['left']), json.dumps(pair['right']), 
         data.answer, pair['label']))
@@ -576,8 +585,8 @@ async def submit_one(data: SubmitOne, user=Depends(manager)):
         avg_time = (lb_entry['avg_time'] * pairs + time_taken) / (pairs + 1)
         cur.execute("UPDATE leaderboard "
                     "SET pairs = %s, tp = %s, fp = %s, tn = %s, fn = %s, score = %s, avg_time = %s "
-                    "WHERE id = %s AND benchmark = %s", 
-                    (pairs + 1, tp, fp, tn, fn, f1, avg_time, user['id'], data.benchmark))
+                    "WHERE id = %s AND benchmark = %s AND name <=> %s", 
+                    (pairs + 1, tp, fp, tn, fn, f1, avg_time, user['id'], data.benchmark, data.display_name))
     
     con.commit()
     cur.close()
@@ -595,7 +604,7 @@ async def get_leaderboard(benchmark: str, user=Depends(manager.optional)):
     ''' Get the leaderboard for a benchmark. '''
     
     validate(benchmark)
-    cur = con.cursor(dictionary=True)
+    cur = get_cursor(dictionary=True)
     
     cur.execute("SELECT * FROM leaderboard WHERE benchmark = %s AND type = %s ORDER BY score DESC",
                            (benchmark, 'model'))
@@ -629,7 +638,7 @@ async def get_leaderboard(benchmark: str, user=Depends(manager.optional)):
 async def delete_user(user=Depends(manager)):
     ''' Delete the current user from the database. '''
     
-    cur = con.cursor()
+    cur = get_cursor()
     for table in ['users', 'matches', 'leaderboard']:
         cur.execute(f"DELETE FROM {table} WHERE id = %s",
                     (user['id'],))
@@ -644,7 +653,7 @@ async def run_sql(data: RunSql, user=Depends(manager)):
         raise HTTPException(status_code=422, 
                             detail='Password is not correct. Your attempt has been logged.')
     
-    cur = con.cursor()
+    cur = get_cursor()
     try:
         cur.execute(data.query)
         output = cur.fetchall()
