@@ -295,32 +295,50 @@ def parse_output(output: str) -> dict:
     """
     # remove empty lines and process lines in reverse order
     output = [s for s in output.splitlines() if s][::-1]
-
-    answer, confidence, explanation = "no", None, None
-
-    if parameter.confidence():
-        for i, line in enumerate(output):
-            line = line.lower()
-            nums = re.findall(r"\d+\.\d+|\d+", line)
-            if nums:
-                confidence = float(''.join(nums))
-                output = output[i + 1:]
-                break
     
-    for i, line in enumerate(output):
-        line = line.lower()
-        nums = re.findall(r"\d+\.\d+|\d+", line)
-        if prompt.output.value == Index("likelihood") and nums:
-            answer = float(answer)
-            output = output[i + 1:]
-            break
-        elif 'yes' in line or 'no' in line:
-            answer = "yes" if "yes" in line else "no"
-            output = output[i + 1:]
-            break
+    index = 0
+    answer, confidence, explanation = None, None, None
+    
+    # parse for numeric values (confidence, likelihood)
+    # with priority given to likelihood if 
+    # both are enabled but only 1 value is found
+    numeric_vals = []
+    num_numeric_vals = parameter.confidence() + (prompt.output.value == Index("likelihood"))
 
-    if parameter.cot():
-        explanation = "\n".join(output[::-1])
+    while index < len(output):
+        if len(numeric_vals) == num_numeric_vals:
+            break
+        
+        nums = re.findall(r"\d+\.\d+|\d+", output[index])
+        if nums:
+            # append new values to front of the list so likelihood
+            # always comes before confidence even if both are from the same line
+            numeric_vals = [float(n) for n in nums] + numeric_vals
+        
+        index += 1
+    
+    # parse answer
+    if prompt.output.value == Index("likelihood"):
+        if len(numeric_vals) > 0:
+            answer = float(numeric_vals.pop(0))
+        else:
+            answer = 0.0
+    else:
+        # if there are no more lines left, look at previous line
+        if index == len(output):
+            index -= 1
+        line = output[index].lower()
+        index += 1
+        
+        answer = "yes" if "yes" in line else "no"
+    
+    # parse confidence
+    if parameter.confidence() and len(numeric_vals) > 0:
+        confidence = float(numeric_vals[-1])
+    
+    # parse explanation
+    if parameter.cot() and index < len(output):
+        explanation = "\n".join(output[index::-1])
 
     return {
         "answer": answer,
