@@ -9,6 +9,6 @@ Explanation = Prompt(
 )
 
 Confidence = Prompt(
-    default="Give a confidence score from 0.0 to 1.0, with 0.0 being a guess "
-            "and 1.0 being confident, give the score only, do not justify.",
+    default="At the end, give a confidence score from 0.0 to 1.0, "
+            "do not justify.",
 )
