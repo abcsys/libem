@@ -1,6 +1,7 @@
 from libem.optimize.cost import cache
 
 model_info = None
+model_choice = None
 null_model_info = {
     'input_cost_per_token': 0,
     'output_cost_per_token': 0
@@ -18,8 +19,9 @@ def get_input_cost(model, num_tokens):
     if num_tokens is None or num_tokens <= 0:
         return 0
 
-    global model_info
-    if model_info is None:
+    global model_info, model_choice
+    if model_info is None or model_choice != model:
+        model_choice = model
         model_info = get_model_info(model)
     return model_info['input_cost_per_token'] * num_tokens
 
@@ -28,8 +30,9 @@ def get_output_cost(model, num_tokens):
     if num_tokens is None or num_tokens <= 0:
         return 0
 
-    global model_info
-    if model_info is None:
+    global model_info, model_choice
+    if model_info is None or model_choice != model:
+        model_choice = model
         model_info = get_model_info(model)
     return model_info['output_cost_per_token'] * num_tokens
 
