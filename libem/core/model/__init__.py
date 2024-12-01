@@ -4,6 +4,9 @@ from libem.core.model import (
 from libem.core import exec
 import libem
 
+def structured_schema(*args, **kwargs) -> dict:
+    return openai.structured_schema(*args, **kwargs)
+
 def call(*args, **kwargs) -> dict:
     return exec.run_async_task(
         async_call(*args, **kwargs)

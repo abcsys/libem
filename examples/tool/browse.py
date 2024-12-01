@@ -8,6 +8,7 @@ def positive():
     print("No browse:")
     libem.calibrate({
         "libem.match.parameter.tools": [],
+        "libem.match.parameter.model": "gpt-4o"
     })
 
     is_match = libem.match(e1, e2)

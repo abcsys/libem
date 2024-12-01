@@ -1,11 +1,8 @@
 import libem
 
-from libem.core.struct.parameter import Index
-
-
 def main():
     libem.calibrate({
-        "libem.match.prompt.output": Index("likelihood")
+        "libem.match.parameter.likelihood": True
     })
 
     left, right = "apple inc.", "Apple company"
