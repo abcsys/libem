@@ -26,9 +26,10 @@ def profile(dataset: Iterable, num_samples=-1, detailed=False):
                 break
 
         start = time.time()
+        matches = libem.match(left, right)
         preds = [
             1 if is_match["answer"].lower() == "yes" else 0
-            for is_match in libem.match(left, right)
+            for is_match in matches
         ]
         latency = time.time() - start
 
@@ -36,6 +37,7 @@ def profile(dataset: Iterable, num_samples=-1, detailed=False):
         p = eval.precision(truths, preds)
         r = eval.recall(truths, preds)
         tp, fp, tn, fn = eval.confusion_matrix(truths, preds)
+        confidence = sum([is_match['confidence'] for is_match in matches]) / len(matches)
 
     stats = t.stats()
     stats["model"]["cost"] = cost.get_cost(
@@ -68,6 +70,7 @@ def profile(dataset: Iterable, num_samples=-1, detailed=False):
             "fn": fn,
             "tp": tp,
             "tn": tn,
+            "confidence" : confidence,
             "num_model_calls": stats["model"]["num_model_calls"]["sum"],
             "num_input_tokens": stats["model"]["num_input_tokens"]["sum"],
             "num_output_tokens": stats["model"]["num_output_tokens"]["sum"],
