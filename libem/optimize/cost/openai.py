@@ -7,7 +7,6 @@ null_model_info = {
     'output_cost_per_token': 0
 }
 
-
 def get_model_info(model=None):
     if model is None:
         return cache.load_openai()

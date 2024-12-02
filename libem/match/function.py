@@ -127,9 +127,9 @@ async def once(left: str, right: str) -> dict:
         prompt.role(),
         prompt.rules(),
         prompt.experiences(),
-        struct.CoT() if parameter.cot() else "",
-        struct.Confidence() if parameter.confidence() else "",
+        prompt.CoT() if parameter.cot() else "",
         prompt.output(),
+        prompt.Confidence() if parameter.confidence() else "",
     )
 
     match_prompt = Prompt.join(
@@ -289,20 +289,14 @@ def parse_output(output: str) -> dict:
     """Handle the model output of format:
     ```
     <explanation> (e.g., "Name Comparison: ...")
-    <confidence> (e.g., "Confidence Score: 5" or "5")
     <answer> (e.g., yes)
+    <confidence> (e.g., "Confidence Score: 0.9" or "0.9")
     ```
     """
     # remove empty lines and process lines in reverse order
     output = [s for s in output.splitlines() if s][::-1]
 
-    answer = output.pop(0).lower()
-    if prompt.output.value == Index("likelihood"):
-        answer = float(answer)
-    else:
-        answer = "yes" if "yes" in answer else "no"
-
-    confidence, explanation = None, None
+    answer, confidence, explanation = "no", None, None
 
     if parameter.confidence():
         for i, line in enumerate(output):
@@ -312,6 +306,18 @@ def parse_output(output: str) -> dict:
                 confidence = float(''.join(nums))
                 output = output[i + 1:]
                 break
+    
+    for i, line in enumerate(output):
+        line = line.lower()
+        nums = re.findall(r"\d+\.\d+|\d+", line)
+        if prompt.output.value == Index("likelihood") and nums:
+            answer = float(answer)
+            output = output[i + 1:]
+            break
+        elif 'yes' in line or 'no' in line:
+            answer = "yes" if "yes" in line else "no"
+            output = output[i + 1:]
+            break
 
     if parameter.cot():
         explanation = "\n".join(output[::-1])
