@@ -7,7 +7,6 @@ import inspect
 from openai import (
     AsyncOpenAI, APITimeoutError
 )
-from pydantic import BaseModel
 
 import libem
 from libem.core import exec
@@ -39,7 +38,7 @@ def get_client():
     return _client
 
 
-def structured_schema(name, **fields) -> dict:
+def output_schema(name, **fields) -> dict:
     fields_schema = create_json_schema(
         name=name,
         extra_fields={"additionalProperties": False},

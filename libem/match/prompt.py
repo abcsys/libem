@@ -1,12 +1,8 @@
-from typing import Dict, Optional
-from pydantic import BaseModel
-from pydantic.fields import FieldInfo
-
-from libem.core.struct import Prompt, Shots, Index
+from libem.core.struct import Prompt, Shots
 from libem.core.struct.prompt import (
     Shot, Rules, Experiences
 )
-from libem.match.parameter import model, output_type, likelihood
+from libem.match.parameter import output_format, likelihood, tools
 
 """System prompts"""
 role = Prompt(
@@ -28,7 +24,7 @@ experiences = Prompt(
 # build the output instruction prompt
 def build_prompt():
     output_string = []
-    if output_type() != "structured":
+    if output_format() != "structured":
         output_string.append("At the end,")
     if likelihood():
         output_string.append("Give your answer strictly in the " \
@@ -38,8 +34,10 @@ def build_prompt():
     else:
         output_string.append("Give your answer in the form of a "
                             "single 'yes' or 'no'.")
-    if output_type() == "strict":
+    if output_format() == "strict":
         output_string.append("Nothing else.")
+    if tools():
+        output_string.append("If you are unsure, consider using a tool.")
     
     return ' '.join(output_string)
     

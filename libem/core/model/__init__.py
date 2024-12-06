@@ -2,10 +2,9 @@ from libem.core.model import (
     openai, llama, claude
 )
 from libem.core import exec
-import libem
 
-def structured_schema(*args, **kwargs) -> dict:
-    return openai.structured_schema(*args, **kwargs)
+def output_schema(*args, **kwargs) -> dict:
+    return openai.output_schema(*args, **kwargs)
 
 def call(*args, **kwargs) -> dict:
     return exec.run_async_task(

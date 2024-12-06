@@ -1,4 +1,3 @@
-import json
 import re
 import time
 import hashlib
@@ -168,7 +167,7 @@ async def once(left: str, right: str) -> dict:
         if parameter.confidence():
             output_structure['confidence'] = float
             
-        output_schema = model.structured_schema("Output", **output_structure)
+        output_schema = model.output_schema("Output", **output_structure)
 
     response = await model.async_call(
         prompt=_prompt,
@@ -188,6 +187,10 @@ async def once(left: str, right: str) -> dict:
         output = Output.model_validate_json(response['output']).model_dump()
     else:
         output = parse_output(response['output'])
+    
+    if parameter.likelihood():
+        output['likelihood'] = output['answer']
+        output['answer'] = 'no' if output['likelihood'] < 0.5 else 'yes'
 
     libem.trace.add({
         "match": {
