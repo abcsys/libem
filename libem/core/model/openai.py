@@ -10,6 +10,7 @@ from openai import (
 
 import libem
 from libem.core import exec
+from libem.core.util import create_json_schema
 
 os.environ.setdefault(
     "OPENAI_API_KEY",
@@ -37,6 +38,22 @@ def get_client():
     return _client
 
 
+def output_schema(name, **fields) -> dict:
+    fields_schema = create_json_schema(
+        name=name,
+        extra_fields={"additionalProperties": False},
+        **fields,
+    )
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": name,
+            "schema": fields_schema,
+            "strict": True,
+        },
+    }
+
+
 def call(*args, **kwargs) -> dict:
     return exec.run_async_task(
         async_call(*args, **kwargs)
@@ -48,6 +65,7 @@ async def async_call(
         prompt: str | list | dict,
         tools: list[str] = None,
         context: list = None,
+        output_schema: dict = None,
         model: str = "gpt-4o",
         temperature: float = 0.0,
         seed: int = None,
@@ -79,24 +97,16 @@ async def async_call(
     tool_usages, tool_outputs = [], []
 
     """Start call"""
-
-    if not tools:
-        try:
-            response = await client.chat.completions.create(
-                messages=messages,
-                model=model,
-                temperature=temperature,
-                seed=seed,
-            )
-        except APITimeoutError as e:  # catch timeout error
-            raise libem.ModelTimedoutException(e)
-
-        response_message = response.choices[0].message
-        num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - \
-                            response.usage.completion_tokens
-        num_output_tokens += response.usage.completion_tokens
-    else:
+    
+    model_params = {
+        "messages": messages,
+        "model": model,
+        "temperature": temperature,
+        "seed": seed,
+    }
+    if output_schema:
+        model_params["response_format"] = output_schema
+    if tools:
         # Load the tool modules
         tools = [
             importlib.import_module(tool)
@@ -113,91 +123,86 @@ async def async_call(
 
         # Get the schema from the tools
         tools = [tool.schema for tool in tools]
+        
+        model_params["tools"] = tools
+        model_params["tool_choice"] = "auto"
 
-        # Call model
-        try:
-            response = await client.chat.completions.create(
-                messages=messages,
-                tools=tools,
-                tool_choice="auto",
-                model=model,
-                temperature=temperature,
-                seed=seed,
+    # Call model
+    try:
+        response = await client.chat.completions.create(
+            **model_params
+        )
+    except APITimeoutError as e:  # catch timeout error
+        raise libem.ModelTimedoutException(e)
+
+    response_message = response.choices[0].message
+    tool_calls = response_message.tool_calls
+
+    num_model_calls += 1
+    num_input_tokens += response.usage.total_tokens - \
+                        response.usage.completion_tokens
+    num_output_tokens += response.usage.completion_tokens
+
+    # Call tools
+    while tool_calls:
+        messages.append(response_message)
+
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
+            function_args = json.loads(tool_call.function.arguments)
+
+            libem.debug(f"[{function_name}] {function_args}")
+
+            if inspect.iscoroutinefunction(function_to_call):
+                function_response = await function_to_call(**function_args)
+            else:
+                function_response = function_to_call(**function_args)
+
+            messages.append(
+                {
+                    "role": "tool",
+                    "name": function_name,
+                    "content": str(function_response),
+                    "tool_call_id": tool_call.id,
+                }
             )
-        except APITimeoutError as e:  # catch timeout error
-            raise libem.ModelTimedoutException(e)
 
-        response_message = response.choices[0].message
-        tool_calls = response_message.tool_calls
+            tool_usages.append({
+                "id": tool_call.id,
+                'name': function_name,
+                "arguments": function_args,
+                "response": function_response,
+            })
 
-        num_model_calls += 1
-        num_input_tokens += response.usage.total_tokens - \
-                            response.usage.completion_tokens
-        num_output_tokens += response.usage.completion_tokens
+            tool_outputs.append({
+                function_name: function_response,
+            })
 
-        # Call tools
-        while tool_calls:
-            messages.append(response_message)
+        tool_calls = None
 
-            for tool_call in tool_calls:
-                function_name = tool_call.function.name
-                function_to_call = available_functions[function_name]
-                function_args = json.loads(tool_call.function.arguments)
-
-                libem.debug(f"[{function_name}] {function_args}")
-
-                if inspect.iscoroutinefunction(function_to_call):
-                    function_response = await function_to_call(**function_args)
-                else:
-                    function_response = function_to_call(**function_args)
-
-                messages.append(
-                    {
-                        "role": "tool",
-                        "name": function_name,
-                        "content": str(function_response),
-                        "tool_call_id": tool_call.id,
-                    }
+        if num_model_calls < max_model_call:
+            # Call the model again with the tool outcomes
+            model_params["messages"] = messages
+            
+            try:
+                response = await client.chat.completions.create(
+                    **model_params
                 )
+            except APITimeoutError as e:  # catch timeout error
+                raise libem.ModelTimedoutException(e)
 
-                tool_usages.append({
-                    "id": tool_call.id,
-                    'name': function_name,
-                    "arguments": function_args,
-                    "response": function_response,
-                })
+            response_message = response.choices[0].message
+            tool_calls = response_message.tool_calls
 
-                tool_outputs.append({
-                    function_name: function_response,
-                })
+            num_model_calls += 1
+            num_input_tokens += response.usage.total_tokens - \
+                                response.usage.completion_tokens
+            num_output_tokens += response.usage.completion_tokens
 
-            tool_calls = []
-
-            if num_model_calls < max_model_call:
-                # Call the model again with the tool outcomes
-                try:
-                    response = await client.chat.completions.create(
-                        messages=messages,
-                        tools=tools,
-                        tool_choice="auto",
-                        model=model,
-                        temperature=temperature,
-                        seed=seed,
-                    )
-                except APITimeoutError as e:  # catch timeout error
-                    raise libem.ModelTimedoutException(e)
-
-                response_message = response.choices[0].message
-                tool_calls = response_message.tool_calls
-
-                num_model_calls += 1
-                num_input_tokens += response.usage.total_tokens - \
-                                    response.usage.completion_tokens
-                num_output_tokens += response.usage.completion_tokens
-
-            if num_model_calls == max_model_call:
-                libem.debug(f"[model] max call reached: "
-                            f"{messages}\n{response_message}")
+        if num_model_calls == max_model_call:
+            libem.debug(f"[model] max call reached: "
+                        f"{messages}\n{response_message}")
 
     """End call"""
 

@@ -1,8 +1,8 @@
-from libem.core.struct import Prompt, Shots, Index
+from libem.core.struct import Prompt, Shots
 from libem.core.struct.prompt import (
     Shot, Rules, Experiences
 )
-from libem.match.parameter import model
+from libem.match.parameter import output_format, likelihood, tools
 
 """System prompts"""
 role = Prompt(
@@ -21,26 +21,27 @@ experiences = Prompt(
     options=[],
 )
 
-output = Prompt(
-    default=Index(
-        lambda: "strict"
-        if model() in {
-            "llama3", "llama3.1", "llama3.2-3b", "llama3.2-1b",
-            "gpt-4o-2024-08-06", "claude-3-5-sonnet-20240620",
-        }
-        else "standard"
-    ),
-    options={
-        "standard": "At the end, give your answer in the form of a "
-                    "single 'yes' or 'no'.",
-        "strict": "At the end, give your answer in the form of a "
-                  "single 'yes' or 'no'. Nothing else.",
-        "likelihood": "At the end, give your answer strictly in the "
-                      "format of a single number between 0.0 and 1.0, "
-                      "estimating the likelihood that the two entities "
-                      "are the same.",
-    },
-)
+# build the output instruction prompt
+def build_prompt():
+    output_string = []
+    if output_format() != "structured":
+        output_string.append("At the end,")
+    if likelihood():
+        output_string.append("Give your answer strictly in the " \
+                            "format of a single number between 0.0 and 1.0, " \
+                            "estimating the likelihood that the two entities " \
+                            "are the same.")
+    else:
+        output_string.append("Give your answer in the form of a "
+                            "single 'yes' or 'no'.")
+    if output_format() == "strict":
+        output_string.append("Nothing else.")
+    if tools():
+        output_string.append("If you are unsure, consider using a tool.")
+    
+    return ' '.join(output_string)
+    
+output = build_prompt
 
 """Assistant prompts"""
 shots = Shots(

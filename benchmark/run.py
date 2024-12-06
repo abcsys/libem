@@ -149,6 +149,9 @@ def args() -> argparse.Namespace:
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
+    parser.add_argument("--likelihood", dest='likelihood',
+                        help="Enable likelihood.",
+                        action='store_true', default=False)
     parser.add_argument("--cot", dest='cot',
                         help="Enable chain of thought.",
                         action='store_true', default=False)

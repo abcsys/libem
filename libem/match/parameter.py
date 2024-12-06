@@ -21,6 +21,30 @@ tools = Parameter(
     },
 )
 
+output_format = Parameter(
+    default=lambda: "structured" if model() in {
+            "gpt-4o-2024-08-06", "gpt-4o-mini-2024-07-18",
+        } 
+        else "strict" if model() in {
+            "llama3", "llama3.1", "llama3.2-3b", "llama3.2-1b",
+            "claude-3-5-sonnet-20240620",
+        }
+        else "standard"
+)
+
+# give a likelihood score instead of "yes" or "no"
+likelihood = Parameter(
+    default=False
+)
+
+# structured (JSON) output
+structured = Parameter(
+    lambda: True if model() in {
+        "gpt-4o-2024-08-06", "gpt-4o-mini-2024-07-18",
+    }
+    else False
+)
+
 # optional requests per minute limit
 rpm = Parameter(
     default=-1
