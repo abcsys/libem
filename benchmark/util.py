@@ -49,6 +49,10 @@ def benchmark(train_set: Iterable,
         libem.calibrate({
             "libem.match.parameter.temperature": args.temperature,
         })
+    if args.likelihood:
+        libem.calibrate({
+            "libem.match.parameter.likelihood": True,
+        })
     if args.cot:
         libem.calibrate({
             "libem.match.parameter.cot": True,
@@ -306,6 +310,8 @@ def run_match(train_set, test_set, args):
                             'right': right,
                             'label': label,
                             'pred': is_match['answer'],
+                            'likelihood': None if 'likelihood' not in is_match 
+                                               else is_match['likelihood'],
                             'confidence': is_match['confidence'],
                             'explanation': is_match['explanation'],
                         }
@@ -338,6 +344,8 @@ def run_match(train_set, test_set, args):
                     'right': r,
                     'label': label,
                     'pred': is_match['answer'],
+                    'likelihood': None if 'likelihood' not in is_match 
+                                       else is_match['likelihood'],
                     'confidence': is_match['confidence'],
                     'explanation': is_match['explanation'],
                 }

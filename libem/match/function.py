@@ -1,6 +1,7 @@
 import re
 import time
 import hashlib
+from pydantic import BaseModel
 from tqdm import tqdm
 from itertools import chain
 from pprint import pformat
@@ -8,9 +9,9 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core.struct import Prompt, Index
+from libem.core.struct import Prompt
 from libem.core import (
-    exec, model, struct
+    exec, model
 )
 
 schema = {
@@ -34,6 +35,12 @@ schema = {
         },
     }
 }
+
+
+class Output(BaseModel):
+    answer: str | float
+    confidence: float = None
+    explanation: str = None
 
 
 def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
@@ -151,10 +158,22 @@ async def once(left: str, right: str) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
+    output_schema = None
+    if parameter.structured():
+        output_structure = {}
+        if parameter.cot():
+            output_structure['explanation'] = str
+        output_structure['answer'] = float if parameter.likelihood() else str
+        if parameter.confidence():
+            output_structure['confidence'] = float
+            
+        output_schema = model.output_schema("Output", **output_structure)
+
     response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
+        output_schema=output_schema,
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
@@ -164,7 +183,14 @@ async def once(left: str, right: str) -> dict:
                 f"[match] model output:\n"
                 f"{response['output']}")
 
-    output = parse_output(response["output"])
+    if parameter.structured():
+        output = Output.model_validate_json(response['output']).model_dump()
+    else:
+        output = parse_output(response['output'])
+    
+    if parameter.likelihood():
+        output['likelihood'] = output['answer']
+        output['answer'] = 'no' if output['likelihood'] < 0.5 else 'yes'
 
     libem.trace.add({
         "match": {
@@ -303,7 +329,7 @@ def parse_output(output: str) -> dict:
     # with priority given to likelihood if 
     # both are enabled but only 1 value is found
     numeric_vals = []
-    num_numeric_vals = parameter.confidence() + (prompt.output.value == Index("likelihood"))
+    num_numeric_vals = parameter.confidence() + parameter.likelihood()
 
     while index < len(output):
         if len(numeric_vals) == num_numeric_vals:
@@ -318,7 +344,7 @@ def parse_output(output: str) -> dict:
         index += 1
     
     # parse answer
-    if prompt.output.value == Index("likelihood"):
+    if parameter.likelihood():
         if len(numeric_vals) > 0:
             answer = float(numeric_vals.pop(0))
         else:
