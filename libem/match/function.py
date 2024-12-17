@@ -9,9 +9,9 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core.struct import Prompt, Index
+from libem.core.struct import Prompt
 from libem.core import (
-    exec, model, struct
+    exec, model
 )
 
 schema = {
@@ -134,9 +134,9 @@ async def once(left: str, right: str) -> dict:
         prompt.role(),
         prompt.rules(),
         prompt.experiences(),
-        struct.CoT() if parameter.cot() else "",
-        struct.Confidence() if parameter.confidence() else "",
+        prompt.CoT() if parameter.cot() else "",
         prompt.output(),
+        prompt.Confidence() if parameter.confidence() else "",
     )
 
     match_prompt = Prompt.join(
@@ -162,7 +162,7 @@ async def once(left: str, right: str) -> dict:
     if parameter.structured():
         output_structure = {}
         if parameter.cot():
-            output_structure['steps'] = str
+            output_structure['explanation'] = str
         output_structure['answer'] = float if parameter.likelihood() else str
         if parameter.confidence():
             output_structure['confidence'] = float
@@ -315,32 +315,56 @@ def parse_output(output: str) -> dict:
     """Handle the model output of format:
     ```
     <explanation> (e.g., "Name Comparison: ...")
-    <confidence> (e.g., "Confidence Score: 5" or "5")
     <answer> (e.g., yes)
+    <confidence> (e.g., "Confidence Score: 0.9" or "0.9")
     ```
     """
     # remove empty lines and process lines in reverse order
     output = [s for s in output.splitlines() if s][::-1]
+    
+    index = 0
+    answer, confidence, explanation = None, None, None
+    
+    # parse for numeric values (confidence, likelihood)
+    # with priority given to likelihood if 
+    # both are enabled but only 1 value is found
+    numeric_vals = []
+    num_numeric_vals = parameter.confidence() + parameter.likelihood()
 
-    answer = output.pop(0).lower()
+    while index < len(output):
+        if len(numeric_vals) == num_numeric_vals:
+            break
+        
+        nums = re.findall(r"\d+\.\d+|\d+", output[index])
+        if nums:
+            # append new values to front of the list so likelihood
+            # always comes before confidence even if both are from the same line
+            numeric_vals = [float(n) for n in nums] + numeric_vals
+        
+        index += 1
+    
+    # parse answer
     if parameter.likelihood():
-        answer = float(answer)
+        if len(numeric_vals) > 0:
+            answer = float(numeric_vals.pop(0))
+        else:
+            answer = 0.0
     else:
-        answer = "yes" if "yes" in answer else "no"
-
-    confidence, explanation = None, None
-
-    if parameter.confidence():
-        for i, line in enumerate(output):
-            line = line.lower()
-            nums = re.findall(r"\d+\.\d+|\d+", line)
-            if nums:
-                confidence = float(''.join(nums))
-                output = output[i + 1:]
-                break
-
-    if parameter.cot():
-        explanation = "\n".join(output[::-1])
+        # if there are no more lines left, look at previous line
+        if index == len(output):
+            index -= 1
+        line = output[index].lower()
+        index += 1
+        
+        answer = "yes" if "yes" in line else "no"
+    
+    # parse confidence
+    if parameter.confidence() and len(numeric_vals) > 0:
+        confidence = float(numeric_vals[-1])
+    
+    # parse explanation
+    if parameter.cot() and index < len(output):
+        explanation = "\n".join(output[index::-1])
 
     return {
         "answer": answer,
