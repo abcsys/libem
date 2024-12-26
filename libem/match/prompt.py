@@ -2,6 +2,9 @@ from libem.core.struct import Prompt, Shots
 from libem.core.struct.prompt import (
     Shot, Rules, Experiences
 )
+from libem.core.struct.pattern import (
+    CoT, Confidence
+)
 from libem.match.parameter import output_format, likelihood, tools
 
 """System prompts"""
