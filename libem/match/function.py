@@ -1,6 +1,7 @@
 import re
 import time
 import hashlib
+from pydantic import BaseModel
 from tqdm import tqdm
 from itertools import chain
 from pprint import pformat
@@ -8,9 +9,9 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.core.struct import Prompt, Index
+from libem.core.struct import Prompt
 from libem.core import (
-    exec, model, struct
+    exec, model
 )
 
 schema = {
@@ -34,6 +35,12 @@ schema = {
         },
     }
 }
+
+
+class Output(BaseModel):
+    answer: str | float
+    confidence: float = None
+    explanation: str = None
 
 
 def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
@@ -151,10 +158,22 @@ async def once(left: str, right: str) -> dict:
         {"role": "user", "content": match_prompt},
     ]
 
+    output_schema = None
+    if parameter.structured():
+        output_structure = {}
+        if parameter.cot():
+            output_structure['explanation'] = str
+        output_structure['answer'] = float if parameter.likelihood() else str
+        if parameter.confidence():
+            output_structure['confidence'] = float
+            
+        output_schema = model.output_schema("Output", **output_structure)
+
     response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
+        output_schema=output_schema,
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
@@ -164,7 +183,14 @@ async def once(left: str, right: str) -> dict:
                 f"[match] model output:\n"
                 f"{response['output']}")
 
-    output = parse_output(response["output"])
+    if parameter.structured():
+        output = Output.model_validate_json(response['output']).model_dump()
+    else:
+        output = parse_output(response['output'])
+    
+    if parameter.likelihood():
+        output['likelihood'] = output['answer']
+        output['answer'] = 'no' if output['likelihood'] < 0.5 else 'yes'
 
     libem.trace.add({
         "match": {
@@ -295,32 +321,50 @@ def parse_output(output: str) -> dict:
     """
     # remove empty lines and process lines in reverse order
     output = [s for s in output.splitlines() if s][::-1]
-
-    answer, confidence, explanation = "no", None, None
-
-    if parameter.confidence():
-        for i, line in enumerate(output):
-            line = line.lower()
-            nums = re.findall(r"\d+\.\d+|\d+", line)
-            if nums:
-                confidence = float(''.join(nums))
-                output = output[i + 1:]
-                break
     
-    for i, line in enumerate(output):
-        line = line.lower()
-        nums = re.findall(r"\d+\.\d+|\d+", line)
-        if prompt.output.value == Index("likelihood") and nums:
-            answer = float(answer)
-            output = output[i + 1:]
-            break
-        elif 'yes' in line or 'no' in line:
-            answer = "yes" if "yes" in line else "no"
-            output = output[i + 1:]
-            break
+    index = 0
+    answer, confidence, explanation = None, None, None
+    
+    # parse for numeric values (confidence, likelihood)
+    # with priority given to likelihood if 
+    # both are enabled but only 1 value is found
+    numeric_vals = []
+    num_numeric_vals = parameter.confidence() + parameter.likelihood()
 
-    if parameter.cot():
-        explanation = "\n".join(output[::-1])
+    while index < len(output):
+        if len(numeric_vals) == num_numeric_vals:
+            break
+        
+        nums = re.findall(r"\d+\.\d+|\d+", output[index])
+        if nums:
+            # append new values to front of the list so likelihood
+            # always comes before confidence even if both are from the same line
+            numeric_vals = [float(n) for n in nums] + numeric_vals
+        
+        index += 1
+    
+    # parse answer
+    if parameter.likelihood():
+        if len(numeric_vals) > 0:
+            answer = float(numeric_vals.pop(0))
+        else:
+            answer = 0.0
+    else:
+        # if there are no more lines left, look at previous line
+        if index == len(output):
+            index -= 1
+        line = output[index].lower()
+        index += 1
+        
+        answer = "yes" if "yes" in line else "no"
+    
+    # parse confidence
+    if parameter.confidence() and len(numeric_vals) > 0:
+        confidence = float(numeric_vals[-1])
+    
+    # parse explanation
+    if parameter.cot() and index < len(output):
+        explanation = "\n".join(output[index::-1])
 
     return {
         "answer": answer,
