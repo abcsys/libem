@@ -22,3 +22,4 @@ anthropic
 aiolimiter
 seaborn
 requests
+jsonref
