@@ -33,10 +33,10 @@ def get_func(full_path):
         raise Exception(f"Module '{module_path}' does not have "
                         f"a function named '{function_name}': {e}")
 
-def create_json_schema(_name: str, extra_fields: dict = {}, **fields) -> dict:
+def create_json_schema(schema_name: str, extra_fields: dict = {}, **fields) -> dict:
     '''
     input:
-        _name: name of JSON object
+        schema_name: name of JSON object
         extra_fields: extra JSON fields to be appended alongside the schema
         fields: object fields in the format {<field_name>: <type>}
                 or {<field_name>: (<type>, <description>)};
@@ -45,7 +45,7 @@ def create_json_schema(_name: str, extra_fields: dict = {}, **fields) -> dict:
         a dict containing the schema in JSON form
     '''
     
-    def create_json_model(_name: str, extra_fields={}, **fields):
+    def create_json_model(schema_name: str, **fields):
         formatted_fields: Dict[str, Field] = {}
     
         for f_name, f_def in fields.items():
@@ -68,7 +68,7 @@ def create_json_schema(_name: str, extra_fields: dict = {}, **fields) -> dict:
             
             formatted_fields[f_name] = (f_type, Field(description=f_desc))
         
-        return create_model(_name, **formatted_fields)
+        return create_model(schema_name, **formatted_fields)
 
     def merge_extra_fields(schema: dict, extra_fields: dict) -> dict:
         """
@@ -86,7 +86,7 @@ def create_json_schema(_name: str, extra_fields: dict = {}, **fields) -> dict:
 
         return schema
     
-    schema = jsonref.replace_refs(create_json_model(_name, **fields).model_json_schema(), proxies=False)
+    schema = jsonref.replace_refs(create_json_model(schema_name, **fields).model_json_schema(), proxies=False)
     # remove the unnecessary $defs key generated from recursive calls and add extra fields
     schema.pop("$defs", None)
     return merge_extra_fields(schema, extra_fields)
