@@ -40,7 +40,6 @@ def get_client():
 
 def output_schema(schema_name, **fields) -> dict:
     fields_schema = create_json_schema(
-        schema_name=schema_name,
         extra_fields={"additionalProperties": False},
         **fields,
     )
