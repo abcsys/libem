@@ -18,5 +18,6 @@ Output = Iterable[Pair]
 
 
 def block(left: Left, right: Right = None, 
-          on: str | list | None = None) -> Output:
-    yield from func(left, right, on)
+          key: str | list | None = None, 
+          ignore: str | list | None = None) -> Output:
+    return func(left, right, key, ignore)

@@ -130,23 +130,13 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
     max_pairs = len(left) * len(right)
 
     print(f"Benchmark: Blocking {max_pairs} potential pairs "
-          f"from the {args.name} benchmark", end='')
-    
-    if args.num_pairs > 0:
-        print(f",\nBenchmark: stopping after the first "
-              f"{'pair' if args.num_pairs == 1 else f'{args.num_pairs} pairs'} "
-              f"that pass{f'es' if args.num_pairs == 1 else ''} the cutoff:")
-    else:
-        print(":")
+          f"from the {args.name} benchmark:", end='')
 
     blocked = []
     start_time = time.time()
     for pair in libem.block(left, right):
         blocked.append(pair)
-
-        # check num_pairs stop condition
-        if 0 < args.num_pairs <= len(blocked):
-            break
+    
     total_time = time.time() - start_time
     
     # generate output and stats
@@ -168,25 +158,8 @@ def run_block(test_set: Iterable, args: argparse.Namespace):
                 'label': 0
             })
 
-    # if didn't run through the entire dataset,
-    # go through all pairs to find the fn and total pairs
-    if 0 < args.num_pairs <= len(blocked):
-        total_pairs, i = 0, 0
-        for l, r in product(left, right):
-            total_pairs += 1
-            
-            if l == blocked[i]['left'] and r == blocked[i]['right']:
-                i += 1
-                
-                # stop early if reached end of blocked
-                if i == len(blocked) - 1:
-                    break
-            else:
-                if {'left': l, 'right': r} in true:
-                    fn.append(pair)
-    else:
-        total_pairs = max_pairs
-        fn = [pair for pair in true if pair not in tp]
+    total_pairs = max_pairs
+    fn = [pair for pair in true if pair not in tp]
     
     num_tn = total_pairs - len(tp) - len(fp) - len(fn)
     
