@@ -72,6 +72,10 @@ batch_size = query_per_prompt = Parameter(
     default=1
 )
 
+smart_batch = Parameter(
+    default=True
+)
+
 # execution modes
 sync = Parameter(
     default=False,

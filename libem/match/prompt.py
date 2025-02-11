@@ -30,7 +30,7 @@ def build_prompt():
     if output_format() != "structured":
         output_string.append("At the end,")
     if batch_size() > 1:
-        output_string.append("For each left, right entity pair,")
+        output_string.append("For each pair of 'left' and 'right' entities,")
     if likelihood():
         output_string.append("Give your answer strictly in the " \
                             "format of a single number between 0.0 and 1.0, " \

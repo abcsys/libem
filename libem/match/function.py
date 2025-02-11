@@ -114,16 +114,20 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     
     batches = left_batches if len(left_batches) <= len(right_batches) else right_batches
 
-    # generate tasks for each batch
+    # generate tasks for each batch, 
+    # if smart batching is enabled, treat each cluster (size > 1) that 
+    # share the same left as its own batch
     batch_tasks, curr_batch_l, curr_batch_r = [], [], []
     for left, rights in batches.items():
-        if (len(rights) == 1): # traditional batching
-            curr_batch_l.append(left)
-            curr_batch_r.append(rights[0])
-            
-            if len(curr_batch_l) == parameter.batch_size():
-                batch_tasks.append(batch(curr_batch_l, curr_batch_r))
-                curr_batch_l, curr_batch_r = [], []
+        if not parameter.smart_batch() or len(rights) == 1:
+            # traditional batching: add pairs one by one until the batch size is reached
+            for right in rights:
+                curr_batch_l.append(left)
+                curr_batch_r.append(right)
+                
+                if len(curr_batch_l) == parameter.batch_size():
+                    batch_tasks.append(batch(curr_batch_l, curr_batch_r))
+                    curr_batch_l, curr_batch_r = [], []
         
         else: # smart batching
             batch_start = 0
@@ -133,7 +137,7 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
                 batch_tasks.append(batch(left, rights[batch_start:batch_end]))
                 batch_start += parameter.batch_size()
     
-    # add any remaining pairs
+    # add any remaining pairs from the last traditional batch
     if len(curr_batch_l) > 0:
         batch_tasks.append(batch(curr_batch_l, curr_batch_r))
     
@@ -239,7 +243,7 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
         left_prompt = Prompt.join("Left entity:", left)
         right_prompt = Prompt.join(
             "Right entities:", 
-            *[f"E{i + 1}: {r}"
+            *[f"{i + 1}:\n{r}"
                 for i, r in zip(
                     range(size), right
             )])
@@ -248,7 +252,7 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
     else:
         match_prompt = Prompt.join(*[
             Prompt.join(
-                f"E{i + 1}:",
+                f"{i + 1}:",
                 prompt.query(
                     left=l,
                     right=r
@@ -289,21 +293,27 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
     
     if parameter.structured():
         output = BatchOutput.model_validate_json(response['output']).model_dump()['answers']
+        if len(output) != size: # pad output if necessary
+            libem.warn(f"[match] output size differ from batch size: "
+                    f"output: {len(output)}, batch size: {size}")
+            
+            while len(output) < size:
+                output.append(Output(answer='no').model_dump())
     else:
         output_lines = response["output"].split('\n')
 
         # parsing model output for each pair
         # assuming model output is in the format:
-        # E1: <answer>
-        # E2: <answer>
+        # 1: <answer>
+        # 2: <answer>
         # ...
-        # En: <answer>
+        # n: <answer>
         # where each <answer> may contain multiple lines.
-        if re.match(r"^E\d+:", output_lines[0]):
+        if re.match(r"^\d+:", output_lines[0]):
             answer_lines = []
 
             for line in output_lines:
-                if re.match(r"^E\d+:", line):
+                if re.match(r"^\d+:", line):
                     # parse the previous answer
                     if len(answer_lines) > 0:
                         output.append(
@@ -320,13 +330,19 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
                     parse_output('\n'.join(answer_lines))
                 )
 
-            if len(output) > size:
-                libem.warn(f"[match] output size greater than batch size: "
-                        f"output: {output}; {len(output)} > {size}")
+            if len(output) != size: # pad output if necessary
+                libem.warn(f"[match] output size differ from batch size: "
+                        f"output: {len(output)}, batch size: {size}")
+                
+                while len(output) < size:
+                    output.append(Output(answer='no').model_dump())
         else:
             # if the model output does not follow the expected
             # format, assume all answers are the same and only
             # one answer is returned for all pairs
+            libem.warn(f"[match] output size differ from batch size: "
+                        f"output: 1, batch size: {size}")
+            
             answer = parse_output(response["output"])
             output = [answer for _ in range(size)]
 

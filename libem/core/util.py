@@ -68,7 +68,7 @@ def create_json_schema(extra_fields: dict = {}, **fields) -> dict:
             
             formatted_fields[f_name] = (f_type, Field(description=f_desc))
         
-        return create_model(__model_name="", **formatted_fields)
+        return create_model("", **formatted_fields)
 
     def merge_extra_fields(schema: dict, extra_fields: dict) -> dict:
         """
