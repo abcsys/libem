@@ -115,12 +115,12 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     batches = left_batches if len(left_batches) <= len(right_batches) else right_batches
 
     # generate tasks for each batch, 
-    # if smart batching is enabled, treat each cluster (size > 1) that 
+    # if record batching is enabled, treat each cluster (size > 1) that 
     # share the same left as its own batch
     batch_tasks, curr_batch_l, curr_batch_r = [], [], []
     for left, rights in batches.items():
-        if not parameter.smart_batch() or len(rights) == 1:
-            # traditional batching: add pairs one by one until the batch size is reached
+        if not parameter.record_batch() or len(rights) == 1:
+            # prompt-level batching: add pairs one by one until the batch size is reached
             for right in rights:
                 curr_batch_l.append(left)
                 curr_batch_r.append(right)
@@ -129,7 +129,7 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
                     batch_tasks.append(batch(curr_batch_l, curr_batch_r))
                     curr_batch_l, curr_batch_r = [], []
         
-        else: # smart batching
+        else: # record-level batching
             batch_start = 0
             # ensure batches do not go over the batch size
             while batch_start < len(rights):

@@ -72,8 +72,9 @@ batch_size = query_per_prompt = Parameter(
     default=1
 )
 
-smart_batch = Parameter(
-    default=True
+# record-level batching
+record_batch = Parameter(
+    default=False
 )
 
 # execution modes
