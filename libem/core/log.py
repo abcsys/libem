@@ -35,7 +35,7 @@ def warn(*args, **kwargs):
     msg = " ".join(map(str, args))
     if libem.LIBEM_DO_LOG:
         log(msg, typ="warning")
-    raise Warning(msg)
+    # raise Warning(msg)
 
 
 def error(*args, **kwargs):

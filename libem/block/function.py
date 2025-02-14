@@ -184,7 +184,7 @@ def parallel_block_left_right(left: list[str | dict | list],
         
         # Monitor progress and collect results
         results = []
-        with tqdm(total=len(async_results), desc="Processing") as pbar:
+        with tqdm(total=len(async_results), desc="Blocking") as pbar:
             for async_result in async_results:
                 try:
                     results.extend(async_result.get())

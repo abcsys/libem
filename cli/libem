@@ -27,6 +27,12 @@ def add_common_arguments(parser):
     parser.add_argument("--temperature", dest='temperature', nargs='?',
                         help="The temperature to use for model call.",
                         type=float, default=libem.parameter.temperature())
+    parser.add_argument("--batch-size", dest='batch_size', nargs='?',
+                        help="The batch size to use for matching.",
+                        type=int, default=1)
+    parser.add_argument("--record-batch", dest='record_batch',
+                        help="Enable record-level batching.",
+                        action='store_true', default=False)
     parser.add_argument("-b", "--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
@@ -174,6 +180,10 @@ def match(args):
         configs.append(('libem.match.parameter.model', args.model))
     if args.temperature:
         configs.append(('libem.match.parameter.temperature', args.temperature))
+    if args.batch_size:
+        configs.append(('libem.match.parameter.batch_size', args.batch_size))
+    if args.record_batch:
+        configs.append(('libem.match.parameter.record_batch', True))
     if args.cot:
         configs.append(('libem.match.parameter.cot', True))
     if args.confidence:

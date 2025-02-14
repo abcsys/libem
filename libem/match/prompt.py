@@ -5,7 +5,7 @@ from libem.core.struct.prompt import (
 from libem.core.struct.pattern import (
     CoT, Confidence
 )
-from libem.match.parameter import output_format, likelihood, tools
+from libem.match.parameter import output_format, likelihood, batch_size, tools
 
 """System prompts"""
 role = Prompt(
@@ -29,6 +29,8 @@ def build_prompt():
     output_string = []
     if output_format() != "structured":
         output_string.append("At the end,")
+    if batch_size() > 1:
+        output_string.append("For each pair of 'left' and 'right' entities,")
     if likelihood():
         output_string.append("Give your answer strictly in the " \
                             "format of a single number between 0.0 and 1.0, " \
@@ -53,6 +55,6 @@ shots = Shots(
 
 """User prompts"""
 query = Prompt(
-    default="Entity 1: {left}.\nEntity 2: {right}.",
+    default="Left entity: {left}.\nRight entity: {right}.",
     options=[],
 )

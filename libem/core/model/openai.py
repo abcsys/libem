@@ -38,16 +38,15 @@ def get_client():
     return _client
 
 
-def output_schema(name, **fields) -> dict:
+def output_schema(schema_name, **fields) -> dict:
     fields_schema = create_json_schema(
-        name=name,
         extra_fields={"additionalProperties": False},
         **fields,
     )
     return {
         "type": "json_schema",
         "json_schema": {
-            "name": name,
+            "name": schema_name,
             "schema": fields_schema,
             "strict": True,
         },

@@ -31,6 +31,6 @@ def load(num_samples=-1):
                    'rt', encoding='utf-8', errors='replace') as f:
         csv_reader = csv.DictReader(f)
         for row in csv_reader:
-            mapping.append(row)
+            mapping.append(set(row.values()))
     
     return left, right, mapping
