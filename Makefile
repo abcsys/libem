@@ -49,17 +49,17 @@ shots:
 tune: rule
 
 # optimize examples
-.PHONY: profile prompt_batch async_request async_batch record_batch batch
+.PHONY: profile prompt_batch record_batch async_request async_batch batch
 profile:
 	python examples/optimize/profile.py
 prompt_batch:
 	python examples/optimize/prompt_batch.py
+record_batch:
+	python examples/optimize/record_batch.py
 async_request:
 	python examples/optimize/async_request.py
 async_batch:
 	python examples/optimize/async_batch.py
-record_batch:
-	python examples/optimize/record_batch.py
 batch: async_batch
 
 # claude model example
