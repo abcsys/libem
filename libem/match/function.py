@@ -42,6 +42,9 @@ class Output(BaseModel):
     confidence: float = None
     explanation: str = None
 
+class BatchOutput(BaseModel):
+    answers: list[Output]
+
 
 def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
     if parameter.sync():
@@ -101,30 +104,44 @@ def create_once_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
 
 def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     assert len(left) == len(right)
+    
+    # count number of repeats in left and right
+    left_batches, right_batches = {}, {}
+    
+    for l, r in zip(left, right):
+        left_batches[l] = left_batches.get(l, []) + [r]
+        right_batches[r] = right_batches.get(r, []) + [l]
+    
+    batches = left_batches if len(left_batches) <= len(right_batches) else right_batches
 
-    num_pairs = len(left)
-    batch_size = parameter.batch_size()
-    left_batches, right_batches = [], []
-    batch_start = 0
-
-    # generate left and right batches
-    while batch_start < num_pairs:
-        batch_end = min(batch_start + batch_size, num_pairs)
-
-        left_batches.append(
-            left[batch_start:batch_end]
-        )
-        right_batches.append(
-            right[batch_start:batch_end]
-        )
-
-        batch_start += batch_size
-
-    # generate tasks for each batch
-    return [
-        batch(left, right)
-        for left, right in zip(left_batches, right_batches)
-    ]
+    # generate tasks for each batch, 
+    # if record batching is enabled, treat each cluster (size > 1) that 
+    # share the same left as its own batch
+    batch_tasks, curr_batch_l, curr_batch_r = [], [], []
+    for left, rights in batches.items():
+        if not parameter.record_batch() or len(rights) == 1:
+            # prompt-level batching: add pairs one by one until the batch size is reached
+            for right in rights:
+                curr_batch_l.append(left)
+                curr_batch_r.append(right)
+                
+                if len(curr_batch_l) == parameter.batch_size():
+                    batch_tasks.append(batch(curr_batch_l, curr_batch_r))
+                    curr_batch_l, curr_batch_r = [], []
+        
+        else: # record-level batching
+            batch_start = 0
+            # ensure batches do not go over the batch size
+            while batch_start < len(rights):
+                batch_end = batch_start + parameter.batch_size()
+                batch_tasks.append(batch(left, rights[batch_start:batch_end]))
+                batch_start += parameter.batch_size()
+    
+    # add any remaining pairs from the last traditional batch
+    if len(curr_batch_l) > 0:
+        batch_tasks.append(batch(curr_batch_l, curr_batch_r))
+    
+    return batch_tasks
 
 
 async def once(left: str, right: str) -> dict:
@@ -207,11 +224,12 @@ async def once(left: str, right: str) -> dict:
     return output
 
 
-async def batch(left: list[str], right: list[str]) -> list[dict]:
+async def batch(left: str | list[str], right: list[str]) -> list[dict]:
     start = time.time()
 
-    output, size = [], len(left)
+    output, size = [], len(right)
 
+    # generate prompt
     system_prompt = Prompt.join(
         prompt.role(),
         prompt.rules(),
@@ -221,71 +239,112 @@ async def batch(left: list[str], right: list[str]) -> list[dict]:
 
     shots: list[dict] = prompt.shots()
 
-    match_prompt = Prompt.join(*[
-        Prompt.join(
-            f"Q{i + 1}:",
-            prompt.query(
-                left=l,
-                right=r
+    if isinstance(left, str):
+        left_prompt = Prompt.join("Left entity:", left)
+        right_prompt = Prompt.join(
+            "Right entities:", 
+            *[f"{i + 1}:\n{r}"
+                for i, r in zip(
+                    range(size), right
+            )])
+
+        match_prompt = Prompt.join(left_prompt, right_prompt)
+    else:
+        match_prompt = Prompt.join(*[
+            Prompt.join(
+                f"{i + 1}:",
+                prompt.query(
+                    left=l,
+                    right=r
+                )
             )
-        )
-        for i, l, r in zip(
-            range(size), left, right
-        )])
+            for i, l, r in zip(
+                range(size), left, right
+            )])
 
     _prompt = [
         {"role": parameter.system_role(), "content": system_prompt},
         *shots,
         {"role": "user", "content": match_prompt},
     ]
+    
+    # generate output schema
+    output_schema = None
+    if parameter.structured():
+        output_structure = {}
+        if parameter.cot():
+            output_structure['explanation'] = str
+        output_structure['answer'] = float if parameter.likelihood() else str
+        if parameter.confidence():
+            output_structure['confidence'] = float
+        
+        # a list of the regular output schema
+        output_schema = model.output_schema("Output", **{"answers": [output_structure]})
 
+    # call the model
     response = await model.async_call(
         prompt=_prompt,
         tools=parameter.tools(),
         model=parameter.model(),
+        output_schema=output_schema,
         temperature=parameter.temperature(),
         seed=libem.LIBEM_SEED,
     )
-
-    output_lines = response["output"].split('\n')
-
-    # parsing model output for each pair
-    # assuming model output is in the format:
-    # Q1: <answer>
-    # Q2: <answer>
-    # ...
-    # Qn: <answer>
-    # where each <answer> may contain multiple lines.
-    if re.match(r"^Q\d+:", output_lines[0]):
-        answer_lines = []
-
-        for line in output_lines:
-            if re.match(r"^Q\d+:", line):
-                # parse the previous answer
-                if len(answer_lines) > 0:
-                    output.append(
-                        parse_output('\n'.join(answer_lines))
-                    )
-                # reset answer lines
-                answer_lines = [line]
-            else:
-                answer_lines.append(line)
-
-        # parse the last answer
-        if len(answer_lines) > 0:
-            output.append(
-                parse_output('\n'.join(answer_lines))
-            )
-
-        if len(output) > size:
-            libem.warn(f"[match] output size greater than batch size: "
-                       f"output: {output}; {len(output)} > {size}")
+    
+    if parameter.structured():
+        output = BatchOutput.model_validate_json(response['output']).model_dump()['answers']
+        if len(output) != size: # pad output if necessary
+            libem.warn(f"[match] output size differ from batch size: "
+                    f"output: {len(output)}, batch size: {size}")
+            
+            while len(output) < size:
+                output.append(Output(answer='no').model_dump())
     else:
-        # if the model output does not follow the expected
-        # format, assume all answers are the same and only
-        # one answer is returned for all pairs
-        answer = parse_output(response["output"])
-        output = [answer for _ in range(size)]
+        output_lines = response["output"].split('\n')
+
+        # parsing model output for each pair
+        # assuming model output is in the format:
+        # 1: <answer>
+        # 2: <answer>
+        # ...
+        # n: <answer>
+        # where each <answer> may contain multiple lines.
+        if re.match(r"^\d+:", output_lines[0]):
+            answer_lines = []
+
+            for line in output_lines:
+                if re.match(r"^\d+:", line):
+                    # parse the previous answer
+                    if len(answer_lines) > 0:
+                        output.append(
+                            parse_output('\n'.join(answer_lines))
+                        )
+                    # reset answer lines
+                    answer_lines = [line]
+                else:
+                    answer_lines.append(line)
+
+            # parse the last answer
+            if len(answer_lines) > 0:
+                output.append(
+                    parse_output('\n'.join(answer_lines))
+                )
+
+            if len(output) != size: # pad output if necessary
+                libem.warn(f"[match] output size differ from batch size: "
+                        f"output: {len(output)}, batch size: {size}")
+                
+                while len(output) < size:
+                    output.append(Output(answer='no').model_dump())
+        else:
+            # if the model output does not follow the expected
+            # format, assume all answers are the same and only
+            # one answer is returned for all pairs
+            libem.warn(f"[match] output size differ from batch size: "
+                        f"output: 1, batch size: {size}")
+            
+            answer = parse_output(response["output"])
+            output = [answer for _ in range(size)]
 
     libem.debug(f"[match] batch output:\n"
                 f"{response['output']}")

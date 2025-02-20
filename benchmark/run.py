@@ -146,6 +146,9 @@ def args() -> argparse.Namespace:
     parser.add_argument("--batch-size", dest='batch_size', nargs='?',
                         help="The batch size to use for matching.",
                         type=int, default=1)
+    parser.add_argument("--record-batch", dest='record_batch',
+                        help="Enable record-level batching.",
+                        action='store_true', default=False)
     parser.add_argument("--browse", dest='browse',
                         help="Enable the browse tool.",
                         action='store_true', default=False)
@@ -206,6 +209,8 @@ def validate(args):
                          "supported with batch size > 1.")
     if args.batch_size > 1 and args.sync:
         raise ValueError("Synchronous operation not supported for batch size > 1.")
+    if args.record_batch and args.batch_size == 1:
+        raise ValueError("Record-level batching requires batch size > 1.")
     if args.similarity and (args.similarity < 0 or args.similarity > 100):
         raise ValueError("Similarity cutoff should be between 0 and 100.")
     

@@ -214,11 +214,10 @@ def run_match(train_set, test_set, args):
         num_pairs = min(args.num_pairs, len(test_set))
     else:
         num_pairs = len(test_set)
-    num_batches = math.ceil(num_pairs / args.batch_size)
 
     print(f"Benchmark: Matching {num_pairs} "
           f"{'pair' if num_pairs == 1 else 'pairs'} "
-          f"{f'in {num_batches} batches ' if args.batch_size > 1 else ''}"
+          f"{f'with a batch size of {args.batch_size} ' if args.batch_size > 1 else ''}"
           f"from the {args.name} benchmark.")
 
     if args.num_shots > 0:
@@ -240,6 +239,7 @@ def run_match(train_set, test_set, args):
     with libem.trace as t:
         libem.calibrate({
             "libem.match.parameter.batch_size": args.batch_size,
+            "libem.match.parameter.record_batch": args.record_batch,
             "libem.match.parameter.sync": args.sync,
             "libem.match.prompt.shots": shots,
         })
@@ -424,6 +424,8 @@ def create_signature(args):
     ]
     if args.block:
         signature.append('block')
+    if args.record_batch:
+        signature.append('record')
     if args.batch_size > 1:
         signature.append(f'batch-{args.batch_size}')
     if args.match:
