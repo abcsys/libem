@@ -104,7 +104,7 @@ def encode_entity_fields(entity_fields: EntityDesc) -> _MultimodalEntityDesc | l
                 if "image_fields" in entity_fields:
                     _entity_fields["image_fields"] = encode_image_fields(entity_fields["image_fields"])
             else:
-                _entity_fields = encode_text_fields(entity_fields)
+                _entity_fields = {"text_fields": encode_text_fields(entity_fields)}
             
             return _entity_fields
         case list():
