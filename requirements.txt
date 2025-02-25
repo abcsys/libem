@@ -23,3 +23,5 @@ aiolimiter
 seaborn
 requests
 jsonref
+opencv-python
+Pillow

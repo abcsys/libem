@@ -331,7 +331,7 @@ def run_match(train_set, test_set, args):
                 continue
 
             match = span['match']
-            left, right = match['left'], match['right']
+            left, right = match['left']['text'], match['right']['text']
 
             # for batch matching, the trace are
             # shared between pairs in each batch
