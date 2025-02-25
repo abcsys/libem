@@ -4,7 +4,7 @@ from libem.match import (
     parameter,
     func, async_func,
 )
-from libem.match.interface.struct import (
+from libem.match.struct import (
     Left, Right, Output,
     parse_input,
 )
