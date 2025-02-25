@@ -12,7 +12,7 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.match.struct import _MultimodalEntityDesc
+from libem.match.struct import _MultimodalEntityDesc, parse_input
 from libem.core.struct import Prompt
 from libem.core import (
     exec, model
@@ -62,6 +62,9 @@ def func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
 
 def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
               right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
+    if not isinstance(left, dict) or not ('text_fields' in left or 'image_fields' in left):
+        left, right = parse_input(left, right)
+    
     if isinstance(left, dict):
         return exec.run_async_task(
             once(left, right)
@@ -83,6 +86,9 @@ def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
 
 async def async_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
                      right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
+    if not isinstance(left, dict) or not ('text_fields' in left or 'image_fields' in left):
+        left, right = parse_input(left, right)
+    
     if isinstance(left, dict):
         return await once(left, right)
 
