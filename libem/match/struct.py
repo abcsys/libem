@@ -9,7 +9,7 @@ import numpy as np
 # input types
 TextEntityField = str
 TextEntityFields = TextEntityField | dict[str, TextEntityField]
-ImageEntityField = Image.Image | np.ndarray
+ImageEntityField = Image.Image | np.ndarray | str
 ImageEntityFields = ImageEntityField | dict[str, ImageEntityField]
 
 
@@ -45,7 +45,7 @@ Output = Answer | list[Answer]
 # internal types
 class _MultimodalEntityDesc(TypedDict):
     text_fields: str | None
-    image_fields: list[np.ndarray] | None
+    image_fields: list[str | np.ndarray] | None
 _Left = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
 _Right = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
 
@@ -90,9 +90,7 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
 
 def encode_entity_fields(entity_fields: EntityDesc) -> _MultimodalEntityDesc | list[_MultimodalEntityDesc]:
     match entity_fields:
-        case str():
-            return {"text_fields": entity_fields}
-        case Image.Image() | np.ndarray():
+        case str() | Image.Image() | np.ndarray():
             return {"image_fields": encode_image_fields(entity_fields)}
         case dict():
             _entity_fields = {}
@@ -124,14 +122,14 @@ def encode_text_fields(text_fields: TextEntityFields) -> str:
 
 def encode_image_fields(image_fields: ImageEntityFields) -> list[np.ndarray]:
     
-    def img_to_cv2(img):
+    def convert_pil(img):
         """
         Convert a PIL Image to an OpenCV image (NumPy array).
         """
         import cv2
         
         match img:
-            case np.ndarray():
+            case str() | np.ndarray():
                 return img
             case Image.Image():
                 cv_img = np.array(img)
@@ -147,12 +145,12 @@ def encode_image_fields(image_fields: ImageEntityFields) -> list[np.ndarray]:
                 )
     
     match image_fields:
-        case Image.Image() | np.ndarray():
-            return [img_to_cv2(image_fields)]
+        case str() | Image.Image() | np.ndarray():
+            return [convert_pil(image_fields)]
         case dict():
-            return [img_to_cv2(value) for value in image_fields.values()]
+            return [convert_pil(value) for value in image_fields.values()]
         case list():
-            return [img_to_cv2(value) for value in image_fields]
+            return [convert_pil(value) for value in image_fields]
         case _:
             raise ValueError(
                 f"unexpected input type: {type(image_fields)},"

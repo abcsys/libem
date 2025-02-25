@@ -180,8 +180,7 @@ async def once(left: _MultimodalEntityDesc, right: _MultimodalEntityDesc) -> dic
     start = time.time()
     
     left_text, right_text = left.get('text_fields', None), right.get('text_fields', None)
-    left_imgs = encode_imgs(left.get('image_fields', None))
-    right_imgs = encode_imgs(right.get('image_fields', None))
+    left_imgs, right_imgs = left.get('image_fields', None), right.get('image_fields', None)
 
     system_prompt = Prompt.join(
         prompt.role(),
@@ -282,9 +281,9 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
 
     if isinstance(left, dict):
         left_text = left.get('text_fields', None)
-        left_imgs = encode_imgs(left.get('image_fields', None))
+        left_imgs = left.get('image_fields', None)
         right_text = [r.get('text_fields', None) for r in right]
-        right_imgs = [encode_imgs(r.get('image_fields', None)) for r in right]
+        right_imgs = [r.get('image_fields', None) for r in right]
         
         if left_imgs or any(right_imgs):
             match_prompt = prompt.multimodal_record_batch_query(
@@ -295,9 +294,9 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
             match_prompt = prompt.record_batch_query(left_text, right_text)
     else:
         left_text = [l.get('text_fields', None) for l in left]
-        left_imgs = [encode_imgs(l.get('image_fields', None)) for l in left]
+        left_imgs = [l.get('image_fields', None) for l in left]
         right_text = [r.get('text_fields', None) for r in right]
-        right_imgs = [encode_imgs(r.get('image_fields', None)) for r in right]
+        right_imgs = [r.get('image_fields', None) for r in right]
         
         if any(left_imgs):
             match_prompt = prompt.multimodal_prompt_batch_query(
@@ -483,16 +482,3 @@ def parse_output(output: str) -> dict:
         "confidence": confidence,
         "explanation": explanation,
     }
-
-def encode_imgs(imgs: list[np.ndarray]) -> list[str]:
-    if not imgs:
-        return None
-    
-    base64_frames = []
-    for img in imgs:
-        ret, buffer = cv2.imencode(".jpg", img)
-        if not ret:
-            raise ValueError("Could not encode the frame.")
-        base64_frames.append(base64.b64encode(buffer).decode("utf-8"))
-    
-    return base64_frames

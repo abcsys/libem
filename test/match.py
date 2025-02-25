@@ -68,11 +68,11 @@ def main():
     fruits = [
         {"image_fields": get_pil_image("apple")},
         {"image_fields": [get_image("orange1"), get_pil_image("orange2")]},
-        {"image_fields": [get_image("lemon")]},
-        {"text_fields": {"name": "red apple"}}
+        {"text_fields": {"name": "red apple"}},
+        {"image_fields": ["https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w="]}
     ]
     output = [o['answer'] for o in libem.match([fruits[0]] * 3, fruits[1:])]
-    assert output == ["no", "no", "yes"], output
+    assert output == ["no", "yes", "yes"], output
     
     print("All tests passed.")
 

@@ -3,6 +3,7 @@ import json
 import httpx
 import importlib
 import inspect
+import numpy as np
 
 from openai import (
     AsyncOpenAI, APITimeoutError
@@ -36,6 +37,33 @@ def get_client():
             )
         )
     return _client
+
+
+def format_text(text: str) -> dict:
+    return {
+        "type": "text",
+        "text": text
+    }
+
+
+def format_image(image: str | np.ndarray) -> dict:
+    import cv2
+    import base64
+    
+    if isinstance(image, str):
+        return {
+            "type": "image_url",
+            "image_url": {"url": image}
+        }
+    elif isinstance(image, np.ndarray):
+        ret, buffer = cv2.imencode(".jpg", image)
+        if not ret:
+            raise ValueError("Could not encode the frame.")
+        return {
+            "type": "image_url",
+            "image_url": {"url": "data:image/jpeg;base64," +
+                                 base64.b64encode(buffer).decode("utf-8")}
+        }
 
 
 def output_schema(schema_name, **fields) -> dict:
