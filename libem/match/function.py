@@ -62,10 +62,11 @@ def func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
 
 def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
               right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
-    if not isinstance(left, dict) or not ('text_fields' in left or 'image_fields' in left):
+    if not (isinstance(left, _MultimodalEntityDesc) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
         left, right = parse_input(left, right)
     
-    if isinstance(left, dict):
+    if isinstance(left, _MultimodalEntityDesc):
         return exec.run_async_task(
             once(left, right)
         )
@@ -86,10 +87,11 @@ def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
 
 async def async_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
                      right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
-    if not isinstance(left, dict) or not ('text_fields' in left or 'image_fields' in left):
+    if not (isinstance(left, _MultimodalEntityDesc) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
         left, right = parse_input(left, right)
     
-    if isinstance(left, dict):
+    if isinstance(left, _MultimodalEntityDesc):
         return await once(left, right)
 
     if parameter.batch_size() == 1:
@@ -121,17 +123,17 @@ def create_batch_tasks(left: list[_MultimodalEntityDesc],
     assert len(left) == len(right)
     
     # count number of repeats in left and right
-    left_text = [l.get('text_fields', None) for l in left]
-    right_text = [r.get('text_fields', None) for r in right]
+    left_text = [l.text for l in left]
+    right_text = [r.text for r in right]
     
     if any(left_text) and any(right_text):
         left_batches, right_batches, left_mapping, right_mapping = {}, {}, {}, {}
         
         for l, r in zip(left, right):
-            left_batches[l['text_fields']] = left_batches.get(l['text_fields'], []) + [r]
-            left_mapping[l['text_fields']] = l
-            right_batches[r['text_fields']] = right_batches.get(r['text_fields'], []) + [l]
-            right_mapping[r['text_fields']] = r
+            left_batches[l.text] = left_batches.get(l.text, []) + [r]
+            left_mapping[l.text] = l
+            right_batches[r.text] = right_batches.get(r.text, []) + [l]
+            right_mapping[r.text] = r
         
         if len(left_batches) <= len(right_batches):
             batches = left_batches
@@ -179,8 +181,8 @@ def create_batch_tasks(left: list[_MultimodalEntityDesc],
 async def once(left: _MultimodalEntityDesc, right: _MultimodalEntityDesc) -> dict:
     start = time.time()
     
-    left_text, right_text = left.get('text_fields', None), right.get('text_fields', None)
-    left_imgs, right_imgs = left.get('image_fields', None), right.get('image_fields', None)
+    left_text, right_text = left.text, right.text
+    left_imgs, right_imgs = left.images, right.images
 
     system_prompt = Prompt.join(
         prompt.role(),
@@ -279,11 +281,9 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
 
     shots: list[dict] = prompt.shots()
 
-    if isinstance(left, dict):
-        left_text = left.get('text_fields', None)
-        left_imgs = left.get('image_fields', None)
-        right_text = [r.get('text_fields', None) for r in right]
-        right_imgs = [r.get('image_fields', None) for r in right]
+    if isinstance(left, _MultimodalEntityDesc):
+        left_text, left_imgs = left.text, left.images
+        right_text, right_imgs = [r.text for r in right], [r.images for r in right]
         
         if left_imgs or any(right_imgs):
             match_prompt = prompt.multimodal_record_batch_query(
@@ -293,10 +293,8 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
         else:
             match_prompt = prompt.record_batch_query(left_text, right_text)
     else:
-        left_text = [l.get('text_fields', None) for l in left]
-        left_imgs = [l.get('image_fields', None) for l in left]
-        right_text = [r.get('text_fields', None) for r in right]
-        right_imgs = [r.get('image_fields', None) for r in right]
+        left_text, left_imgs = [l.text for l in left], [l.images for l in left]
+        right_text, right_imgs = [r.text for r in right], [r.images for r in right]
         
         if any(left_imgs):
             match_prompt = prompt.multimodal_prompt_batch_query(
@@ -394,7 +392,7 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
                 f"{response['output']}")
     
     # calculate the number of images for each entity
-    if isinstance(left, dict):
+    if isinstance(left, _MultimodalEntityDesc):
         left_num_imgs = 1
     else:
         left_num_imgs = [len(img) if img else 0 for img in left_imgs]

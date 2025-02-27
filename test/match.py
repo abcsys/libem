@@ -2,6 +2,7 @@ import os
 import cv2
 from PIL import Image
 import libem
+from libem.match.struct import MultimodalEntityDesc
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,20 +21,20 @@ def main():
     assert output == "yes", output
     
     fruits = [
-        {"text_fields": {"name": "apple", "color": "red"},
-         "image_fields": get_image("apple")},
-        {"text_fields": {"name": "sweet seedless orange", "color": "orange"},
-         "image_fields": [get_image("orange1"), get_pil_image("orange2")]},
-        {"text_fields": {"name": "lemon", "color": "yellow"},
-         "image_fields": [get_image("lemon")]},
-        {"text_fields": {"name": "fuji apple"}}
+        MultimodalEntityDesc(text={"name": "apple", "color": "red"}, 
+                             images=get_image("apple")),
+        MultimodalEntityDesc(text={"name": "sweet seedless orange", "color": "orange"}, 
+                             images=[get_image("orange1"), get_image("orange2")]),
+        MultimodalEntityDesc(text={"name": "lemon", "color": "yellow"}, 
+                             images=[get_image("lemon")]),
+        MultimodalEntityDesc(text={"name": "fuji apple"})
     ]
     
     # dict only
-    output = libem.match(fruits[0]['text_fields'], fruits[1]['text_fields'])['answer']
+    output = libem.match(fruits[0].text, fruits[1].text)['answer']
     assert output == "no", output
     
-    output = libem.match(fruits[1]['text_fields'], fruits[1]['text_fields'])['answer']
+    output = libem.match(fruits[1].text, fruits[1].text)['answer']
     assert output == "yes", output
     
     # dict and image
@@ -66,10 +67,10 @@ def main():
     
     # image only
     fruits = [
-        {"image_fields": get_pil_image("apple")},
-        {"image_fields": [get_image("orange1"), get_pil_image("orange2")]},
-        {"text_fields": {"name": "red apple"}},
-        {"image_fields": ["https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w="]}
+        MultimodalEntityDesc(images=get_pil_image("apple")),
+        MultimodalEntityDesc(images=[get_image("orange1"), get_pil_image("orange2")]),
+        MultimodalEntityDesc(text={"name": "red apple"}),
+        MultimodalEntityDesc(images=["https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w="])
     ]
     output = [o['answer'] for o in libem.match([fruits[0]] * 3, fruits[1:])]
     assert output == ["no", "yes", "yes"], output

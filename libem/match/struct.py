@@ -1,5 +1,6 @@
 from libem.match import parameter
 from typing import TypedDict
+from pydantic import BaseModel
 from collections.abc import (
     Iterable, Generator, Iterator
 )
@@ -13,9 +14,12 @@ ImageEntityField = Image.Image | np.ndarray | str
 ImageEntityFields = ImageEntityField | dict[str, ImageEntityField]
 
 
-class MultimodalEntityDesc(TypedDict):
-    text_fields: TextEntityFields | None
-    image_fields: ImageEntityFields | list[ImageEntityField] | None
+class MultimodalEntityDesc(BaseModel):
+    text: TextEntityFields | None = None
+    images: ImageEntityFields | list[ImageEntityField] | None = None
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 
 EntityDesc = TextEntityFields | list[TextEntityFields] | \
@@ -43,9 +47,13 @@ Output = Answer | list[Answer]
 
 
 # internal types
-class _MultimodalEntityDesc(TypedDict):
-    text_fields: str | None
-    image_fields: list[str | np.ndarray] | None
+class _MultimodalEntityDesc(BaseModel):
+    text: str | None = None
+    images: list[str | np.ndarray] | None = None
+    
+    class Config:
+        arbitrary_types_allowed = True
+
 _Left = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
 _Right = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
 
@@ -90,20 +98,16 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
 
 def encode_entity_fields(entity_fields: EntityDesc) -> _MultimodalEntityDesc | list[_MultimodalEntityDesc]:
     match entity_fields:
-        case str() | Image.Image() | np.ndarray():
-            return {"image_fields": encode_image_fields(entity_fields)}
-        case dict():
-            _entity_fields = {}
-            
-            # check for MultiModalEntityDesc
-            if "text_fields" in entity_fields or "image_fields" in entity_fields:
-                if "text_fields" in entity_fields:
-                    _entity_fields["text_fields"] = encode_text_fields(entity_fields["text_fields"])
-                if "image_fields" in entity_fields:
-                    _entity_fields["image_fields"] = encode_image_fields(entity_fields["image_fields"])
-            else:
-                _entity_fields = {"text_fields": encode_text_fields(entity_fields)}
-            
+        case str() | dict():
+            return _MultimodalEntityDesc(text=encode_text_fields(entity_fields))
+        case Image.Image() | np.ndarray():
+            return _MultimodalEntityDesc(images=encode_image_fields(entity_fields))
+        case MultimodalEntityDesc():
+            _entity_fields = _MultimodalEntityDesc()
+            if entity_fields.text is not None:
+                _entity_fields.text = encode_text_fields(entity_fields.text)
+            if entity_fields.images is not None:
+                _entity_fields.images = encode_image_fields(entity_fields.images)
             return _entity_fields
         case list():
             return [encode_entity_fields(e) for e in entity_fields]
@@ -120,7 +124,7 @@ def encode_text_fields(text_fields: TextEntityFields) -> str:
     return text_fields
 
 
-def encode_image_fields(image_fields: ImageEntityFields) -> list[np.ndarray]:
+def encode_image_fields(images: ImageEntityFields) -> list[np.ndarray]:
     
     def convert_pil(img):
         """
@@ -144,15 +148,15 @@ def encode_image_fields(image_fields: ImageEntityFields) -> list[np.ndarray]:
                     f"must be {Image.Image}."
                 )
     
-    match image_fields:
+    match images:
         case str() | Image.Image() | np.ndarray():
-            return [convert_pil(image_fields)]
+            return [convert_pil(images)]
         case dict():
-            return [convert_pil(value) for value in image_fields.values()]
+            return [convert_pil(value) for value in images.values()]
         case list():
-            return [convert_pil(value) for value in image_fields]
+            return [convert_pil(value) for value in images]
         case _:
             raise ValueError(
-                f"unexpected input type: {type(image_fields)},"
+                f"unexpected input type: {type(images)},"
                 f"must be {ImageEntityFields}."
             )
