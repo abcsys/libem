@@ -5,6 +5,7 @@ from libem.core.struct.prompt import (
 from libem.core.struct.pattern import (
     CoT, Confidence
 )
+from libem.core.model import format_text, format_image
 from libem.match.parameter import output_format, likelihood, batch_size, tools
 
 """System prompts"""
@@ -56,5 +57,97 @@ shots = Shots(
 """User prompts"""
 query = Prompt(
     default="Left entity: {left}.\nRight entity: {right}.",
-    options=[],
+)
+
+def _multimodal_prompt(left_text: str, 
+                       left_images: list, 
+                       right_text: str, 
+                       right_images: list):
+    prompt = []
+    prompt.append(format_text("Left entity:"))
+    if left_text:
+        prompt.append(format_text(left_text))
+    if left_images:
+        prompt.extend([format_image(img) for img in left_images])
+    prompt.append(format_text("Right entity:"))
+    if right_text:
+        prompt.append(format_text(right_text))
+    if right_images:
+        prompt.extend([format_image(img) for img in right_images])
+    
+    return prompt
+
+multimodal_query = Prompt(
+    default=_multimodal_prompt,
+)
+
+def _prompt_batch_prompt(left: list[str], right: list[str]):
+    return Prompt.join(*[
+        Prompt.join(
+            f"{i + 1}:",
+            query(
+                left=l,
+                right=r
+            )
+        )
+        for i, (l, r) in enumerate(
+            zip(left, right)
+        )])
+
+prompt_batch_query = Prompt(
+    default=_prompt_batch_prompt,
+)
+
+def _multimodal_prompt_batch_prompt(left_text: list[str], 
+                       left_images: list[list], 
+                       right_text: list[str], 
+                       right_images: list[list]):
+    prompt = []
+    
+    for i, (l_t, l_i, r_t, r_i) in enumerate(zip(left_text, left_images, right_text, right_images)):
+        prompt.append(format_text(f"{i + 1}:"))
+        prompt.extend(multimodal_query(l_t, l_i, r_t, r_i))
+    
+    return prompt
+
+multimodal_prompt_batch_query = Prompt(
+    default=_multimodal_prompt_batch_prompt,
+)
+
+def _record_batch_prompt(left: str, right: list[str]):
+    left_prompt = Prompt.join("Left entity:", left)
+    right_prompt = Prompt.join("Right entities:",
+            *[f"{i + 1}:\n{r}"
+            for i, r in enumerate(right)
+        ])
+    return Prompt.join(left_prompt, right_prompt)
+
+record_batch_query = Prompt(
+    default=_record_batch_prompt,
+)
+
+def _multimodal_record_batch_prompt(left_text: str, 
+                       left_images: list, 
+                       right_text: list[str], 
+                       right_images: list[list]):
+    prompt = []
+    prompt.append(format_text("Left entity:"))
+    if left_text:
+        prompt.append(format_text(left_text))
+    if left_images:
+        prompt.extend([format_image(img) for img in left_images])
+    
+    prompt.append(format_text("Right entities:"))
+    
+    for i, (r_t, r_i) in enumerate(zip(right_text, right_images)):
+        prompt.append(format_text(f"{i + 1}:"))
+        if r_t:
+            prompt.append(format_text(r_t))
+        if r_i:
+            prompt.extend([format_image(img) for img in r_i])
+    
+    return prompt
+
+multimodal_record_batch_query = Prompt(
+    default=_multimodal_record_batch_prompt,
 )

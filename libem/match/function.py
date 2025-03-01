@@ -1,6 +1,9 @@
+import base64
 import re
 import time
 import hashlib
+import cv2
+import numpy as np
 from pydantic import BaseModel
 from tqdm import tqdm
 from itertools import chain
@@ -9,6 +12,7 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
+from libem.match.struct import _MultimodalEntityDesc, parse_input
 from libem.core.struct import Prompt
 from libem.core import (
     exec, model
@@ -46,7 +50,8 @@ class BatchOutput(BaseModel):
     answers: list[Output]
 
 
-def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
+def func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
+         right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
     if parameter.sync():
         return sync_func(left, right)
     else:
@@ -55,8 +60,13 @@ def func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
         )
 
 
-def sync_func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
-    if isinstance(left, str):
+def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
+              right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
+    if not (isinstance(left, _MultimodalEntityDesc) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
+        left, right = parse_input(left, right)
+    
+    if isinstance(left, _MultimodalEntityDesc):
         return exec.run_async_task(
             once(left, right)
         )
@@ -75,8 +85,13 @@ def sync_func(left: str | list[str], right: str | list[str]) -> dict | list[dict
     return output
 
 
-async def async_func(left: str | list[str], right: str | list[str]) -> dict | list[dict]:
-    if isinstance(left, str):
+async def async_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
+                     right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
+    if not (isinstance(left, _MultimodalEntityDesc) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
+        left, right = parse_input(left, right)
+    
+    if isinstance(left, _MultimodalEntityDesc):
         return await once(left, right)
 
     if parameter.batch_size() == 1:
@@ -89,7 +104,8 @@ async def async_func(left: str | list[str], right: str | list[str]) -> dict | li
     ))
 
 
-def create_once_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
+def create_once_tasks(left: list[_MultimodalEntityDesc], 
+                      right: list[_MultimodalEntityDesc]) -> list[Coroutine]:
     async def _once(left, right):
         # wrap the result in a list to
         # follow the batch output format
@@ -102,23 +118,41 @@ def create_once_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     ]
 
 
-def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
+def create_batch_tasks(left: list[_MultimodalEntityDesc], 
+                       right: list[_MultimodalEntityDesc]) -> list[Coroutine]:
     assert len(left) == len(right)
     
     # count number of repeats in left and right
-    left_batches, right_batches = {}, {}
+    left_text = [l.text for l in left]
+    right_text = [r.text for r in right]
     
-    for l, r in zip(left, right):
-        left_batches[l] = left_batches.get(l, []) + [r]
-        right_batches[r] = right_batches.get(r, []) + [l]
-    
-    batches = left_batches if len(left_batches) <= len(right_batches) else right_batches
+    if any(left_text) and any(right_text):
+        left_batches, right_batches, left_mapping, right_mapping = {}, {}, {}, {}
+        
+        for l, r in zip(left, right):
+            left_batches[l.text] = left_batches.get(l.text, []) + [r]
+            left_mapping[l.text] = l
+            right_batches[r.text] = right_batches.get(r.text, []) + [l]
+            right_mapping[r.text] = r
+        
+        if len(left_batches) <= len(right_batches):
+            batches = left_batches
+            mapping = left_mapping
+        else:
+            batches = right_batches
+            mapping = right_mapping
+    else: # if no text fields, don't use record-level batching
+        batches, mapping = {}, {}
+        for i, (l, r) in enumerate(zip(left, right)):
+            batches[i] = [r]
+            mapping[i] = l
 
     # generate tasks for each batch, 
     # if record batching is enabled, treat each cluster (size > 1) that 
     # share the same left as its own batch
     batch_tasks, curr_batch_l, curr_batch_r = [], [], []
-    for left, rights in batches.items():
+    for key, rights in batches.items():
+        left = mapping[key]
         if not parameter.record_batch() or len(rights) == 1:
             # prompt-level batching: add pairs one by one until the batch size is reached
             for right in rights:
@@ -144,8 +178,11 @@ def create_batch_tasks(left: list[str], right: list[str]) -> list[Coroutine]:
     return batch_tasks
 
 
-async def once(left: str, right: str) -> dict:
+async def once(left: _MultimodalEntityDesc, right: _MultimodalEntityDesc) -> dict:
     start = time.time()
+    
+    left_text, right_text = left.text, right.text
+    left_imgs, right_imgs = left.images, right.images
 
     system_prompt = Prompt.join(
         prompt.role(),
@@ -156,16 +193,20 @@ async def once(left: str, right: str) -> dict:
         prompt.Confidence() if parameter.confidence() else "",
     )
 
-    match_prompt = Prompt.join(
-        prompt.query(
-            left=left,
-            right=right
-        ),
-    )
+    if left_imgs:
+        match_prompt = prompt.multimodal_query(
+            left_text, left_imgs,
+            right_text, right_imgs
+        )
+    else:
+        match_prompt = prompt.query(
+            left=left_text,
+            right=right_text
+        )
 
     shots = parameter.icl_strategy().run(
         shots=prompt.shots,
-        question=prompt.query(left=left, right=right),
+        question=prompt.query(left=left_text, right=right_text),
         num_shots=parameter.num_shots(),
     )
 
@@ -211,7 +252,8 @@ async def once(left: str, right: str) -> dict:
 
     libem.trace.add({
         "match": {
-            "left": left, "right": right,
+            "left": {"text": left_text, "num_images": len(left_imgs) if left_imgs else 0}, 
+            "right": {"text": right_text, "num_images": len(right_imgs) if right_imgs else 0},
             "output": output,
             "prompt": _prompt,
             "model_output": response["output"],
@@ -224,7 +266,7 @@ async def once(left: str, right: str) -> dict:
     return output
 
 
-async def batch(left: str | list[str], right: list[str]) -> list[dict]:
+async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right: list[_MultimodalEntityDesc]) -> list[dict]:
     start = time.time()
 
     output, size = [], len(right)
@@ -239,28 +281,28 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
 
     shots: list[dict] = prompt.shots()
 
-    if isinstance(left, str):
-        left_prompt = Prompt.join("Left entity:", left)
-        right_prompt = Prompt.join(
-            "Right entities:", 
-            *[f"{i + 1}:\n{r}"
-                for i, r in zip(
-                    range(size), right
-            )])
-
-        match_prompt = Prompt.join(left_prompt, right_prompt)
-    else:
-        match_prompt = Prompt.join(*[
-            Prompt.join(
-                f"{i + 1}:",
-                prompt.query(
-                    left=l,
-                    right=r
-                )
+    if isinstance(left, _MultimodalEntityDesc):
+        left_text, left_imgs = left.text, left.images
+        right_text, right_imgs = [r.text for r in right], [r.images for r in right]
+        
+        if left_imgs or any(right_imgs):
+            match_prompt = prompt.multimodal_record_batch_query(
+                left_text, left_imgs,
+                right_text, right_imgs
             )
-            for i, l, r in zip(
-                range(size), left, right
-            )])
+        else:
+            match_prompt = prompt.record_batch_query(left_text, right_text)
+    else:
+        left_text, left_imgs = [l.text for l in left], [l.images for l in left]
+        right_text, right_imgs = [r.text for r in right], [r.images for r in right]
+        
+        if any(left_imgs):
+            match_prompt = prompt.multimodal_prompt_batch_query(
+                left_text, left_imgs,
+                right_text, right_imgs
+            )
+        else:
+            match_prompt = prompt.prompt_batch_query(left_text, right_text)
 
     _prompt = [
         {"role": parameter.system_role(), "content": system_prompt},
@@ -348,10 +390,18 @@ async def batch(left: str | list[str], right: list[str]) -> list[dict]:
 
     libem.debug(f"[match] batch output:\n"
                 f"{response['output']}")
+    
+    # calculate the number of images for each entity
+    if isinstance(left, _MultimodalEntityDesc):
+        left_num_imgs = 1
+    else:
+        left_num_imgs = [len(img) if img else 0 for img in left_imgs]
+    right_num_imgs = [len(img) if img else 0 for img in right_imgs]
 
     libem.trace.add({
         "match": {
-            "left": left, "right": right,
+            "left": {"text": left_text, "num_images": left_num_imgs}, 
+            "right": {"text": right_text, "num_images": right_num_imgs},
             "output": output,
             "prompt": _prompt,
             "model_output": response["output"],

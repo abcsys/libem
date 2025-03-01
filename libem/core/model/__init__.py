@@ -3,8 +3,18 @@ from libem.core.model import (
 )
 from libem.core import exec
 
+
+def format_text(*args, **kwargs) -> dict:
+    return openai.format_text(*args, **kwargs)
+
+
+def format_image(*args, **kwargs) -> dict:
+    return openai.format_image(*args, **kwargs)
+
+
 def output_schema(*args, **kwargs) -> dict:
     return openai.output_schema(*args, **kwargs)
+
 
 def call(*args, **kwargs) -> dict:
     return exec.run_async_task(
