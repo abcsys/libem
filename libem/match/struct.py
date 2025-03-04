@@ -1,61 +1,20 @@
-from libem.match import parameter
-from typing import TypedDict
-from pydantic import BaseModel
 from collections.abc import (
     Iterable, Generator, Iterator
 )
-from PIL import Image
-import numpy as np
-
-# input types
-TextEntityField = str
-TextEntityFields = TextEntityField | dict[str, TextEntityField]
-ImageEntityField = Image.Image | np.ndarray | str
-ImageEntityFields = ImageEntityField | dict[str, ImageEntityField]
-
-
-class MultimodalEntityDesc(BaseModel):
-    text: TextEntityFields | None = None
-    images: ImageEntityFields | list[ImageEntityField] | None = None
-    
-    class Config:
-        arbitrary_types_allowed = True
-
-
-EntityDesc = TextEntityFields | list[TextEntityFields] | \
-             ImageEntityFields | list[ImageEntityFields] | \
-             MultimodalEntityDesc | list[MultimodalEntityDesc]
-
-
-class Pair(TypedDict):
-    left: EntityDesc
-    right: EntityDesc
-
-
-Left = EntityDesc | Pair | list[Pair]
-Right = EntityDesc | None
-
-
-# output types
-class Answer(TypedDict):
-    answer: str | float
-    confidence: float | None
-    explanation: str | None
-
-
-Output = Answer | list[Answer]
+from libem.struct import *
+from libem.match import parameter
 
 
 # internal types
-class _MultimodalEntityDesc(BaseModel):
+class _MultimodalRecord(BaseModel):
     text: str | None = None
     images: list[str | np.ndarray] | None = None
     
     class Config:
         arbitrary_types_allowed = True
 
-_Left = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
-_Right = _MultimodalEntityDesc | list[_MultimodalEntityDesc]
+_Left = _MultimodalRecord | list[_MultimodalRecord]
+_Right = _MultimodalRecord | list[_MultimodalRecord]
 
 
 def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
@@ -64,7 +23,7 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
         # parse the pair into left and right
         pair = left
         match pair:
-            case dict():
+            case Mapping():
                 try:
                     left, right = pair["left"], pair["right"]
                 except KeyError:
@@ -72,7 +31,7 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
                         f"unexpected input type: {type(pair)}," 
                         f"must be {Pair}."
                     )
-            case _ if isinstance(pair, Iterable):
+            case Iterable():
                 if isinstance(pair, Generator) or isinstance(pair, Iterator):
                     pair = list(pair)
                 try:
@@ -96,14 +55,14 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
     return encode_entity_fields(left), encode_entity_fields(right)
 
 
-def encode_entity_fields(entity_fields: EntityDesc) -> _MultimodalEntityDesc | list[_MultimodalEntityDesc]:
+def encode_entity_fields(entity_fields: Record) -> _MultimodalRecord | list[_MultimodalRecord]:
     match entity_fields:
-        case str() | dict():
-            return _MultimodalEntityDesc(text=encode_text_fields(entity_fields))
+        case str() | Mapping():
+            return _MultimodalRecord(text=encode_text_fields(entity_fields))
         case Image.Image() | np.ndarray():
-            return _MultimodalEntityDesc(images=encode_image_fields(entity_fields))
-        case MultimodalEntityDesc():
-            _entity_fields = _MultimodalEntityDesc()
+            return _MultimodalRecord(images=encode_image_fields(entity_fields))
+        case MultimodalRecord():
+            _entity_fields = _MultimodalRecord()
             if entity_fields.text is not None:
                 _entity_fields.text = encode_text_fields(entity_fields.text)
             if entity_fields.images is not None:
@@ -118,14 +77,13 @@ def encode_entity_fields(entity_fields: EntityDesc) -> _MultimodalEntityDesc | l
             )
 
 
-def encode_text_fields(text_fields: TextEntityFields) -> str:
-    if isinstance(text_fields, dict):
+def encode_text_fields(text_fields: TextFields) -> str:
+    if isinstance(text_fields, Mapping):
         return parameter.dict_desc_encoding(text_fields)
     return text_fields
 
 
-def encode_image_fields(images: ImageEntityFields) -> list[np.ndarray]:
-    
+def encode_image_fields(images: ImageFields) -> list[np.ndarray]:
     def convert_pil(img):
         """
         Convert a PIL Image to an OpenCV image (NumPy array).
@@ -151,12 +109,12 @@ def encode_image_fields(images: ImageEntityFields) -> list[np.ndarray]:
     match images:
         case str() | Image.Image() | np.ndarray():
             return [convert_pil(images)]
-        case dict():
+        case Mapping():
             return [convert_pil(value) for value in images.values()]
         case list():
             return [convert_pil(value) for value in images]
         case _:
             raise ValueError(
                 f"unexpected input type: {type(images)},"
-                f"must be {ImageEntityFields}."
+                f"must be {ImageFields}."
             )

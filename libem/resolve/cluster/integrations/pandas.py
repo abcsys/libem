@@ -27,13 +27,18 @@ def cluster(*args, **kwargs):
     return func(*args, **kwargs)
 
 
-def func(df: pd.DataFrame, sort: bool = False) -> pd.DataFrame:
+def func(*dfs: pd.DataFrame, sort: bool = False) -> pd.DataFrame:
     clusters = cluster_func(
-        df.to_dict(orient="records")
+        *[df.to_dict(orient="records") for df in dfs]
     )
-
-    new_df = df.copy()
-    new_df["__cluster__"] = [cluster_id for cluster_id, _ in clusters]
+    print(clusters)
+    
+    rows = []
+    for cluster_id, record in clusters:
+        row = record.copy()
+        row["__cluster__"] = cluster_id
+        rows.append(row)
+    new_df = pd.DataFrame(rows)
 
     if sort:
         return new_df.sort_values(by="__cluster__")

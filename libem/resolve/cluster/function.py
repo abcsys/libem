@@ -1,26 +1,29 @@
-import json
-import hashlib
 from tqdm import tqdm
 from typing import Iterable
 
 import libem
+from libem.struct import (
+    Record, SingleRecord,
+    digest
+)
 from libem.resolve.cluster import parameter
 
 ClusterID = int
-Record = str | dict
 
 schema = {}
 
 
-def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
+def func(*records: Iterable[Record]) -> list[(ClusterID, SingleRecord)]:
     """
     Block, match, and cluster records.
+    If multiple iterables are passed in, only cluster across the iterables.
 
     Returns a list of tuples, each containing a cluster id and a record.
     """
-    records = list(records)
-    pairs, answers = block_and_match(records)
-    digests = [digest(record) for record in records]
+    
+    pairs, answers = block_and_match(*records)
+    flattened_records = [record for iter in records for record in iter]
+    digests = [digest(record) for record in flattened_records]
 
     record_cluster_ids = {
         d: i for i, d in enumerate(digests)
@@ -58,7 +61,7 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
                             f"of the same-as relation.")
 
     libem.debug(f"[cluster] {len(cluster_id_records)} clusters found,"
-                f"average cluster size: {len(records) / len(cluster_id_records):.2f}")
+                f"average cluster size: {len(flattened_records) / len(cluster_id_records):.2f}")
 
     # reassign cluster ids so that they increment from 0 without gaps, 
     # the final cluster_id order will follow the input records order
@@ -68,28 +71,15 @@ def func(records: Iterable[Record]) -> list[(ClusterID, Record)]:
     
     return [
         (record_cluster_ids[d], r)
-        for d, r in zip(digests, records)
+        for d, r in zip(digests, flattened_records)
     ]
 
 
-def block_and_match(records: Iterable[Record]) -> (list, list[dict]):
+def block_and_match(*records: Iterable[Record]) -> tuple[list[dict], list[dict]]:
     block = parameter.block_func
     match = parameter.match_func
 
-    pairs = list(block(records))
-    answers = list(match(pairs))
+    pairs = block(*records)
+    answers = match(pairs)
 
     return pairs, answers
-
-
-def digest(record: Record) -> str:
-    match record:
-        case str():
-            return hashlib.md5(record.encode()).hexdigest()
-        case dict():
-            return hashlib.md5(
-                json.dumps(
-                    record, sort_keys=True
-                ).encode()).hexdigest()
-        case _:
-            return hashlib.md5(str(record).encode()).hexdigest()

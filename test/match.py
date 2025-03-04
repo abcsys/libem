@@ -2,7 +2,7 @@ import os
 import cv2
 from PIL import Image
 import libem
-from libem.match.struct import MultimodalEntityDesc
+from libem.struct import MultimodalRecord
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,13 +21,13 @@ def main():
     assert output == "yes", output
     
     fruits = [
-        MultimodalEntityDesc(text={"name": "apple", "color": "red"}, 
-                             images=get_image("apple")),
-        MultimodalEntityDesc(text={"name": "sweet seedless orange", "color": "orange"}, 
-                             images=[get_image("orange1"), get_image("orange2")]),
-        MultimodalEntityDesc(text={"name": "lemon", "color": "yellow"}, 
-                             images=[get_image("lemon")]),
-        MultimodalEntityDesc(text={"name": "fuji apple"})
+        MultimodalRecord(text={"name": "apple", "color": "red"}, 
+                         images=get_image("apple")),
+        MultimodalRecord(text={"name": "sweet seedless orange", "color": "orange"}, 
+                         images=[get_image("orange1"), get_image("orange2")]),
+        MultimodalRecord(text={"name": "lemon", "color": "yellow"}, 
+                         images=[get_image("lemon")]),
+        MultimodalRecord(text={"name": "fuji apple"})
     ]
     
     # dict only
@@ -67,10 +67,10 @@ def main():
     
     # image only
     fruits = [
-        MultimodalEntityDesc(images=get_pil_image("apple")),
-        MultimodalEntityDesc(images=[get_image("orange1"), get_pil_image("orange2")]),
-        MultimodalEntityDesc(text={"name": "red apple"}),
-        MultimodalEntityDesc(images=["https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w="])
+        MultimodalRecord(images=get_pil_image("apple")),
+        MultimodalRecord(images=[get_image("orange1"), get_pil_image("orange2")]),
+        MultimodalRecord(text={"name": "red apple"}),
+        MultimodalRecord(images=["https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w="])
     ]
     output = [o['answer'] for o in libem.match([fruits[0]] * 3, fruits[1:])]
     assert output == ["no", "yes", "yes"], output

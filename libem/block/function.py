@@ -1,46 +1,43 @@
-import heapq
-import itertools
-from tqdm import tqdm
+import ray
+from ray.data.aggregate import AggregateFnV2
+from ray.data.block import BlockAccessor
 from fuzzywuzzy import fuzz
-from operator import itemgetter
-from typing import Any, Callable, Iterable
-from multiprocessing import Pool, cpu_count
+from itertools import combinations, product
+from typing import Any
+from tqdm import tqdm
 
 from libem.block import parameter
+from libem.block.struct import (
+    _TextRecord, _ImageRecord, 
+    _Record, parse_input
+)
+from libem.struct import Record
 
 schema = {
     "type": "function",
     "function": {
         "name": "block",
-        "description": "Perform the blocking stage of entity matching given two datasets.",
+        "description": "Perform the blocking stage of entity matching given one or more datasets.",
         "parameters": {
             "type": "object",
             "properties": {
-                "left": {
-                    "type": "list",
-                    "description": "A list containing the first dataset.",
-                },
-                "right": {
-                    "type": "list",
-                    "description": "A list containing the second dataset.",
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "type": "list",
+                        "description": "A list containing a dataset.",
+                    },
                 },
             },
-            "required": ["left", "right"],
+            "required": ["records"],
         },
     }
 }
 
 
-def func(left, right=None, key=None, ignore=None):
-    if right is None:
-        return block(left, key, ignore)
-    else:
-        return block_left_right(left, right, key, ignore)
-
-
-def block(records: Iterable[str | dict], 
-          key: str | list | None = None,
-          ignore: str | list | None = None) -> Iterable[dict]:
+def func(*records: Record, 
+         key: str | list | None = None,
+         ignore: str | list | None = None) -> list[dict]:
     
     if not ignore:
         ignore = []
@@ -49,193 +46,204 @@ def block(records: Iterable[str | dict],
     elif not isinstance(ignore, list):
         raise ValueError("Ignore must be a string or a list of strings.")
     
-    if key:
-        if isinstance(key, str):
-            key = [key]
-        elif not isinstance(key, list):
-            raise ValueError("Key must be a string or a list of strings.")
+    if not key:
+        key = None
+    elif isinstance(key, str):
+        key = [key]
+    elif not isinstance(key, list):
+        raise ValueError("Key must be a string or a list of strings.")
         
-        # group by key
-        grouped_records = list(parallel_groupby(records, key=itemgetter(*key)).values())
-        
-        return parallel_block_left_right(grouped_records, grouped_records,
-                                         remove_keys=key + ignore, 
-                                         compare_same_index=False)
+    grouped_records = process(records, key)
+    
+    if len(records) == 1:
+        return block_single_list(grouped_records, ignore)
     else:
-        records = list(records)
-        return parallel_block_left_right(records, records, 
-                                         remove_keys=ignore, 
-                                         compare_same_index=False)
+        return block_across_lists(grouped_records, ignore)
 
 
-def block_left_right(left: Iterable[str | dict], 
-                     right: Iterable[str | dict],
-                     key: str | list | None = None,
-                     ignore: str | list | None = None) -> Iterable[dict]:
-    if not ignore:
-        ignore = []
-    elif isinstance(ignore, str):
-        ignore = [ignore]
-    elif not isinstance(ignore, list):
-        raise ValueError("Ignore must be a string or a list of strings.")
+def process(records: Record, key: list[str] | None) -> list[dict]:
+    ''' 
+    Process and perform groupby operations on the records.
+    If multiple datasets are passed in, only keep key values
+    that are shared by 2 or more datasets.
+    '''
     
-    if key:
-        if isinstance(key, str):
-            key = [key]
-        elif not isinstance(key, list):
-            raise ValueError("Key must be a string or a list of strings.")
+    # Combine all records into a single Ray dataset
+    _records = []
+    for idx, dataset in enumerate(records):
+        processed = parse_input(dataset)
         
-        # group by key
-        left = parallel_groupby(left, key=itemgetter(*key))
-        right = parallel_groupby(right, key=itemgetter(*key))
-        
-        # inner join the two iterables
-        common_keys = set(left.keys()) & set(right.keys())
-        left_list = [left[key] for key in common_keys]
-        right_list = [right[key] for key in common_keys]
-        return parallel_block_left_right(
-            left_list, right_list,
-            remove_keys=key + ignore
-        )
-    else:
-        left, right = list(left), list(right)
-        return parallel_block_left_right(left, right, 
-                                         remove_keys=ignore)
-
-
-def parallel_groupby(data: Iterable[Any], key: Callable[[Any], Any]) -> dict:
-    ''' Perform a parallelized groupby operation on an iterable. '''
-    
-    # Convert data to a list for slicing
-    data = list(data)
-    chunk_size = max(1, len(data) // cpu_count())
-    chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
-
-    # Process chunks in parallel
-    with Pool(cpu_count()) as pool:
-        args = [(chunk, key) for chunk in chunks]
-        chunk_results = pool.starmap(groupby_chunk, args)
-
-    # Merge results
-    grouped_result = {}
-    for partial_result in chunk_results:
-        for k, v in partial_result.items():
-            if k in grouped_result:
-                grouped_result[k].extend(v)
-            else:
-                grouped_result[k] = v
-
-    return grouped_result
-
-
-def groupby_chunk(chunk: list[Any], key: Callable[[Any], Any]) -> dict:
-    """Group a single chunk."""
-    chunk = sorted(chunk, key=key)  # Groupby requires sorted input
-    return {k: list(g) for k, g in itertools.groupby(chunk, key=key)}
-
-
-def parallel_block_left_right(left: list[str | dict | list],
-                              right: list[str | dict | list],
-                              remove_keys: list | None = None,
-                              compare_same_index: bool = True) -> list[dict]:
-    ''' Run block with multiprocessing. '''
-    
-    with Pool(cpu_count()) as pool:
-        if isinstance(left[0], list): # nested list: pass each sublist to compare
-            if not isinstance(right[0], list):
-                raise ValueError("Left and right must have the same structure.")
+        for record in processed:
+            new_record = {"idx": idx, "record": record}
+            if key: # expose key values
+                if not isinstance(record.text, dict):
+                    raise ValueError("Records must be dict to use key.")
+                for k in key:
+                    new_record[k] = record.text.get(k, None)
             
-            async_results = [
-                pool.apply_async(
-                    compare, 
-                    args=(l, r, remove_keys, compare_same_index)
+            _records.append(new_record)
+    
+    ds = ray.data.from_items(_records)
+    
+    grouped = ds.groupby(key).aggregate(_GroupbyAggregator()).take_all()
+    
+    output = []
+    # Format output to be
+    # [{"records": [[ds1_rec1, ds1_rec2, ...], [ds2_rec1, ...] ...]}, ...]
+    for group in grouped:
+        result = group["__result__"]
+        if len(records) == 1 or len(result) > 1:
+            output.append({"records": [result[idx] for idx in result]})
+    return output
+
+
+def block_single_list(grouped_records: list[dict],
+                      ignore: list | None = None) -> list[dict]:
+    ''' Pairwise compare all records in each group. '''
+    
+    batch_size = parameter.batch_size()
+    similarity = parameter.similarity()
+    remote_tasks, batch = [], []
+    
+    for group in grouped_records:
+        for left, right in combinations(group["records"][0], 2):
+            batch.append((left, right))
+            if len(batch) == batch_size:
+                remote_tasks.append(
+                    compare.remote((batch, ignore, similarity))
                 )
-                for l, r in zip(left, right)
-            ]
-        else: # single list: split into chunks
-            if isinstance(right[0], list):
-                raise ValueError("Left and right must have the same structure.")
-            
-            left_size = len(left)
-            chunk_size = max(1, left_size // cpu_count())
-            left_chunks = [left[i:i + chunk_size] for i in range(0, left_size, chunk_size)]
-            async_results = []
-            
-            if compare_same_index:
-                async_results = [
-                    pool.apply_async(
-                        compare, 
-                        args=(left_chunks[l], right, remove_keys)
-                    )
-                    for l in range(len(left_chunks))
-            ]
-            else:
-                right_size = len(right)
-                if left_size != right_size:
-                    raise ValueError("Left and right must have the same length.")
-                
-                async_results = [
-                    pool.apply_async(
-                        compare, 
-                        args=(left_chunks[l], right[l*chunk_size:], remove_keys, compare_same_index)
-                    )
-                    for l in range(len(left_chunks))
-                ]
-        
-        # Monitor progress and collect results
-        results = []
-        with tqdm(total=len(async_results), desc="Blocking") as pbar:
-            for async_result in async_results:
-                try:
-                    results.extend(async_result.get())
-                    pbar.update(1)
-                except Exception as e:
-                    # terminate the pool if an exception occurs
-                    pool.terminate()
-                    pool.join()
-                    raise e
+                batch = []
+    if len(batch) > 0:
+        remote_tasks.append(
+            compare.remote((batch, ignore, similarity))
+        )
+    
+    # Use tqdm and ray.wait to show progress as tasks complete
+    results = []
+    pending = remote_tasks.copy()
+    with tqdm(total=len(remote_tasks), 
+              desc="Blocking") as pbar:
+        while pending:
+            done, pending = ray.wait(pending, num_returns=1)
+            results.extend(ray.get(done)[0])
+            pbar.update(len(done))
     
     return results
 
 
-def compare(left: Iterable[str | dict], 
-            right: Iterable[str | dict],
-            remove_keys: list | None = None,
-            compare_same_index: bool = True,
-            progress_bar: bool = False) -> Iterable[dict]:
+def block_across_lists(grouped_records: list[dict],
+                       ignore: list | None = None) -> list[dict]:
+    ''' Pairwise compare all records across different lists in each group. '''
+    
+    batch_size = parameter.batch_size()
+    similarity = parameter.similarity()
+    remote_tasks, batch = [], []
+    
+    for group in grouped_records:
+        for sublist1, sublist2 in combinations(group["records"], 2):
+            for left, right in product(sublist1, sublist2):
+                batch.append((left, right))
+                if len(batch) == batch_size:
+                    remote_tasks.append(
+                        compare.remote((batch, ignore, similarity))
+                    )
+                    batch = []
+    if len(batch) > 0:
+        remote_tasks.append(
+            compare.remote((batch, ignore, similarity))
+        )
+    
+    # Use tqdm and ray.wait to show progress as tasks complete.
+    results = []
+    pending = remote_tasks.copy()
+    with tqdm(total=len(remote_tasks), 
+              desc="Blocking") as pbar:
+        while pending:
+            done, pending = ray.wait(pending, num_returns=1)
+            results.extend(ray.get(done)[0])
+            pbar.update(len(done))
+    
+    return results
+
+
+@ray.remote
+def compare(input: tuple[list, list | None, list | None]) -> list[dict]:
     ''' Block using string similarity. '''
     
-    # set similarity and convert right iterable to list
-    similarity = parameter.similarity()
-    right = list(right)
+    pairs, ignore, similarity = input
     result = []
+    if similarity is None:
+        similarity = parameter.similarity()
 
-    for i, l in enumerate(left):
-        left_str = convert_to_str(l, remove_keys)
-        
-        iterable = right
-        if progress_bar:
-            iterable = tqdm(right, desc='Comparing', mininterval=0.01, leave=False)
-
-        for j, r in enumerate(iterable):
-            if not compare_same_index and i >= j:
-                continue
-            
-            right_str = convert_to_str(r, remove_keys)
+    for l, r in pairs:
+        # If purely image, do not compare
+        if isinstance(l, _ImageRecord) or isinstance(r, _ImageRecord):
+            result.append({'left': convert_to_original(l), 
+                           'right': convert_to_original(r)})
+        else:
+            left_str = convert_to_str(l.text, ignore)
+            right_str = convert_to_str(r.text, ignore)
             if fuzz.token_set_ratio(left_str, right_str) >= similarity:
-                result.append({'left': l, 'right': r})
+                result.append({'left': convert_to_original(l), 
+                            'right': convert_to_original(r)})
     
     return result
 
 
-def convert_to_str(record: str | dict, remove_keys: Iterable | None = None):
+def convert_to_str(record: str | dict, ignore: list | None = None):
     match record:
         case str():
             return record
         case dict():
-            if remove_keys:
-                return ' '.join(map(str, (value for key, value in record.items() if key not in remove_keys)))
+            if ignore:
+                return ' '.join(map(str, (value for key, value in record.items() if key not in ignore)))
             else:
                 return ' '.join(map(str, record.values()))
         case _:
             return str(record)
+
+
+def convert_to_original(record: _Record) -> Record:
+    if isinstance(record, _TextRecord):
+        return record.text
+    elif isinstance(record, _ImageRecord):
+        return record.image
+    else:
+        return record
+
+
+class _GroupbyAggregator(AggregateFnV2):
+    def __init__(self):
+        # Start with an empty dict mapping idx to a list of records
+        super().__init__(
+            name="__result__",
+            zero_factory=lambda: {},
+            on=None,
+            ignore_nulls=False,
+        )
+
+    def aggregate_block(self, block: Any) -> dict[int, list]:
+        block_acc = BlockAccessor.for_block(block)
+        accumulator: dict[int, list] = {}
+        
+        # Read each row, group by idx
+        for row in block_acc.iter_rows(public_row_format=False):
+            idx = row["idx"]
+            rec = row["record"]
+            if idx in accumulator:
+                accumulator[idx].append(rec)
+            else:
+                accumulator[idx] = [rec]
+        
+        return accumulator
+
+    def combine(self, 
+                current_accumulator: dict[int, list[dict]], 
+                new: dict[int, list[dict]]) -> dict[int, list[dict]]:
+        # Merge two accumulators on idx
+        for list_idx, recs in new.items():
+            if list_idx in current_accumulator:
+                current_accumulator[list_idx].extend(recs)
+            else:
+                current_accumulator[list_idx] = recs
+        return current_accumulator

@@ -3,31 +3,33 @@ from libem.resolve.cluster.interface import cluster
 schema = {}
 
 
-def func(records_a, records_b):
+def func(*records):
     import pandas as pd
 
-    assert type(records_a) == type(records_b)
+    first_type = type(records[0])
+    for record in records:
+        assert type(record) == first_type
 
-    match records_a:
-        case pd.DataFrame():
-            df_a, df_b = records_a, records_b
-
-            df_a["__source__"] = 0
-            df_b["__source__"] = 1
-
-            df_a, df_b = align(df_a, df_b)
-            # concatenate to one dataframe
-            df = pd.concat([df_a, df_b], ignore_index=True)
+    match first_type:
+        case pd.DataFrame:
+            # keep track of the source ids
+            source_ids = []
+            for i, df in enumerate(records):
+                source_ids.extend([i] * len(df))
+            
+            dfs = align(*records)
+            
             # cluster the rows
-            df_cluster = cluster(df.drop(columns=["__source__"]))
+            df_cluster = cluster(*records)
+            
             # add source column back
-            df_cluster = pd.concat([df_cluster, df[["__source__"]]], axis=1)
+            df_cluster = pd.concat([df_cluster, pd.Series(source_ids, name="__source__")], axis=1)
         case _:
             raise NotImplementedError
 
     return df_cluster
 
 
-def align(df_a, df_b):
-    # assume that df_a and df_b have the aligned schemas
-    return df_a, df_b
+def align(*dfs):
+    # assume that all dfs have aligned schemas
+    return dfs
