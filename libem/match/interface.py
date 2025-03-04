@@ -2,12 +2,10 @@ import random
 
 from libem.match import (
     parameter,
-    func, async_func,
+    func, async_func
 )
-from libem.match.struct import (
-    Left, Right, Output,
-    parse_input,
-)
+from libem.struct import Left, Right, Output
+from libem.match.struct import parse_input
 
 
 def match(left: Left, right: Right = None) -> Output:

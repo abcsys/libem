@@ -3,7 +3,7 @@ import cv2
 import libem
 
 from libem.match.prompt import rules
-from libem.match.struct import MultimodalEntityDesc
+from libem.struct import MultimodalRecord
 
 
 parent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,10 +37,10 @@ def negative():
 
 
 def multimodal():
-    e1 = MultimodalEntityDesc(text={"name": "fuji apple", "color": "red"},
-                              images=[get_image("apple")])
-    e2 = MultimodalEntityDesc(text={"name": "sweet seedless orange", "color": "orange"},
-                              images=[get_image("orange1"), get_image("orange2")])
+    e1 = MultimodalRecord(text={"name": "fuji apple", "color": "red"},
+                          images=[get_image("apple")])
+    e2 = MultimodalRecord(text={"name": "sweet seedless orange", "color": "orange"},
+                          images=[get_image("orange1"), get_image("orange2")])
 
     is_match = libem.match(e1, e2)
 

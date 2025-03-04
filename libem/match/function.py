@@ -1,8 +1,6 @@
-import base64
 import re
 import time
 import hashlib
-import cv2
 import numpy as np
 from pydantic import BaseModel
 from tqdm import tqdm
@@ -12,7 +10,9 @@ from typing import Coroutine
 
 import libem
 from libem.match import prompt, parameter
-from libem.match.struct import _MultimodalEntityDesc, parse_input
+from libem.match.struct import (
+    _MultimodalRecord, parse_input
+)
 from libem.core.struct import Prompt
 from libem.core import (
     exec, model
@@ -50,8 +50,8 @@ class BatchOutput(BaseModel):
     answers: list[Output]
 
 
-def func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
-         right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
+def func(left: _MultimodalRecord | list[_MultimodalRecord], 
+         right: _MultimodalRecord | list[_MultimodalRecord]) -> dict | list[dict]:
     if parameter.sync():
         return sync_func(left, right)
     else:
@@ -60,13 +60,13 @@ def func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
         )
 
 
-def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
-              right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
-    if not (isinstance(left, _MultimodalEntityDesc) or 
-            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
+def sync_func(left: _MultimodalRecord | list[_MultimodalRecord], 
+              right: _MultimodalRecord | list[_MultimodalRecord]) -> dict | list[dict]:
+    if not (isinstance(left, _MultimodalRecord) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalRecord)):
         left, right = parse_input(left, right)
     
-    if isinstance(left, _MultimodalEntityDesc):
+    if isinstance(left, _MultimodalRecord):
         return exec.run_async_task(
             once(left, right)
         )
@@ -85,13 +85,13 @@ def sync_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
     return output
 
 
-async def async_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], 
-                     right: _MultimodalEntityDesc | list[_MultimodalEntityDesc]) -> dict | list[dict]:
-    if not (isinstance(left, _MultimodalEntityDesc) or 
-            isinstance(left, list) and isinstance(left[0], _MultimodalEntityDesc)):
+async def async_func(left: _MultimodalRecord | list[_MultimodalRecord], 
+                     right: _MultimodalRecord | list[_MultimodalRecord]) -> dict | list[dict]:
+    if not (isinstance(left, _MultimodalRecord) or 
+            isinstance(left, list) and isinstance(left[0], _MultimodalRecord)):
         left, right = parse_input(left, right)
     
-    if isinstance(left, _MultimodalEntityDesc):
+    if isinstance(left, _MultimodalRecord):
         return await once(left, right)
 
     if parameter.batch_size() == 1:
@@ -104,8 +104,8 @@ async def async_func(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc],
     ))
 
 
-def create_once_tasks(left: list[_MultimodalEntityDesc], 
-                      right: list[_MultimodalEntityDesc]) -> list[Coroutine]:
+def create_once_tasks(left: list[_MultimodalRecord], 
+                      right: list[_MultimodalRecord]) -> list[Coroutine]:
     async def _once(left, right):
         # wrap the result in a list to
         # follow the batch output format
@@ -118,8 +118,8 @@ def create_once_tasks(left: list[_MultimodalEntityDesc],
     ]
 
 
-def create_batch_tasks(left: list[_MultimodalEntityDesc], 
-                       right: list[_MultimodalEntityDesc]) -> list[Coroutine]:
+def create_batch_tasks(left: list[_MultimodalRecord], 
+                       right: list[_MultimodalRecord]) -> list[Coroutine]:
     assert len(left) == len(right)
     
     # count number of repeats in left and right
@@ -178,7 +178,7 @@ def create_batch_tasks(left: list[_MultimodalEntityDesc],
     return batch_tasks
 
 
-async def once(left: _MultimodalEntityDesc, right: _MultimodalEntityDesc) -> dict:
+async def once(left: _MultimodalRecord, right: _MultimodalRecord) -> dict:
     start = time.time()
     
     left_text, right_text = left.text, right.text
@@ -266,7 +266,7 @@ async def once(left: _MultimodalEntityDesc, right: _MultimodalEntityDesc) -> dic
     return output
 
 
-async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right: list[_MultimodalEntityDesc]) -> list[dict]:
+async def batch(left: _MultimodalRecord | list[_MultimodalRecord], right: list[_MultimodalRecord]) -> list[dict]:
     start = time.time()
 
     output, size = [], len(right)
@@ -281,7 +281,7 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
 
     shots: list[dict] = prompt.shots()
 
-    if isinstance(left, _MultimodalEntityDesc):
+    if isinstance(left, _MultimodalRecord):
         left_text, left_imgs = left.text, left.images
         right_text, right_imgs = [r.text for r in right], [r.images for r in right]
         
@@ -392,7 +392,7 @@ async def batch(left: _MultimodalEntityDesc | list[_MultimodalEntityDesc], right
                 f"{response['output']}")
     
     # calculate the number of images for each entity
-    if isinstance(left, _MultimodalEntityDesc):
+    if isinstance(left, _MultimodalRecord):
         left_num_imgs = 1
     else:
         left_num_imgs = [len(img) if img else 0 for img in left_imgs]

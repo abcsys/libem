@@ -25,3 +25,5 @@ requests
 jsonref
 opencv-python
 Pillow
+ray>=2.43.0
+pyarrow
