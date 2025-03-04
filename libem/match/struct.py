@@ -49,10 +49,12 @@ def parse_input(left: Left, right: Right) -> tuple[_Left, _Right]:
                 )
 
     assert type(left) == type(right)
+    
+    left, right = encode_entity_fields(left), encode_entity_fields(right)
     if isinstance(left, list):
         assert len(left) == len(right)
     
-    return encode_entity_fields(left), encode_entity_fields(right)
+    return left, right
 
 
 def encode_entity_fields(entity_fields: Record) -> _MultimodalRecord | list[_MultimodalRecord]:
@@ -68,7 +70,7 @@ def encode_entity_fields(entity_fields: Record) -> _MultimodalRecord | list[_Mul
             if entity_fields.images is not None:
                 _entity_fields.images = encode_image_fields(entity_fields.images)
             return _entity_fields
-        case list():
+        case Iterable():
             return [encode_entity_fields(e) for e in entity_fields]
         case _:
             raise ValueError(
@@ -111,7 +113,7 @@ def encode_image_fields(images: ImageFields) -> list[np.ndarray]:
             return [convert_pil(images)]
         case Mapping():
             return [convert_pil(value) for value in images.values()]
-        case list():
+        case Iterable():
             return [convert_pil(value) for value in images]
         case _:
             raise ValueError(

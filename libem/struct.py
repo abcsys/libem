@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from typing import TypedDict
 from pydantic import BaseModel
 from PIL import Image
@@ -8,7 +8,8 @@ import numpy as np
 TextField = str
 TextFields = TextField | Mapping[str, TextField]
 ImageField = Image.Image | np.ndarray | str
-ImageFields = ImageField | Mapping[str, ImageField] | Iterable[ImageField]
+ImageFields = ImageField | Mapping[str, ImageField] | \
+              Sequence[ImageField] | Iterable[ImageField]
 
 
 class MultimodalRecord(BaseModel):
