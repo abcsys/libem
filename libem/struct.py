@@ -62,10 +62,19 @@ def digest(record: SingleRecord) -> str:
             record.save(buf, format='PNG')
             data = buf.getvalue()
         case MultimodalRecord():
-            text = json.dumps(record.text, sort_keys=True).encode()
-            images = b''.join([
-                digest(image) for image in record.images
-            ])
+            if record.text is None:
+                text = b''
+            else:
+                text = json.dumps(record.text, sort_keys=True).encode()
+                
+            if record.images is None:
+                images = b''
+            elif isinstance(record.images, np.ndarray):
+                images = record.images.tobytes() + str(record.images.shape).encode()
+            else:
+                images = b''.join([
+                    digest(image) for image in record.images
+                ])
             data = text + images
         case _:
             data = str(record).encode()

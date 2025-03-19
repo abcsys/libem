@@ -31,7 +31,6 @@ def func(*dfs: pd.DataFrame, sort: bool = False) -> pd.DataFrame:
     clusters = cluster_func(
         *[df.to_dict(orient="records") for df in dfs]
     )
-    print(clusters)
     
     rows = []
     for cluster_id, record in clusters:

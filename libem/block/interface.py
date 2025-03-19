@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from libem.block.function import func
+from libem.block.function import func, init
 from libem.struct import Record, Pair
 
 
