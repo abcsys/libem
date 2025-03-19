@@ -40,10 +40,12 @@ def func(*records: Record,
          ignore: str | list | None = None) -> list[dict]:
     
     if not ignore:
-        ignore = []
+        ignore = parameter.default_ignore()
     elif isinstance(ignore, str):
-        ignore = [ignore]
-    elif not isinstance(ignore, list):
+        ignore = parameter.default_ignore + [ignore]
+    elif isinstance(ignore, list):
+        ignore = parameter.default_ignore + ignore
+    else:
         raise ValueError("Ignore must be a string or a list of strings.")
     
     if not key:
