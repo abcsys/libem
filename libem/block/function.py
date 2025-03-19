@@ -212,6 +212,11 @@ def convert_to_original(record: _Record) -> Record:
         return record
 
 
+def init():
+    ''' Initialize Ray. '''
+    ray.init(ignore_reinit_error=True)
+
+
 class _GroupbyAggregator(AggregateFnV2):
     def __init__(self):
         # Start with an empty dict mapping idx to a list of records

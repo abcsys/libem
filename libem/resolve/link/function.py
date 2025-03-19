@@ -1,3 +1,5 @@
+import builtins
+
 from libem.resolve.cluster.interface import cluster
 
 schema = {}
@@ -20,10 +22,14 @@ def func(*records):
             dfs = align(*records)
             
             # cluster the rows
-            df_cluster = cluster(*records)
+            df_cluster = cluster(*dfs)
             
             # add source column back
             df_cluster = pd.concat([df_cluster, pd.Series(source_ids, name="__source__")], axis=1)
+        case builtins.list:
+            # convert all record lists to dataframes
+            dfs = [pd.DataFrame(record) for record in records]
+            return func(*dfs)
         case _:
             raise NotImplementedError
 
