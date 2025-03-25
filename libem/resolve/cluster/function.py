@@ -80,6 +80,9 @@ def block_and_match(*records: Iterable[Record]) -> tuple[list[dict], list[dict]]
     match = parameter.match_func
 
     pairs = block(*records)
-    answers = match(pairs)
+    if len(pairs) > 0:
+        answers = match(pairs)
+    else:
+        answers = []
 
     return pairs, answers
